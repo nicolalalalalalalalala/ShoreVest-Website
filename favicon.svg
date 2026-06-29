@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="ShoreVest favicon">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e4f56"></stop>
+      <stop offset="100%" stop-color="#09353e"></stop>
+    </linearGradient>
+    <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"></feTurbulence>
+      <feColorMatrix type="saturate" values="0"></feColorMatrix>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.05"></feFuncA>
+      </feComponentTransfer>
+    </filter>
+    <clipPath id="roundedClip">
+      <rect x="5" y="5" width="502" height="502" rx="105" ry="105"></rect>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundedClip)">
+    <rect width="512" height="512" fill="#f3f0e8"></rect>
+    <path d="M0,0 H315&#xA;             C302,26 327,42 313,67&#xA;             C298,92 317,111 292,131&#xA;             C267,151 282,175 258,194&#xA;             C233,214 250,241 227,261&#xA;             C201,283 219,311 196,333&#xA;             C172,357 196,385 168,407&#xA;             C141,430 160,460 132,482&#xA;             C118,493 105,503 96,512&#xA;             H0 Z" fill="url(#tealGrad)"></path>
+    <rect width="512" height="512" filter="url(#grain)" opacity="0.4"></rect>
+  </g>
+</svg>
