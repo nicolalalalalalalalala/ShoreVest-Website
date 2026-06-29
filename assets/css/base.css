@@ -1,0 +1,86 @@
+/* Reset & Base */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: var(--sv-cream);
+}
+
+body {
+  font-family: var(--sv-font-sans);
+  font-weight: 400;
+  color: var(--sv-ink);
+  background: var(--sv-cream);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+button { cursor: pointer; background: none; border: none; font: inherit; }
+
+/* Utility: shell container */
+.sv-shell {
+  width: 100%;
+  max-width: var(--sv-shell-max);
+  margin-inline: auto;
+  padding-inline: var(--sv-shell-pad);
+}
+
+/* Utility: 12-col grid */
+.sv-grid12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: clamp(16px, 2vw, 32px);
+}
+
+/* Utility: eyebrow label */
+.sv-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sv-teal-light);
+}
+
+/* Utility: section heading */
+.sv-h2 {
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--sv-ink);
+}
+
+/* Utility: text link with arrow */
+.sv-textlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--sv-teal);
+  text-decoration: none;
+  border-bottom: 1.5px solid currentColor;
+  padding-bottom: 1px;
+  transition: opacity 0.2s var(--sv-ease);
+}
+.sv-textlink:hover { opacity: 0.65; }
+
+/* Scroll reveal */
+.sv-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s var(--sv-ease), transform 0.55s var(--sv-ease);
+}
+.sv-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sv-reveal { opacity: 1; transform: none; transition: none; }
+}

@@ -1,0 +1,31 @@
+/* ShoreVest Brand Tokens */
+:root {
+  /* Palette */
+  --sv-cream:        #F2ECD8;
+  --sv-cream-mid:    #EAE2C9;
+  --sv-cream-dark:   #DDD4B8;
+  --sv-teal:         #1F2A26;
+  --sv-teal-mid:     #2A3C36;
+  --sv-teal-light:   #3A5046;
+  --sv-green-ink:    #0F2206;
+  --sv-gold:         #B8942A;
+  --sv-ink:          #1A1C1A;
+  --sv-ink-mid:      #3A3D38;
+  --sv-muted:        #6B6F68;
+  --sv-muted-light:  #9A9E97;
+  --sv-rule:         rgba(31, 42, 38, 0.14);
+  --sv-rule-light:   rgba(242, 236, 216, 0.18);
+  --sv-white:        #FFFFFF;
+
+  /* Typography */
+  --sv-font-sans:    'DIN 2014', 'Barlow', system-ui, sans-serif;
+  --sv-font-cn:      'Noto Serif SC', serif;
+
+  /* Layout */
+  --sv-shell-max:    1280px;
+  --sv-shell-pad:    clamp(24px, 5vw, 80px);
+  --sv-header-h:     80px;
+
+  /* Transitions */
+  --sv-ease:         cubic-bezier(0.25, 0.1, 0.25, 1);
+}
