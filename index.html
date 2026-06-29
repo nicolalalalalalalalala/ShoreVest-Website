@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <script>
@@ -8,49 +8,50 @@ window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
   var T=window.__SVT;
   function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
   window.__svTok=tok;
-  function fixEl(el){if(el.nodeType!==1)return;if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}}
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
   function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
   new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
   if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
-  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
   document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
 })();
 </script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ShoreVest | Investor Portal</title>
-  <meta name="description" content="Secure investor portal access for ShoreVest investors." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
-  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
-  <script>document.write('<link rel="icon" href="../assets/favicon.svg?v=3&t='+window.__SVT+'" type="image/svg+xml" sizes="any">');</script>
-  <!-- Canonical homepage chrome (header/footer/tokens) then the architectural rebuild. -->
-  <script>document.write('<link rel="stylesheet" href="../assets/css/homepage-rebuild.css?v=20260622-r12-warm1&t='+window.__SVT+'">');</script>
-  <script>document.write('<link rel="stylesheet" href="../assets/css/investor-portal-rebuild.css?v=20260626-ipr3&t='+window.__SVT+'">');</script>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShoreVest | Asset-backed private credit in China</title>
+<meta name="description" content="ShoreVest Partners is a China private credit and private debt investment manager focused on asset-backed private credit, margin of safety, proprietary sourcing, and downside protection.">
+<link rel="icon" type="image/png" href="assets/brand/sv-circle-fullcolor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Self-contained homepage: this stylesheet is the single authority. DIN 2014
+     resolves from the local install when present; Barlow is the loaded fallback. -->
+<script>document.write('<link rel="stylesheet" href="assets/css/homepage-rebuild.css?v=20260627-r24-h1-a2-a3-c4-c8-z3-warm1-mob1-foot1-menu1&t='+window.__SVT+'">');</script>
 </head>
-  <body class="homepage investor-portal-page">
+<body id="top" class="homepage home-page">
 
+<!-- ============================================================ A · HEADER -->
 <header class="sv-header">
   <div class="sv-header__inner">
-    <a class="sv-header__logo" href="../index.html" aria-label="ShoreVest — home">
-      <img src="../assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest" width="172" height="41">
+    <a class="sv-header__logo" href="index.html" aria-label="ShoreVest — home">
+      <!-- Cream header → FullColor_Dark variant (dark-teal wordmark, reads on cream). -->
+      <img src="assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest" width="172" height="41">
     </a>
     <nav class="sv-nav" aria-label="Primary">
       <ul>
-        <li><a href="../firm.html">Firm</a></li>
-        <li><a href="../strategy.html">Strategy</a></li>
-        <li><a href="../insights.html">Insights</a></li>
-        <li><a href="../press.html">Media</a></li>
-        <li><a href="../team.html">Team</a></li>
+        <li><a href="firm.html">Firm</a></li>
+        <li><a href="strategy.html">Strategy</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li><a href="press.html">Media</a></li>
+        <li><a href="team.html">Team</a></li>
       </ul>
     </nav>
     <div class="sv-utils">
-      <a class="sv-lang" href="../index_cn.html"><span class="on">EN</span><span class="sep">|</span>中文</a>
-      <a class="sv-util-btn" href="index.html">Investor Portal</a>
-      <a class="sv-util-btn sv-util-btn--cta" href="../contact.html">Contact</a>
+      <a class="sv-lang" href="index_cn.html"><span class="on">EN</span><span class="sep">|</span>中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
     </div>
     <button class="sv-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sv-mobile-menu">
       <span></span>
@@ -61,275 +62,194 @@ window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
 <div class="sv-mobile-menu" id="sv-mobile-menu">
   <nav aria-label="Mobile">
     <ul>
-      <li><a href="../firm.html">Firm</a></li>
-      <li><a href="../strategy.html">Strategy</a></li>
-      <li><a href="../insights.html">Insights</a></li>
-      <li><a href="../press.html">Media</a></li>
-      <li><a href="../team.html">Team</a></li>
+      <li><a href="firm.html">Firm</a></li>
+      <li><a href="strategy.html">Strategy</a></li>
+      <li><a href="insights.html">Insights</a></li>
+      <li><a href="press.html">Media</a></li>
+      <li><a href="team.html">Team</a></li>
     </ul>
     <div class="sv-mobile-utils">
-      <a class="sv-util-btn" href="../index_cn.html">中文</a>
-      <a class="sv-util-btn" href="index.html">Investor Portal</a>
-      <a class="sv-util-btn sv-util-btn--cta" href="../contact.html">Contact</a>
+      <a class="sv-util-btn" href="index_cn.html">中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
     </div>
   </nav>
 </div>
 
-  <main class="investor-portal-main" aria-labelledby="investor-portal-title">
-    <section class="investor-portal-hero" data-screen-label="Investor Portal" aria-labelledby="investor-portal-title">
-      <div class="investor-portal-hero__inner">
-        <div class="ip-hero__red">
-          <p class="investor-portal-hero__eyebrow">Investor Portal</p>
-          <h1 id="investor-portal-title">Secure data room access.</h1>
-          <span class="ip-hero__rule" aria-hidden="true"></span>
-          <p class="ip-hero__desc">Authorized investors sign in to access ShoreVest fund materials through the iDeals virtual data room.</p>
-          <p class="ip-hero__confidential">Authorized users only</p>
-        </div>
+<main id="content">
 
-        <div class="ip-hero__signin">
-          <p class="ip-signin__kicker">Secure sign in</p>
-          <h2 class="ip-signin__title">Enter your email to continue.</h2>
-          <p class="ip-signin__note">You will be redirected to the iDeals data room once your email is validated.</p>
-<section class="login-form-container">
-  <form name="login" id="vdr-login-form" class="login-form" method="POST">
-    <h3>
-      Sign in to data room powered by
-      <a href="https://www.idealsvdr.com/" target="_blank">
-        <svg width="156" height="42" viewBox="0 0 156 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0.691101 4.67743C0.691101 2.22886 2.67064 0.363281 5.17418 0.363281C7.61949 0.363281 9.54081 2.22886 9.54081 4.67743C9.54081 7.18429 7.61949 8.99157 5.17418 8.99157C2.61242 8.99157 0.691101 7.18429 0.691101 4.67743ZM1.56443 40.9396V12.3729H8.49282V40.9396H1.56443Z" fill="#002325"/>
-          <path d="M42.2032 1.00488V40.9982H35.4495V37.267C33.3535 39.7739 30.3842 41.6978 26.2504 41.6978C18.0412 41.6978 11.9279 35.2266 11.9279 26.7149C11.9279 18.3198 18.0994 11.7902 26.1922 11.7902C30.2677 11.7902 33.1788 13.6558 35.2748 16.1044V1.00488H42.2032ZM35.6824 26.6566C35.6824 21.9343 32.3637 17.97 27.2402 17.97C22.1749 17.97 18.8563 21.9343 18.8563 26.6566C18.8563 31.4954 22.1749 35.4015 27.2402 35.4015C32.3055 35.4015 35.6824 31.4954 35.6824 26.6566Z" fill="#002325"/>
-          <path d="M74.3999 29.1051H52.4503C53.3236 32.778 56.0018 35.6929 61.2418 35.6929C64.5022 35.6929 68.2284 34.4686 70.7319 32.7197L73.4683 37.6168C70.7901 39.599 66.1906 41.5812 60.9506 41.5812C50.1214 41.5812 45.3472 34.2355 45.3472 26.6565C45.3472 18.1449 51.344 11.7319 60.3102 11.7319C68.403 11.7319 74.5745 17.0372 74.5745 26.0736C74.6328 27.2395 74.5163 28.1723 74.3999 29.1051ZM52.4503 23.9165H67.8208C67.2386 19.8938 64.2693 17.4453 60.3102 17.4453C56.3511 17.4453 53.3818 19.9521 52.4503 23.9165Z" fill="#002325"/>
-          <path d="M107.47 12.3732V40.9399H100.891V37.4419C98.7366 39.8905 95.6508 41.6395 91.5171 41.6395C83.1914 41.6395 77.2527 34.9933 77.2527 26.5399C77.2527 17.97 83.3078 11.7319 91.5171 11.7319C95.6508 11.7319 98.6784 13.5975 100.891 16.0461V12.4315H107.47V12.3732ZM101.065 26.6565C101.065 21.9343 97.6304 17.97 92.5651 17.97C87.4998 17.97 84.1229 21.9343 84.1229 26.6565C84.1229 31.4371 87.4998 35.4014 92.5651 35.4014C97.5722 35.4014 101.065 31.4371 101.065 26.6565Z" fill="#002325"/>
-          <path d="M111.836 40.9399V1.00488H118.707V40.9982H111.836V40.9399Z" fill="#002325"/>
-          <path d="M121.56 36.0427L125.46 31.8452C127.44 34.4103 130.409 35.8678 133.204 35.8678C135.707 35.8678 137.454 34.5269 137.454 32.8946C137.454 31.6703 136.639 30.8541 135.3 30.1545C133.67 29.3383 129.943 28.114 128.139 27.1812C124.878 25.6072 123.306 23.042 123.306 19.8938C123.306 14.9967 127.382 11.4404 133.786 11.4404C137.454 11.4404 141.064 12.723 143.684 15.638L140.074 20.0104C138.036 17.9116 135.591 17.0372 133.611 17.0372C131.399 17.0372 130.118 18.2614 130.118 19.7189C130.118 20.71 130.759 21.8177 132.622 22.5173C134.485 23.2752 137.279 24.208 139.55 25.374C142.752 27.0646 144.441 29.28 144.441 32.6614C144.441 37.7334 140.074 41.6978 133.262 41.6978C128.663 41.6978 124.296 39.8322 121.56 36.0427Z" fill="#002325"/>
-          <path d="M146.187 37.675C146.187 35.4013 148.05 33.6523 150.379 33.6523C152.592 33.6523 154.397 35.4013 154.397 37.675C154.397 40.0653 152.592 41.7559 150.379 41.7559C148.05 41.8142 146.187 40.0653 146.187 37.675Z" fill="#002325"/>
-        </svg>
-      </a>
-    </h3>
-
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input id="email" type="text" name="email" class="form-control" placeholder="name@website.com" autocomplete="off" />
-      <small class="error"></small>
+<!-- ============================================================ B · HERO -->
+<section class="sv-hero" id="hero" data-screen-label="Hero" aria-label="ShoreVest introduction">
+  <div class="sv-hero__inner">
+    <div class="sv-hero__main">
+      <span class="sv-hero__rule" aria-hidden="true"></span>
+      <p class="sv-hero__label">Specialists in China credit</p>
+      <h1 class="sv-hero__headline">Asset-backed <br class="sv-hero__br">private credit <br class="sv-hero__br">in China</h1>
+      <p class="sv-hero__body">ShoreVest Partners invests in asset-backed China credit opportunities where proprietary sourcing, collateral quality, and recoverability drive the underwriting case.</p>
+      <div class="sv-hero__cta">
+        <a href="insights.html" class="sv-textlink">China Debt Dynamics<span aria-hidden="true">→</span></a>
+      </div>
     </div>
-
-    <button type="submit" class="btn btn-primary" name="submit">Sign in</button>
-  </form>
-  <p class="ip-signin__secure">Encrypted connection · iDeals secure VDR</p>
+    <div class="sv-hero__field">
+      <aside class="sv-hero__panel" aria-label="Firm reference">
+        <p class="sv-hero__panel-label">ShoreVest at a glance</p>
+        <dl>
+          <div class="sv-hero__panel-row">
+            <dt>Focus</dt>
+            <dd>Asset-backed private credit</dd>
+          </div>
+          <div class="sv-hero__panel-row">
+            <dt>Since</dt>
+            <dd>2004</dd>
+          </div>
+          <div class="sv-hero__panel-row">
+            <dt>Strategies</dt>
+            <dd>Asset-Based Lending · Asset Restructuring · Debt Resolutions</dd>
+          </div>
+          <div class="sv-hero__panel-row">
+            <dt>Offices</dt>
+            <dd>Guangzhou · Shanghai · Beijing · Hong Kong</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </div>
 </section>
-<script>
-  (function(ELEMENT) {
-    ELEMENT.matches = ELEMENT.matches || ELEMENT.mozMatchesSelector || ELEMENT.msMatchesSelector || ELEMENT.oMatchesSelector || ELEMENT.webkitMatchesSelector;
-    ELEMENT.closest = ELEMENT.closest || function closest(selector) {
-      if (!this) return null;
-      if (this.matches(selector)) return this;
-      if (!this.parentElement) {return null}
-      else return this.parentElement.closest(selector)
-    };
-  }(Element.prototype));
-</script>
-<script>
-  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+<!-- ============================================================ D · WHAT SHOREVEST DOES -->
+<section class="sv-bridge home-firm-preview" id="firm" data-screen-label="Firm" aria-labelledby="sv-bridge-title">
+  <div class="sv-shell sv-grid12 sv-bridge__inner home-firm-preview__grid">
+    <div class="sv-bridge__head home-firm-preview__copy">
+      <p class="sv-label">The Firm</p>
+      <h2 class="sv-h2" id="sv-bridge-title">A China credit platform developed over two decades.</h2>
+    </div>
+    <div class="sv-bridge__body home-firm-preview__statement">
+      <p>ShoreVest brings two decades of experience across China credit and distressed debt, with institutional capital managed through multiple market cycles.</p>
+      <a class="sv-textlink home-firm-preview__link" href="firm.html">Inside the firm <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</section>
 
-  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-  (function () {
-    var ERROR_MESSAGES = {
-      INVALID_EMAIL: 'Enter a valid email',
-      REQUIRED_FIELD: 'Fill in to continue'
-    };
-
-    var Login = /*#__PURE__*/function () {
-      "use strict";
-
-      function Login(form) {
-        _classCallCheck(this, Login);
-
-        this.form = form;
-        this.emailField = this.form.email;
-        this.submitBtn = this.form.submit;
-        this.addListeners();
-      }
-
-      _createClass(Login, [{
-        key: "addListeners",
-        value: function addListeners() {
-          this.form.addEventListener('submit', this.submit.bind(this));
-          this.emailField.addEventListener('keydown', this.clearErrors.bind(this));
-          this.emailField.addEventListener('change', this.clearErrors.bind(this));
-        }
-      }, {
-        key: "submit",
-        value: function submit(event) {
-          var _this = this;
-
-          event.preventDefault();
-
-          if (this.validateForm()) {
-            var email = encodeURIComponent(_this.emailField.value);
-            window.location.href = "https://app.idealsvdr.com/projects/all?email=".concat(email);
-          }
-        }
-      }, {
-        key: "setErrorText",
-        value: function setErrorText(element, text) {
-          element.closest('.form-group').querySelector('.error').innerText = text;
-        }
-      }, {
-        key: "showError",
-        value: function showError(element) {
-          var formGroup = element.closest('.form-group');
-
-          if (!formGroup.classList.contains('has-error')) {
-            formGroup.classList.add('has-error');
-          }
-        }
-      }, {
-        key: "hideError",
-        value: function hideError(element) {
-          var formGroup = element.closest('.form-group');
-
-          if (formGroup.classList.contains('has-error')) {
-            formGroup.classList.remove('has-error');
-          }
-        }
-      }, {
-        key: "clearErrors",
-        value: function clearErrors(event) {
-          this.hideError(event.target);
-          this.setErrorText(event.target, '');
-        }
-      }, {
-        key: "validateForm",
-        value: function validateForm() {
-          var emailValid = this.validateEmail();
-          return emailValid;
-        }
-      }, {
-        key: "validateEmail",
-        value: function validateEmail() {
-          var re = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
-          var value = this.emailField.value;
-
-          if (value === "" || value === undefined) {
-            this.setErrorText(this.emailField, ERROR_MESSAGES.REQUIRED_FIELD);
-            this.showError(this.emailField);
-            return false;
-          }
-
-          if (!re.test(value)) {
-            this.setErrorText(this.emailField, ERROR_MESSAGES.INVALID_EMAIL);
-            this.showError(this.emailField);
-            return false;
-          }
-
-          return true;
-        }
-      }]);
-
-      return Login;
-    }();
-
-    window.addEventListener('load', function () {
-      new Login(document.getElementById('vdr-login-form'));
-    });
-  })();
-</script>
+<!-- ============================================================ E · INVESTMENT STRATEGY -->
+<section class="sv-strategy" id="strategy" data-screen-label="Strategy" aria-labelledby="sv-strategy-title">
+  <div class="sv-shell sv-grid12 sv-strategy__inner">
+    <div class="sv-strategy__lead">
+      <p class="sv-label">Strategy</p>
+      <h2 class="sv-h2" id="sv-strategy-title">Defined recovery paths.</h2>
+      <p>ShoreVest underwrites secured opportunities around claim priority, enforceability, and exit route.</p>
+    </div>
+    <div class="sv-strategy__rows">
+      <div class="sv-srow">
+        <h3 class="sv-srow__title">Asset-Based Lending</h3>
       </div>
+      <div class="sv-srow">
+        <h3 class="sv-srow__title">Asset Restructuring</h3>
       </div>
-    </section>
-  </main>
-
-  <section class="investor-portal-panel" aria-label="Portal access information">
-    <div class="ip-shell">
-      <div class="ip-access__head">
-        <p class="ip-access__label">Access</p>
-        <h2>What to expect inside the data room.</h2>
-      </div>
-      <div class="ip-access">
-        <div class="ip-access__row">
-          <span class="ip-access__num">01</span>
-          <div class="ip-access__body">
-            <p class="ip-access__rowtitle">Authorized access</p>
-            <p class="ip-access__copy">The portal is restricted to investors who have been granted access by ShoreVest. Sign in with the email address associated with your access.</p>
-          </div>
-        </div>
-        <div class="ip-access__row">
-          <span class="ip-access__num">02</span>
-          <div class="ip-access__body">
-            <p class="ip-access__rowtitle">Fund materials</p>
-            <p class="ip-access__copy">Authorized users can review fund documentation, reporting, and related materials hosted in the iDeals virtual data room.</p>
-          </div>
-        </div>
-        <div class="ip-access__row">
-          <span class="ip-access__num">03</span>
-          <div class="ip-access__body">
-            <p class="ip-access__rowtitle">Need access?</p>
-            <p class="ip-access__copy">If you have not been granted access, please contact your ShoreVest representative or reach us through the <a href="../contact.html">contact page</a>.</p>
-          </div>
-        </div>
+      <div class="sv-srow">
+        <h3 class="sv-srow__title">Debt Resolutions</h3>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="ip-assure" aria-labelledby="ip-assure-title">
-    <div class="ip-assure__inner">
-      <div class="ip-assure__lead">
-        <p class="ip-access__label">Security &amp; confidentiality</p>
-        <h2 id="ip-assure-title">Materials are accessed through a secure, controlled environment.</h2>
+<!-- ============================================================ H · CHINA DEBT DYNAMICS -->
+<section class="sv-cdd" id="research" data-screen-label="China Debt Dynamics" aria-labelledby="sv-cdd-title">
+  <div class="sv-shell sv-cdd__inner">
+    <div class="sv-cdd__head">
+      <div>
+        <p class="sv-cdd__label">Research series · established 2018</p>
+        <h2 class="sv-cdd__title" id="sv-cdd-title">China Debt Dynamics</h2>
+        <p class="sv-cdd__cn" lang="zh">新岸资本 · 中国债务动态</p>
       </div>
-      <div class="ip-assure__grid">
-        <div class="ip-assure__cell">
-          <p class="ip-assure__k">Controlled</p>
-          <p class="ip-assure__v">Access is limited to authorized investors and managed by ShoreVest.</p>
-        </div>
-        <div class="ip-assure__cell">
-          <p class="ip-assure__k">Encrypted</p>
-          <p class="ip-assure__v">The iDeals data room provides an encrypted environment for document review.</p>
-        </div>
-        <div class="ip-assure__cell">
-          <p class="ip-assure__k">Confidential</p>
-          <p class="ip-assure__v">All materials are confidential and intended solely for the authorized recipient.</p>
-        </div>
-      </div>
+      <p class="sv-cdd__desc">Research on China&rsquo;s private credit markets, policy trajectory, legal frameworks, and creditor recoveries.</p>
     </div>
-  </section>
 
-  <footer class="sv-footer" aria-label="Site footer">
+    <article>
+      <a class="sv-cdd__feature" href="china-debt-dynamics-v10i1.html">
+        <div class="sv-cdd__feature-meta">
+          <span class="sv-cdd__feature-tag">Featured report</span>
+          <span class="sv-cdd__feature-issue">Issue 46 · 25 January 2026</span>
+        </div>
+        <div class="sv-cdd__feature-main">
+          <h3 class="sv-cdd__feature-title">The End of the &ldquo;China Is Uninvestable&rdquo; Myth</h3>
+          <span class="sv-cdd__feature-read">Read Issue <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+    </article>
+
+    <p class="sv-cdd__recent">Recent issues</p>
+    <div class="sv-cdd__list">
+      <article>
+        <a class="sv-cddrow" href="china-debt-dynamics-v10i1.html">
+          <span class="sv-cddrow__id">Vol. 10 · No. 1<small>January 2026</small></span>
+          <span class="sv-cddrow__title">The End of the &ldquo;China Is Uninvestable&rdquo; Myth</span>
+          <span class="sv-cddrow__cat">Markets</span>
+          <span class="sv-cddrow__read">Read</span>
+        </a>
+      </article>
+      <article>
+        <a class="sv-cddrow" href="china-debt-dynamics-45-beijings-campaign-against-overcapacity-creates-private-credit-opportunities.html">
+          <span class="sv-cddrow__id">Vol. 9 · No. 4<small>2025</small></span>
+          <span class="sv-cddrow__title">Beijing&rsquo;s Campaign Against Overcapacity Creates Private Credit Opportunities</span>
+          <span class="sv-cddrow__cat">Policy</span>
+          <span class="sv-cddrow__read">Read</span>
+        </a>
+      </article>
+      <article>
+        <a class="sv-cddrow" href="china-debt-dynamics-into-the-shadows-of-us-private-credit.html">
+          <span class="sv-cddrow__id">Vol. 9 · No. 3<small>2025</small></span>
+          <span class="sv-cddrow__title">Into the Shadows of US Private Credit: A China Perspective</span>
+          <span class="sv-cddrow__cat">Markets</span>
+          <span class="sv-cddrow__read">Read</span>
+        </a>
+      </article>
+    </div>
+
+    <div class="sv-cdd__foot">
+      <a class="sv-cdd__archive-btn" href="insights.html#archive">View Full Archive<span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================ I · FOOTER -->
+<footer class="sv-footer" aria-label="Site footer">
   <div class="sv-footer__inner">
     <div class="sv-footer__top">
       <div>
-        <a class="sv-footer__logo" href="../index.html" aria-label="ShoreVest — home">
-          <img src="../assets/brand/sv-lockup-fc-light.png" alt="ShoreVest" width="200" height="48">
+        <a class="sv-footer__logo" href="index.html" aria-label="ShoreVest — home">
+          <!-- Dark footer → FullColor_Light variant (ivory wordmark, reads on teal). -->
+          <img src="assets/brand/sv-lockup-fc-light.png" alt="ShoreVest" width="200" height="48">
         </a>
         <p class="sv-footer__offices">
           Guangzhou · Shanghai · Beijing · Hong Kong<br>
-          <a href="../contact.html">General inquiries</a>
+          <a href="contact.html">General inquiries</a>
         </p>
       </div>
       <nav class="sv-footer__nav" aria-label="Footer">
-        <a href="../firm.html">Firm</a>
-        <a href="../insights.html">Insights</a>
-        <a href="../strategy.html">Strategy</a>
-        <a href="../press.html">Media</a>
-        <a href="../team.html">Team</a>
-        <a href="../contact.html">Contact</a>
-        <a href="index.html">Investor Portal</a>
-        <a href="../insights.html#archive">China Debt Dynamics</a>
+        <a href="firm.html">Firm</a>
+        <a href="insights.html">Insights</a>
+        <a href="strategy.html">Strategy</a>
+        <a href="press.html">Media</a>
+        <a href="team.html">Team</a>
+        <a href="contact.html">Contact</a>
+        <a href="investor-portal/index.html">Investor Portal</a>
+        <a href="insights.html#archive">China Debt Dynamics</a>
       </nav>
     </div>
+
     <div class="sv-footer__legal">
       <p>ShoreVest Partners and its affiliates provide investment management services to institutional investors. This website is for informational purposes only and does not constitute an offer to sell or a solicitation of an offer to buy any security or investment product, nor investment, legal, or tax advice.</p>
       <p>Past performance is not indicative of future results. Investments in private credit and private debt involve risk, including the possible loss of principal. Figures shown are approximate and subject to change.</p>
     </div>
+
     <div class="sv-footer__bottom">
       <div class="sv-footer__links">
-        <a href="../legal.html#privacy">Privacy Policy</a>
-        <a href="../legal.html#cookies">Cookie Notice</a>
-        <a href="../legal.html#terms">Terms of Use</a>
-        <a href="../legal.html#disclaimers">Legal Notices &amp; Disclaimers</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-notice.html">Cookie Notice</a>
+        <a href="terms-of-use.html">Terms of Use</a>
+        <a href="legal-notices-disclaimers.html">Legal Notices &amp; Disclaimers</a>
       </div>
       <p class="sv-footer__copy">© 2026 ShoreVest Partners. All rights reserved.</p>
     </div>
@@ -340,13 +260,35 @@ window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
   <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5"/></svg>
 </button>
 
-  <script>
+<script>
 (function(){
-  var burger=document.querySelector('.sv-burger'); var menu=document.getElementById('sv-mobile-menu');
-  if(burger&&menu){burger.addEventListener('click',function(){var open=menu.classList.toggle('is-open');burger.setAttribute('aria-expanded',open?'true':'false');burger.setAttribute('aria-label',open?'Close menu':'Open menu');});menu.addEventListener('click',function(e){if(e.target.closest('a')){menu.classList.remove('is-open');burger.setAttribute('aria-expanded','false');}});}
-  var toTop=document.querySelector('.sv-totop');
-  if(toTop){var onScroll=function(){if(window.scrollY>600)toTop.classList.add('is-visible');else toTop.classList.remove('is-visible');};window.addEventListener('scroll',onScroll,{passive:true});onScroll();toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}
+  // Mobile menu toggle
+  var burger = document.querySelector('.sv-burger');
+  var menu = document.getElementById('sv-mobile-menu');
+  if (burger && menu) {
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    menu.addEventListener('click', function(e){ if (e.target.closest('a')) { menu.classList.remove('is-open'); burger.setAttribute('aria-expanded','false'); } });
+  }
+  // Scroll-to-top
+  var toTop = document.querySelector('.sv-totop');
+  if (toTop) {
+    var onScroll = function(){ if (window.scrollY > 600) toTop.classList.add('is-visible'); else toTop.classList.remove('is-visible'); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    toTop.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+  // Reveal on scroll (respects reduced motion via CSS)
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('is-in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.sv-reveal').forEach(function(el){ io.observe(el); });
+  }
 })();
 </script>
+
 </body>
 </html>
