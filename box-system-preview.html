@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShoreVest — Box System</title>
+<style>
+  @font-face { font-family:"DIN 2014"; src:local("DIN 2014"),local("DIN2014"); font-weight:400 700; font-display:swap; }
+  :root{ --sv-font:"DIN 2014","Barlow",system-ui,sans-serif;
+    --xuan:#F7F3EA;--cinnabar:#C93B2A;--cinnabar-d:#8A1F12;--qing:#3D7070;--qing-deep:#1F4F50;
+    --qing-light:#9DBABC;--green:#2E4A18;--ink:#171C1C;--ivory:#FAF6EC;--muted:#6E7169; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#EFE7D4;color:#20211F;font-family:var(--sv-font);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1240px;margin:0 auto;padding:clamp(32px,6vw,80px) clamp(20px,4vw,48px);}
+  h1{margin:0;font:500 clamp(30px,4vw,48px)/1.05 var(--sv-font);letter-spacing:-0.03em;}
+  .intro{margin:12px 0 0;color:var(--muted);font-size:16px;max-width:60ch;}
+  .spec{margin:56px 0 16px;display:flex;align-items:baseline;gap:14px;border-top:2px solid var(--cinnabar);padding-top:14px;}
+  .spec b{font:600 12px/1.2 var(--sv-font);letter-spacing:.16em;text-transform:uppercase;color:var(--cinnabar);}
+  .spec span{color:var(--muted);font-size:13px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr;}}
+  .bx{position:relative;overflow:hidden;}
+  .label{margin:0 0 16px;font:600 11px/1.2 var(--sv-font);letter-spacing:.16em;text-transform:uppercase;opacity:.82;}
+  .title{margin:0;font:500 clamp(22px,2.4vw,32px)/1.12 var(--sv-font);letter-spacing:-.02em;}
+  .body{margin:14px 0 0;font:400 15px/1.6 var(--sv-font);opacity:.92;max-width:44ch;}
+  .stats{display:flex;flex-direction:column;}
+  .stat{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:15px 0;border-bottom:1px solid rgba(32,33,31,.10);}
+  .stat:last-child{border-bottom:none;padding-bottom:0;}
+  .stat .v{font:500 clamp(24px,2.6vw,34px)/1 var(--sv-font);letter-spacing:-.02em;white-space:nowrap;}
+  .stat .c{font:600 10px/1.3 var(--sv-font);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:right;}
+  /* 01 full frame */
+  .b1{background:var(--cinnabar);color:var(--ivory);padding:clamp(20px,2.4vw,30px);}
+  .b1 .inset{background:var(--ivory);color:var(--ink);padding:clamp(28px,3.4vw,44px);}
+  /* 02 split field */
+  .b2{background:var(--cinnabar);padding:clamp(34px,4vw,56px) clamp(26px,3.5vw,46px);}
+  .b2::after{content:"";position:absolute;inset:0 0 0 auto;width:min(140px,22%);background:var(--cinnabar-d);}
+  .b2 .card{position:relative;z-index:1;background:var(--ivory);color:var(--ink);padding:clamp(26px,3vw,40px);box-shadow:0 12px 34px rgba(0,0,0,.16);max-width:380px;}
+  /* 03 offset */
+  .b3{background:var(--xuan);padding:clamp(26px,3.4vw,48px);}
+  .b3 .card{background:#fff;color:var(--ink);padding:clamp(26px,3vw,40px);border-left:4px solid var(--cinnabar);box-shadow:0 16px 40px rgba(0,0,0,.12);max-width:480px;}
+  /* 04 band top */
+  .b4{background:var(--xuan);}
+  .b4 .band{background:var(--qing);color:var(--ivory);padding:clamp(18px,2.2vw,26px) clamp(22px,3vw,34px);}
+  .b4 .panel{background:var(--ivory);color:var(--ink);padding:clamp(24px,3vw,38px);}
+  /* 05 vertical split */
+  .b5{display:grid;grid-template-columns:minmax(110px,.4fr) 1fr;background:var(--ivory);color:var(--ink);min-height:230px;}
+  .b5 .stripe{position:relative;background:var(--green);color:var(--ivory);padding:clamp(22px,2.6vw,32px);display:flex;flex-direction:column;justify-content:flex-end;}
+  .b5 .stripe::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,transparent 1px 9px);}
+  .b5 .stripe>*{position:relative;}
+  .b5 .panel{padding:clamp(24px,3vw,38px);}
+  @media(max-width:560px){.b5{grid-template-columns:1fr;}}
+  /* 06 nested */
+  .b6{background:var(--cinnabar);padding:clamp(16px,2vw,24px);}
+  .b6 .f2{background:var(--cinnabar-d);padding:clamp(16px,2vw,24px);}
+  .b6 .core{background:var(--ivory);color:var(--ink);padding:clamp(28px,3.6vw,48px);text-align:center;}
+  .quote{margin:0;font:400 italic clamp(18px,2vw,26px)/1.42 var(--sv-font);letter-spacing:-.01em;}
+  .by{margin:18px 0 0;font:600 11px/1.2 var(--sv-font);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  /* 07 ledge */
+  .b7{position:relative;padding-bottom:20px;}
+  .b7::after{content:"";position:absolute;left:0;right:0;bottom:0;height:58px;background:var(--qing);}
+  .b7 .ledge{position:relative;z-index:1;margin:0 clamp(30px,7vw,80px);background:var(--qing-light);color:var(--ink);padding:12px 22px;font:600 10px/1.3 var(--sv-font);letter-spacing:.14em;text-transform:uppercase;}
+  .b7 .card{position:relative;z-index:1;background:var(--ivory);color:var(--ink);padding:clamp(26px,3vw,40px);box-shadow:0 14px 36px rgba(0,0,0,.14);margin:0 clamp(10px,3vw,36px);}
+  /* 08 numbered + portal */
+  .b8{background:var(--cinnabar);color:var(--ivory);padding:clamp(26px,3vw,40px);}
+  .num{list-style:none;margin:8px 0 0;padding:0;}
+  .num li{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.18);}
+  .num li:last-child{border-bottom:none;}
+  .num .n{font:500 13px/1 var(--sv-font);opacity:.7;}
+  .num .t{font:500 15px/1.3 var(--sv-font);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Box System</h1>
+    <p class="intro">Reusable color-block card components for the ShoreVest site — cinnabar-dominant, with qing teal and ink-green as secondary fields. Square corners, ivory cards, hairline dividers.</p>
+
+    <div class="spec"><b>01 · Full Frame</b><span>Cinnabar field framing a centered ivory inset.</span></div>
+    <div class="bx b1"><div class="inset">
+      <p class="label" style="color:var(--cinnabar)">ShoreVest at a Glance</p>
+      <div class="stats">
+        <div class="stat"><span class="v">~20 yrs</span><span class="c">China credit experience</span></div>
+        <div class="stat"><span class="v">2004</span><span class="c">Platform since</span></div>
+        <div class="stat"><span class="v">4</span><span class="c">Offices · GZ·SH·BJ·HK</span></div>
+      </div>
+    </div></div>
+
+    <div class="spec"><b>02 · Split Field</b><span>Color field + tonal spine, floating ivory card.</span></div>
+    <div class="bx b2"><div class="card">
+      <p class="label" style="color:var(--muted)">Platform Continuity</p>
+      <div class="stats">
+        <div class="stat"><span class="v">2004</span><span class="c">Founded</span></div>
+        <div class="stat"><span class="v">Multiple</span><span class="c">Market cycles</span></div>
+      </div>
+    </div></div>
+
+    <div class="spec"><b>03 · Offset Frame</b><span>Ivory card lifted off the surface, cinnabar accent.</span></div>
+    <div class="bx b3"><div class="card">
+      <p class="label" style="color:var(--cinnabar)">The Firm</p>
+      <h3 class="title">A China credit platform developed over two decades.</h3>
+      <p class="body">Asset-backed private credit, sourced and underwritten on the ground across Greater China.</p>
+    </div></div>
+
+    <div class="spec"><b>04 · Band Top</b><span>Color category band over an ivory stat panel.</span></div>
+    <div class="bx b4">
+      <div class="band"><p class="label" style="margin:0">Our Platform</p></div>
+      <div class="panel"><div class="stats">
+        <div class="stat"><span class="v">14</span><span class="c">Professionals</span></div>
+        <div class="stat"><span class="v">4</span><span class="c">Offices</span></div>
+      </div></div>
+    </div>
+
+    <div class="spec"><b>05 · Vertical Split</b><span>Pinstriped stripe + content panel.</span></div>
+    <div class="grid2">
+      <div class="bx b5"><div class="stripe"><p class="label" style="margin:0">Our Offices</p></div>
+        <div class="panel"><div class="stats">
+          <div class="stat"><span class="v" style="font-size:18px">Guangzhou</span><span class="c">HQ</span></div>
+          <div class="stat"><span class="v" style="font-size:18px">Shanghai</span><span class="c">CN</span></div>
+          <div class="stat"><span class="v" style="font-size:18px">Beijing</span><span class="c">CN</span></div>
+          <div class="stat"><span class="v" style="font-size:18px">Hong Kong</span><span class="c">SAR</span></div>
+        </div></div>
+      </div>
+      <div class="bx b5" style="background:var(--ivory)"><div class="stripe" style="background:var(--cinnabar)"><p class="label" style="margin:0">Focus</p></div>
+        <div class="panel">
+          <h3 class="title" style="font-size:22px">Asset-backed private credit in China</h3>
+          <p class="body">Asset-based lending · asset restructuring · debt resolutions.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec"><b>06 · Nested Panel</b><span>Double inset color frames, ivory core — investor messaging.</span></div>
+    <div class="bx b6"><div class="f2"><div class="core">
+      <blockquote class="quote">"We combine deep local insight with institutional discipline across China credit cycles."</blockquote>
+      <p class="by">ShoreVest Partners</p>
+    </div></div></div>
+
+    <div class="spec"><b>07 · Ledge Card</b><span>Ivory card anchored to a colored base with a light-blue ledge.</span></div>
+    <div class="bx b7">
+      <div class="ledge">Since 2004 · Established platform</div>
+      <div class="card">
+        <p class="label" style="color:var(--cinnabar)">Platform Continuity</p>
+        <div class="stats">
+          <div class="stat"><span class="v">~20 yrs</span><span class="c">China credit</span></div>
+          <div class="stat"><span class="v">4</span><span class="c">Offices across Greater China</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec"><b>08 · Numbered Routes</b><span>Cinnabar field with a numbered contact ledger.</span></div>
+    <div class="bx b8">
+      <p class="label">Contact Routes</p>
+      <ol class="num">
+        <li><span class="n">01</span><span class="t">New Opportunities</span></li>
+        <li><span class="n">02</span><span class="t">Investor Inquiries</span></li>
+        <li><span class="n">03</span><span class="t">Media Requests</span></li>
+        <li><span class="n">04</span><span class="t">General Inquiries</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="#C93B2A"/>
+      <rect x="14" y="14" width="34" height="34" fill="#FAF6EC"/>
+      <rect x="52" y="14" width="34" height="34" fill="#3D7070"/>
+      <rect x="14" y="52" width="34" height="34" fill="#2E4A18"/>
+      <rect x="52" y="52" width="34" height="34" fill="#8A1F12"/>
+    </svg>
+  </template>
+</body>
+</html>

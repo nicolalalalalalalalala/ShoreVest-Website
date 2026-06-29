@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | Cookie 通知</title>
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="assets/css/chinese-latin-typography.css?t='+window.__SVT+'">');</script>
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2-d2&t='+window.__SVT+'">');</script>
+</head>
+<body class="cookie-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main">
+    <article class="sv-container legal-container legal-content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">法律声明</p>
+        <h1>Cookie通知</h1>
+        <p class="effective-date muted"><strong>生效日期：</strong>2026年4月8日</p>
+      </header>
+
+  <p>本 <span class="latin-text" lang="en">Cookie</span> 通知说明新岸资本及其相关关联公司（统称「新岸资本」、「我们」或「我方」）如何在本网站（「本网站」）上使用 <span class="latin-text" lang="en">Cookie</span> 及类似追踪技术。</p>
+  <p>本 <span class="latin-text" lang="en">Cookie</span> 通知应与隐私政策、使用条款及法律声明与免责声明一并阅读。如存在不一致，以后者为准。在适用法律要求的情况下，新岸资本将在部署非必要 <span class="latin-text" lang="en">Cookie</span> 前寻求您的同意。</p>
+
+  <h2>1. 范围与适用</h2>
+  <p>本 <span class="latin-text" lang="en">Cookie</span> 通知适用于本网站的所有用户，包括公开页面的访问者以及访问限制或仅投资者区域的用户。在不使用严格必要 <span class="latin-text" lang="en">Cookie</span> 的情况下，本网站的某些功能可能无法正常运行。</p>
+
+  <h2>2. 什么是 <span class="latin-text" lang="en">Cookie</span></h2>
+  <p><span class="latin-text" lang="en">Cookie</span> 是您访问网站时存放在您设备上的小型文本文件。新岸资本还可能使用本地存储对象、网页信标、像素、追踪标签、设备标识符及服务器端日志机制。就本通知而言，所有此类技术统称为「 <span class="latin-text" lang="en">Cookie</span> 」。</p>
+
+  <h2>3. <span class="latin-text" lang="en">Cookie</span> 类别</h2>
+  <h3>（a）严格必要的 <span class="latin-text" lang="en">Cookie</span></h3>
+  <p>对于本网站的运营、安全性及完整性至关重要，包括页面导航、会话管理、防欺诈及访问控制。无需寻求或获取同意。</p>
+  <h3>（b）性能与分析 <span class="latin-text" lang="en">Cookie</span></h3>
+  <p>收集有关用户与本网站互动的汇总数据，以改善功能和体验。在需要事先同意的司法区（包括适用欧盟及英国《通用数据保护条例》的地区），此类 <span class="latin-text" lang="en">Cookie</span> 仅在获得明确同意后方可部署。新岸资本不将合法利益作为需要事先同意的司法区分析 <span class="latin-text" lang="en">Cookie</span> 的依据。</p>
+  <h3>（c）偏好与功能 <span class="latin-text" lang="en">Cookie</span></h3>
+  <p>使本网站能够记忆用户选择，如语言偏好及显示设置。在适用法律要求的情况下，仅在获得事先同意后方可部署。</p>
+  <h3>（d）安全与访问控制 <span class="latin-text" lang="en">Cookie</span></h3>
+  <p>在限制或投资者访问区域用于验证用户、维护安全会话、执行访问控制及检测可疑活动。基于保护本网站及其用户的合法利益进行部署。</p>
+  <h3>（e）第三方 <span class="latin-text" lang="en">Cookie</span></h3>
+  <p>可能由第三方服务提供商设置，包括分析工具、托管基础设施、内容分发网络及网络安全服务提供商。新岸资本无法控制此类提供商的独立做法。如需了解目前使用的主要 <span class="latin-text" lang="en">Cookie</span> 汇总，请至 <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a> 查询。</p>
+
+  <h2>4. 有效期</h2>
+  <p><span class="latin-text" lang="en">Cookie</span> 可分为会话 <span class="latin-text" lang="en">Cookie</span>（关闭浏览器后即删除）或持久性 <span class="latin-text" lang="en">Cookie</span>（保留一定期限）。保留期限因目的及技术要求而异。</p>
+
+  <h2>5. 法律依据与同意</h2>
+  <p>严格必要的 <span class="latin-text" lang="en">Cookie</span> 无需同意。性能、分析及偏好 <span class="latin-text" lang="en">Cookie</span> 仅在符合法律标准的情况下部署；在需要事先同意的司法区，仅在通过 <span class="latin-text" lang="en">Cookie</span> 同意界面获得明确同意后方可部署。新岸资本将在适用法律要求的地方实施同意弹窗或控制项。</p>
+
+  <h2>6. 管理 <span class="latin-text" lang="en">Cookie</span></h2>
+  <h3>（a）同意界面</h3>
+  <p>在法律要求的情况下，本网站将在部署非必要 <span class="latin-text" lang="en">Cookie</span> 前显示同意界面。您可随时更新偏好设置。撤回同意不影响撒回前已基于同意使用 <span class="latin-text" lang="en">Cookie</span> 的合法性。</p>
+  <h3>（b）浏览器设置</h3>
+  <p>大多数浏览器允许您查看、删除或拦截 <span class="latin-text" lang="en">Cookie</span>。拦截某些 <span class="latin-text" lang="en">Cookie</span> 可能影响网站功能或安全性。</p>
+  <h3>（c）设备与平台控制</h3>
+  <p>某些设备或操作系统提供针对追踪技术的额外控制功能。新岸资本鼓励用户查阅其具体设备或平台上的可用设置。</p>
+
+  <h2>7. 第三方服务</h2>
+  <p>新岸资本聊就的第三方服务提供商可根据合同安排（要求其遵守适用数据保护法律）设置 <span class="latin-text" lang="en">Cookie</span> 并访问相关数据。新岸资本对此类提供商在合同要求以外的独立行为不加以控制。</p>
+
+  <h2>8. 跨境传输</h2>
+  <p>通过 <span class="latin-text" lang="en">Cookie</span> 收集的数据可能在新岸资本或其服务提供商运营所在的多个司法管辖区被处理。通过使用本网站，您确认在隐私政策所述适用法律保障措施的前提下，此类传输可能发生。</p>
+
+  <h2>9. 安全性</h2>
+  <p><span class="latin-text" lang="en">Cookie</span> 可能作为更广治安全措施的一部分，用于保护本网站免受未授权访问及检测恶意活动。无法保证任何安全系统完全有效。用户仍负有维护自身设备及连接安全的责任。</p>
+
+  <h2>10. 变更</h2>
+  <p>新岸资本可随时更新本 <span class="latin-text" lang="en">Cookie</span> 通知。任何修订版本将连同新生效日期一并公布。如非必要 <span class="latin-text" lang="en">Cookie</span> 使用的变更属重大变更且需重新寻求同意，新岸资本将在部署相关 <span class="latin-text" lang="en">Cookie</span> 前寻求该同意。在无需重新寻求同意的情况下，在更新后继续使用本网站即表示确认修订后的通知。</p>
+
+  <h2>11. 联系方式</h2>
+  <p>如就本 <span class="latin-text" lang="en">Cookie</span> 通知或新岸资本使用 <span class="latin-text" lang="en">Cookie</span> 的方式有任何疑问，请联系：<a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a></p>
+
+  <div class="legal-contact-actions">
+    <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>
+    <a href="index_cn.html">返回首页</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

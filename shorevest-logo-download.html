@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style id="sv-boot-cover">html.sv-booting{background:#F2ECD8!important}html.sv-booting body{visibility:hidden!important}html.sv-booting .site-loader{visibility:visible!important}</style>
+<script>document.documentElement.classList.add('sv-booting');setTimeout(function(){document.documentElement.classList.remove('sv-booting');},6500);</script>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest Logo Download</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>document.write('<link rel="stylesheet" href="assets/css/shorevest-typography-system.css?t='+window.__SVT+'">');</script>
+  <style>
+    :root {
+      --bg: #f6f4f0;
+      --ink: #161616;
+      --muted: #666;
+      --red: #3d7070;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--bg);
+      font-family: "DIN 2014", "DIN2014", "DIN", sans-serif;
+      color: var(--ink);
+      gap: 20px;
+    }
+
+    .card {
+      width: min(92vw, 760px);
+      aspect-ratio: 3 / 4;
+      background: var(--bg);
+      border-radius: 0;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(-2%);
+      padding: 40px;
+      text-align: center;
+    }
+
+    .logo-mark {
+      width: clamp(120px, 17vw, 180px);
+      height: auto;
+      margin-bottom: clamp(18px, 2.2vw, 28px);
+    }
+
+    .logo-en {
+      font-family: "DIN 2014", "DIN2014", "DIN", sans-serif;
+      color: var(--ink);
+      font-size: clamp(62px, 8.4vw, 90px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .logo-cn {
+      font-family: "Noto Serif SC";
+      color: var(--muted);
+      font-size: clamp(34px, 4.3vw, 48px);
+      letter-spacing: 0.42em;
+      line-height: 1;
+      margin-top: clamp(20px, 2.5vw, 28px);
+      margin-right: -0.42em;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button,
+    a {
+      appearance: none;
+      border: 0;
+      border-radius: 0;
+      padding: 10px 18px;
+      font: 700 10px/1 'DIN 2014';
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    button {
+      background: var(--red);
+      color: #fff;
+    }
+
+    a {
+      background: transparent;
+      border: 1px solid rgba(22, 22, 22, 0.24);
+      color: var(--ink);
+    }
+  </style>
+    <script>document.write('<link rel="stylesheet" href="assets/css/shorevest-brand-tokens.css?t='+window.__SVT+'">');</script>
+    <script>document.write('<link rel="stylesheet" href="assets/css/typography-consistent.css?t='+window.__SVT+'">');</script>
+    <script>document.write('<link rel="stylesheet" href="assets/css/shared-header.css?t='+window.__SVT+'">');</script>
+    
+<script>document.write('<link rel="stylesheet" href="assets/css/shared-footer.css?t='+window.__SVT+'">');</script>
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/typography-lockdown.css?t='+window.__SVT+'">');</script>
+
+<script>document.write('<link rel="stylesheet" href="assets/css/shorevest-unify.css?t='+window.__SVT+'">');</script>
+</head>
+<body>
+  <div id="site-header-mount"></div>
+  <div class="card" id="capture-target">
+    <div class="logo-wrap">
+      <img class="logo-mark" data-svsrc="assets/images/vectorink-vectorizer-result.svg" alt="ShoreVest mark" />
+      <h1 class="logo-en">ShoreVest</h1>
+      <div class="logo-cn">新岸資本</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="download-png" type="button">Download PNG</button>
+    <a href="assets/images/vectorink-vectorizer-result.svg" download="shorevest-mark.svg">Download Website Mark (SVG)</a>
+  </div>
+
+  <script>
+    const downloadBtn = document.getElementById('download-png');
+    const target = document.getElementById('capture-target');
+
+    function waitForFonts() {
+      return document.fonts ? document.fonts.ready : Promise.resolve();
+    }
+
+    async function downloadPng() {
+      await waitForFonts();
+
+      const width = 1536;
+      const height = 2048;
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#f6f4f0';
+      ctx.fillRect(0, 0, width, height);
+
+      const img = new Image();
+      img.src = 'assets/images/vectorink-vectorizer-result.svg';
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const markSize = 360;
+      const centerX = width / 2;
+      const topY = 620;
+      ctx.drawImage(img, centerX - markSize / 2, topY, markSize, markSize);
+
+      ctx.fillStyle = '#161616';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.font = "500 176px 'DIN 2014'";
+      ctx.fillText('ShoreVest', centerX, topY + markSize + 60);
+
+      ctx.fillStyle = '#666666';
+      ctx.font = "500 82px 'Noto Serif SC'";
+      const cn = '新 岸 資 本';
+      ctx.fillText(cn, centerX, topY + markSize + 300);
+
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'shorevest-brand-card.png';
+      link.click();
+    }
+
+    downloadBtn.addEventListener('click', downloadPng);
+  </script>
+<footer class="sv-footer" data-shared-footer></footer>
+
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

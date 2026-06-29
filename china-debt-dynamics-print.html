@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>China Debt Dynamics Print | ShoreVest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>document.write('<link rel="stylesheet" href="assets/css/cdd-article-print.css?v=20260622-p7&t='+window.__SVT+'">');</script>
+</head>
+<body class="cdd-print-layout" data-default-article-source="assets/data/china-debt-dynamics-v10i1.json">
+  <div class="cdd-topline">
+    <div class="wrap cdd-topline__inner">
+      <div class="cdd-topline__brand">
+        <div class="cdd-label">ShoreVest Insights Publication</div>
+        <!-- TODO(ShoreVest/Lillian): brand lockup is in Traditional Chinese (新岸資本 · 中國債務動態) while the header wordmark uses Simplified (新岸資本). Do NOT auto-convert — founder flagged that conversion breaks names. Human review needed to decide the canonical brand script for the CDD publication. -->
+        <div class="cdd-lockup" lang="zh-Hant">新岸資本 · 中國債務動態</div>
+      </div>
+      <div class="cdd-topline__tools cdd-print-hide">
+        <div class="cdd-actions">
+          <button class="cdd-btn cdd-btn--solid" data-print-action="print">Print / Save as PDF</button>
+        </div>
+        <p class="cdd-print-note">Tip: choose “Save as PDF” in the print dialog for a styled PDF.</p>
+      </div>
+    </div>
+  </div>
+
+  <main class="cdd-page wrap cdd-print-shell">
+    <header class="cdd-print-masthead">
+      <p class="cdd-print-label">ShoreVest Insights Publication</p>
+      <div class="cdd-meta" data-cdd-meta></div>
+    </header>
+
+    <section class="cdd-print-hero">
+      <h1 class="cdd-title" data-cdd-title></h1>
+      <p class="cdd-dek" data-cdd-dek></p>
+    </section>
+
+    <section class="cdd-findings-row">
+      <aside class="cdd-sidecard">
+        <h3>Key Findings</h3>
+        <ul data-cdd-findings></ul>
+      </aside>
+    </section>
+
+    <div class="cdd-grid">
+      <article class="cdd-body" data-cdd-body></article>
+    </div>
+
+    <footer class="cdd-disclaimer">
+      <h4>Legal Information and Disclosures</h4>
+      <p data-cdd-disclaimer></p>
+      <p data-cdd-copyright></p>
+    </footer>
+  </main>
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/cdd-article-template.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  function fixEl(el){if(el.nodeType!==1)return;if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}}
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShoreVest | Firm</title>
+<meta name="description" content="ShoreVest Partners is a leading institutional China private credit and private debt investment manager, having pioneered private credit solutions in the market over 20 years ago. Who we are, our core competencies, and our principles.">
+<link rel="icon" type="image/png" href="assets/brand/sv-circle-fullcolor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="assets/css/homepage-rebuild.css?v=20260619-r8-warm1-foot1-menu1&t='+window.__SVT+'">');</script>
+<script>document.write('<link rel="stylesheet" href="assets/css/firm-rebuild.css?v=20260626-f21-h1-a2-c1-c2-c12&t='+window.__SVT+'">');</script>
+<script>document.write('<link rel="stylesheet" href="assets/css/box-system.css?v=20260626-bx4-c12&t='+window.__SVT+'">');</script>
+</head>
+<body id="top" class="homepage firm-page">
+<!-- ============================================================ A · HEADER -->
+<header class="sv-header">
+  <div class="sv-header__inner">
+    <a class="sv-header__logo" href="index.html" aria-label="ShoreVest — home">
+      <img src="assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest" width="172" height="41">
+    </a>
+    <nav class="sv-nav" aria-label="Primary">
+      <ul>
+        <li><a href="firm.html" aria-current="page">Firm</a></li>
+        <li><a href="strategy.html">Strategy</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li><a href="press.html">Media</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </nav>
+    <div class="sv-utils">
+      <a class="sv-lang" href="firm_cn.html"><span class="on">EN</span><span class="sep">|</span>中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
+    </div>
+    <button class="sv-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sv-mobile-menu">
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sv-mobile-menu" id="sv-mobile-menu">
+  <nav aria-label="Mobile">
+    <ul>
+      <li><a href="firm.html">Firm</a></li>
+      <li><a href="strategy.html">Strategy</a></li>
+      <li><a href="insights.html">Insights</a></li>
+      <li><a href="press.html">Media</a></li>
+      <li><a href="team.html">Team</a></li>
+    </ul>
+    <div class="sv-mobile-utils">
+      <a class="sv-util-btn" href="firm_cn.html">中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
+    </div>
+  </nav>
+</div>
+
+
+
+<main id="content">
+
+<!-- 1 · AUTHORITY OPENING — split masthead + firm-profile proof band -->
+<section class="fm-open" id="firm" data-screen-label="The firm" aria-labelledby="fm-h1">
+  <div class="sv-shell fm-open__inner">
+    <div class="fm-hero__frame">
+      <p class="fm-eyebrow">The firm</p>
+      <h1 class="fm-open__h1" id="fm-h1">Private credit, private debt, and distressed credit solutions in China and Asia</h1>
+    </div>
+    <div class="fm-open__body">
+      <p>ShoreVest Partners is a leading institutional China private credit and private debt investment manager, having pioneered private credit solutions in the market over 20 years ago.</p>
+      <p>The firm also brings deep experience across China&rsquo;s private equity and distressed debt landscape.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · INSTITUTIONAL CAPITAL PROOF — narrative + investor rail -->
+<section class="fm-cap" id="who-we-are" data-screen-label="Who we are" aria-labelledby="fm-who-title">
+  <div class="sv-shell fm-cap__inner">
+    <div class="fm-cap__lead">
+      <h2 id="fm-who-title">Who We Are</h2>
+      <p class="fm-cap__narr">The ShoreVest team has managed over US$2 billion in private credit and private debt investments in China on behalf of institutional investors worldwide.</p>
+      <p class="fm-cap__narr">Through its China-focused credit platform, ShoreVest delivers tailored China credit solutions and selectively pursues distressed debt opportunities, with broader experience across Asia&rsquo;s private credit markets.</p>
+    </div>
+    <aside class="fm-cap__rail" aria-label="Institutional investor base">
+      <p class="fm-cap__rail-label">Institutional investor base</p>
+      <ul class="fm-cap__list">
+        <li>Sovereign wealth funds</li>
+        <li>Pension funds</li>
+        <li>Insurance companies</li>
+        <li>Foundations</li>
+        <li>Endowments</li>
+        <li>Family offices</li>
+      </ul>
+    </aside>
+    <div class="fm-statcard svb svb--band" aria-label="Platform at a glance">
+      <div class="svb-band"><p class="svb-label" style="margin:0">Platform at a glance</p></div>
+      <div class="svb-panel">
+        <div class="svb-stats svb-stats--row">
+          <div class="svb-stat"><span class="svb-stat__v">US$2B+</span><span class="svb-stat__c">Managed for institutional investors</span></div>
+          <div class="svb-stat"><span class="svb-stat__v">20+ yrs</span><span class="svb-stat__c">Track record in China credit</span></div>
+          <div class="svb-stat"><span class="svb-stat__v">Four</span><span class="svb-stat__c">Offices across Greater China</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · CORE COMPETENCIES — platform-thesis band -->
+<section class="fm-comp-sec fm-band" id="core-competencies" data-screen-label="Core competencies" aria-labelledby="fm-comp-title">
+  <div class="sv-shell">
+    <div class="fm-comp-head">
+      <div class="fm-comp-head__l">
+        <p class="fm-kicker">Core competencies</p>
+        <h2 id="fm-comp-title">Three capabilities that define the firm.</h2>
+      </div>
+      <div class="fm-comp-head__r">
+        <p>ShoreVest leverages these core competencies to find and create value in the world&rsquo;s second largest credit market.</p>
+      </div>
+    </div>
+    <div class="fm-comp">
+      <div class="fm-comp__item">
+        <h3 class="fm-comp__name">Track Record</h3>
+        <p class="fm-comp__desc">20+ year track record of consistent returns, focused on first-lien downside protection and margin of safety.</p>
+      </div>
+      <div class="fm-comp__item">
+        <h3 class="fm-comp__name">Credit Solutions</h3>
+        <p class="fm-comp__desc">Credit solution provider, helping companies and financial institutions solve problems and unlock value.</p>
+      </div>
+      <div class="fm-comp__item">
+        <h3 class="fm-comp__name">Local Execution</h3>
+        <p class="fm-comp__desc">Unparalleled local execution capability, integrated with the highest international institutional standards.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · HUMAN-BUSINESS CLOSING -->
+<section class="fm-close" id="trust" data-screen-label="A human business" aria-label="A human business">
+  <div class="sv-shell fm-close__inner svb">
+    <div class="svb svb--offset">
+      <div class="svb-card">
+        <p class="svb-label" style="color:var(--sv-cinnabar)">A human business</p>
+        <p class="svb-statement">At the end of the day, our business is a <strong>human business</strong>, centered on <strong>relationships of trust</strong> with both the networks that provide us opportunities, and the investors that entrust us with their capital.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="sv-footer" aria-label="Site footer">
+  <div class="sv-footer__inner">
+    <div class="sv-footer__top">
+      <div>
+        <a class="sv-footer__logo" href="index.html" aria-label="ShoreVest — home">
+          <!-- Dark footer → FullColor_Light variant (ivory wordmark, reads on teal). -->
+          <img src="assets/brand/sv-lockup-fc-light.png" alt="ShoreVest" width="200" height="48">
+        </a>
+        <p class="sv-footer__offices">
+          Guangzhou · Shanghai · Beijing · Hong Kong<br>
+          <a href="contact.html">General inquiries</a>
+        </p>
+      </div>
+      <nav class="sv-footer__nav" aria-label="Footer">
+        <a href="firm.html">Firm</a>
+        <a href="insights.html">Insights</a>
+        <a href="strategy.html">Strategy</a>
+        <a href="press.html">Media</a>
+        <a href="team.html">Team</a>
+        <a href="contact.html">Contact</a>
+        <a href="investor-portal/index.html">Investor Portal</a>
+        <a href="insights.html#archive">China Debt Dynamics</a>
+      </nav>
+    </div>
+
+    <div class="sv-footer__legal">
+      <p>ShoreVest Partners and its affiliates provide investment management services to institutional investors. This website is for informational purposes only and does not constitute an offer to sell or a solicitation of an offer to buy any security or investment product, nor investment, legal, or tax advice.</p>
+      <p>Past performance is not indicative of future results. Investments in private credit and private debt involve risk, including the possible loss of principal. Figures shown are approximate and subject to change.</p>
+    </div>
+
+    <div class="sv-footer__bottom">
+      <div class="sv-footer__links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-notice.html">Cookie Notice</a>
+        <a href="terms-of-use.html">Terms of Use</a>
+        <a href="legal-notices-disclaimers.html">Legal Notices &amp; Disclaimers</a>
+      </div>
+      <p class="sv-footer__copy">© 2026 ShoreVest Partners. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<button class="sv-totop" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5"/></svg>
+</button>
+
+<script>
+(function(){
+  // Mobile menu toggle
+  var burger = document.querySelector('.sv-burger');
+  var menu = document.getElementById('sv-mobile-menu');
+  if (burger && menu) {
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    menu.addEventListener('click', function(e){ if (e.target.closest('a')) { menu.classList.remove('is-open'); burger.setAttribute('aria-expanded','false'); } });
+  }
+  // Scroll-to-top
+  var toTop = document.querySelector('.sv-totop');
+  if (toTop) {
+    var onScroll = function(){ if (window.scrollY > 600) toTop.classList.add('is-visible'); else toTop.classList.remove('is-visible'); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    toTop.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+  // Reveal on scroll (respects reduced motion via CSS)
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('is-in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.sv-reveal').forEach(function(el){ io.observe(el); });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新岸资本 | 中国资产支持私募信贷</title>
+<meta name="description" content="新岸资本（ShoreVest Partners）是一家专注于中国资产支持私募信贷的私募信贷与私募债务投资管理机构，强调安全边际、专有寻源与下行保护。">
+<link rel="icon" type="image/png" href="assets/brand/sv-circle-fullcolor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Self-contained homepage: this stylesheet is the single authority (same as EN). -->
+<script>document.write('<link rel="stylesheet" href="assets/css/homepage-rebuild.css?v=20260627-r24-h1-a2-a3-c4-c8-z3-warm1-mob1-foot1-menu1&t='+window.__SVT+'">');</script>
+<!-- CN font override: keep the DIN/Barlow stack but add a sans CJK fallback so
+     Chinese glyphs render in a sans face (not serif) after the legacy sheets are dropped. -->
+<style>
+  body.homepage {
+    --sv-font: "DIN 2014", "Barlow", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    --sv-serif: "DIN 2014", "Barlow", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    --sv-cn: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+</style>
+</head>
+<body id="top" class="homepage home-page">
+
+<!-- ============================================================ A · HEADER -->
+<header class="sv-header">
+  <div class="sv-header__inner">
+    <a class="sv-header__logo" href="index_cn.html" aria-label="新岸资本 — 首页">
+      <img src="assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest 新岸资本" width="172" height="41">
+    </a>
+    <nav class="sv-nav" aria-label="主导航">
+      <ul>
+        <li><a href="firm_cn.html">公司</a></li>
+        <li><a href="strategy_cn.html">策略</a></li>
+        <li><a href="insights_cn.html">洞察</a></li>
+        <li><a href="press_cn.html">媒体</a></li>
+        <li><a href="team_cn.html">团队</a></li>
+      </ul>
+    </nav>
+    <div class="sv-utils">
+      <a class="sv-lang" href="index.html">EN<span class="sep">|</span><span class="on">中文</span></a>
+      <a class="sv-util-btn" href="investor-portal/index.html">投资者门户</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact_cn.html">联系</a>
+    </div>
+    <button class="sv-burger" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="sv-mobile-menu">
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sv-mobile-menu" id="sv-mobile-menu">
+  <nav aria-label="移动导航">
+    <ul>
+      <li><a href="firm_cn.html">公司</a></li>
+      <li><a href="strategy_cn.html">策略</a></li>
+      <li><a href="insights_cn.html">洞察</a></li>
+      <li><a href="press_cn.html">媒体</a></li>
+      <li><a href="team_cn.html">团队</a></li>
+    </ul>
+    <div class="sv-mobile-utils">
+      <a class="sv-util-btn" href="index.html">EN</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">投资者门户</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact_cn.html">联系</a>
+    </div>
+  </nav>
+</div>
+
+<main id="content">
+
+<!-- ============================================================ B · HERO -->
+<section class="sv-hero" id="hero" data-screen-label="首页" aria-label="新岸资本简介">
+  <div class="sv-hero__inner">
+    <div class="sv-hero__main">
+      <span class="sv-hero__rule" aria-hidden="true"></span>
+      <p class="sv-hero__label">中国信贷专家</p>
+      <h1 class="sv-hero__headline">中国资产支持<br class="sv-hero__br">私募信贷</h1>
+      <p class="sv-hero__body">新岸资本投资于中国资产支持信贷机会，以专有寻源、抵押品质量及可回收性作为承销核心。</p>
+      <div class="sv-hero__cta">
+        <a href="insights_cn.html" class="sv-textlink">中国债务动态<span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <div class="sv-hero__field">
+      <aside class="sv-hero__panel" aria-label="新岸资本概览">
+        <p class="sv-hero__panel-label">新岸资本概览</p>
+        <dl>
+          <div class="sv-hero__panel-row">
+            <dt>重点</dt>
+            <dd>资产支持私募信贷</dd>
+          </div>
+          <div class="sv-hero__panel-row">
+            <dt>成立</dt>
+            <dd>2004 年</dd>
+          </div>
+          <div class="sv-hero__panel-row">
+            <dt>策略</dt>
+            <dd>资产支持贷款 · 资产重组 · 债务处置</dd>
+          </div>
+          <div class="sv-hero__panel-row">
+            <dt>办公室</dt>
+            <dd>广州 · 上海 · 北京 · 香港</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ D · THE FIRM -->
+<section class="sv-bridge home-firm-preview" id="firm" data-screen-label="公司" aria-labelledby="sv-bridge-title">
+  <div class="sv-shell sv-grid12 sv-bridge__inner home-firm-preview__grid">
+    <div class="sv-bridge__head home-firm-preview__copy">
+      <p class="sv-label">公司</p>
+      <h2 class="sv-h2" id="sv-bridge-title">历经二十余年发展的中国信贷平台。</h2>
+    </div>
+    <div class="sv-bridge__body home-firm-preview__statement">
+      <p>新岸资本在中国信贷与不良债务领域拥有二十年经验，所管理的机构资本历经多个市场周期。</p>
+      <a class="sv-textlink home-firm-preview__link" href="firm_cn.html">了解公司 <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ E · STRATEGY -->
+<section class="sv-strategy" id="strategy" data-screen-label="策略" aria-labelledby="sv-strategy-title">
+  <div class="sv-shell sv-grid12 sv-strategy__inner">
+    <div class="sv-strategy__lead">
+      <p class="sv-label">策略</p>
+      <h2 class="sv-h2" id="sv-strategy-title">明确的回收路径。</h2>
+      <p>新岸资本围绕债权优先级、可执行性及退出路径对担保机会进行承销。</p>
+    </div>
+    <div class="sv-strategy__rows">
+      <div class="sv-srow">
+        <h3 class="sv-srow__title">资产支持贷款</h3>
+      </div>
+      <div class="sv-srow">
+        <h3 class="sv-srow__title">资产重组</h3>
+      </div>
+      <div class="sv-srow">
+        <h3 class="sv-srow__title">债务处置</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ H · CHINA DEBT DYNAMICS -->
+<section class="sv-cdd" id="research" data-screen-label="中国债务动态" aria-labelledby="sv-cdd-title">
+  <div class="sv-shell sv-cdd__inner">
+    <div class="sv-cdd__head">
+      <div>
+        <p class="sv-cdd__label">研究系列 · 始于 2018 年</p>
+        <h2 class="sv-cdd__title" id="sv-cdd-title">中国债务动态</h2>
+        <p class="sv-cdd__cn" lang="en">ShoreVest · China Debt Dynamics</p>
+      </div>
+      <p class="sv-cdd__desc">聚焦中国私募信贷市场、政策走向、法律框架及债权人回收的研究。</p>
+    </div>
+
+    <article>
+      <a class="sv-cdd__feature" href="china-debt-dynamics-v10i1.html">
+        <div class="sv-cdd__feature-meta">
+          <span class="sv-cdd__feature-tag">精选报告</span>
+          <span class="sv-cdd__feature-issue">第 46 期 · 2026 年 1 月 25 日</span>
+        </div>
+        <div class="sv-cdd__feature-main">
+          <h3 class="sv-cdd__feature-title">中国「不可投资」论的终结</h3>
+          <span class="sv-cdd__feature-read">阅读本期 <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+    </article>
+
+    <p class="sv-cdd__recent">近期期刊</p>
+    <div class="sv-cdd__list">
+      <article>
+        <a class="sv-cddrow" href="china-debt-dynamics-v10i1.html">
+          <span class="sv-cddrow__id">第 10 卷 · 第 1 期<small>2026 年 1 月</small></span>
+          <span class="sv-cddrow__title">中国「不可投资」论的终结</span>
+          <span class="sv-cddrow__cat">市场</span>
+          <span class="sv-cddrow__read">阅读</span>
+        </a>
+      </article>
+      <article>
+        <a class="sv-cddrow" href="china-debt-dynamics-45-beijings-campaign-against-overcapacity-creates-private-credit-opportunities.html">
+          <span class="sv-cddrow__id">第 9 卷 · 第 4 期<small>2025 年</small></span>
+          <span class="sv-cddrow__title">北京整治产能过剩为私募信贷创造机会</span>
+          <span class="sv-cddrow__cat">政策</span>
+          <span class="sv-cddrow__read">阅读</span>
+        </a>
+      </article>
+      <article>
+        <a class="sv-cddrow" href="china-debt-dynamics-into-the-shadows-of-us-private-credit.html">
+          <span class="sv-cddrow__id">第 9 卷 · 第 3 期<small>2025 年</small></span>
+          <span class="sv-cddrow__title">走入美国私募信贷的阴影：中国视角</span>
+          <span class="sv-cddrow__cat">市场</span>
+          <span class="sv-cddrow__read">阅读</span>
+        </a>
+      </article>
+    </div>
+
+    <div class="sv-cdd__foot">
+      <a class="sv-cdd__archive-btn" href="insights_cn.html#archive">查看完整档案库<span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================ I · FOOTER -->
+<footer class="sv-footer" aria-label="网站页脚">
+  <div class="sv-footer__inner">
+    <div class="sv-footer__top">
+      <div>
+        <a class="sv-footer__logo" href="index_cn.html" aria-label="新岸资本 — 首页">
+          <img src="assets/brand/sv-lockup-fc-light.png" alt="ShoreVest 新岸资本" width="200" height="48">
+        </a>
+        <p class="sv-footer__offices">
+          广州 · 上海 · 北京 · 香港<br>
+          <a href="contact_cn.html">一般查询</a>
+        </p>
+      </div>
+      <nav class="sv-footer__nav" aria-label="页脚导航">
+        <a href="firm_cn.html">公司</a>
+        <a href="insights_cn.html">洞察</a>
+        <a href="strategy_cn.html">策略</a>
+        <a href="press_cn.html">媒体</a>
+        <a href="team_cn.html">团队</a>
+        <a href="contact_cn.html">联系</a>
+        <a href="investor-portal/index.html">投资者门户</a>
+        <a href="insights_cn.html#archive">中国债务动态</a>
+      </nav>
+    </div>
+
+    <div class="sv-footer__legal">
+      <p>新岸资本（ShoreVest Partners）及其关联机构向机构投资者提供投资管理服务。本网站仅供参考，不构成出售要约或购买任何证券或投资产品的要约邀请，亦不构成投资、法律或税务建议。</p>
+      <p>过往表现并不代表未来结果。私募信贷与私募债务投资涉及风险，包括可能损失本金。所示数据为近似值，可能发生变动。</p>
+    </div>
+
+    <div class="sv-footer__bottom">
+      <div class="sv-footer__links">
+        <a href="privacy-policy_cn.html">隐私政策</a>
+        <a href="cookie-notice_cn.html">Cookie 通知</a>
+        <a href="terms-of-use_cn.html">使用条款</a>
+        <a href="legal-notices-disclaimers_cn.html">法律声明与免责声明</a>
+      </div>
+      <p class="sv-footer__copy">© 2026 新岸资本（ShoreVest Partners）。保留所有权利。</p>
+    </div>
+  </div>
+</footer>
+
+<button class="sv-totop" type="button" aria-label="返回顶部">
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5"/></svg>
+</button>
+
+<script>
+(function(){
+  // Mobile menu toggle
+  var burger = document.querySelector('.sv-burger');
+  var menu = document.getElementById('sv-mobile-menu');
+  if (burger && menu) {
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
+    });
+    menu.addEventListener('click', function(e){ if (e.target.closest('a')) { menu.classList.remove('is-open'); burger.setAttribute('aria-expanded','false'); } });
+  }
+  // Scroll-to-top
+  var toTop = document.querySelector('.sv-totop');
+  if (toTop) {
+    var onScroll = function(){ if (window.scrollY > 600) toTop.classList.add('is-visible'); else toTop.classList.remove('is-visible'); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    toTop.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+})();
+</script>
+
+</body>
+</html>

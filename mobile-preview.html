@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShoreVest — Mobile preview</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #2A2A28; font-family: "Barlow", system-ui, sans-serif; }
+  .sheet {
+    display: flex; gap: 40px; padding: 48px;
+    align-items: flex-start; width: max-content;
+  }
+  .phone { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone__label {
+    font: 600 13px/1 "Barlow", sans-serif; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #FCF9F1;
+  }
+  .phone__frame {
+    width: 390px; height: 844px;
+    border: 10px solid #111; border-radius: 44px;
+    overflow: hidden; background: #fff;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    position: relative;
+  }
+  .phone__frame iframe {
+    width: 390px; height: 844px; border: 0; display: block;
+  }
+</style>
+</head>
+<body>
+  <div class="sheet" id="sheet"></div>
+  <script>
+    var pages = [
+      ['Home', 'index.html'],
+      ['Firm', 'firm.html'],
+      ['Strategy', 'strategy.html'],
+      ['Insights', 'insights.html'],
+      ['Media', 'press.html'],
+      ['Team', 'team.html'],
+      ['Contact', 'contact.html']
+    ];
+    var sheet = document.getElementById('sheet');
+    var T = new URLSearchParams(location.search).get('t') || '';
+    pages.forEach(function(p){
+      var wrap = document.createElement('div'); wrap.className = 'phone';
+      var label = document.createElement('div'); label.className = 'phone__label'; label.textContent = p[0];
+      var frame = document.createElement('div'); frame.className = 'phone__frame';
+      var ifr = document.createElement('iframe');
+      ifr.src = p[1] + (T ? ('?t=' + T) : '');
+      ifr.setAttribute('scrolling','no');
+      frame.appendChild(ifr);
+      wrap.appendChild(label); wrap.appendChild(frame);
+      sheet.appendChild(wrap);
+    });
+  </script>
+</body>
+</html>

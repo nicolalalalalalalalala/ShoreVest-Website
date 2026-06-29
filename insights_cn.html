@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  function fixEl(el){if(el.nodeType!==1)return;if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}}
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新岸资本 | 中国债务动态</title>
+<meta name="description" content="中国债务动态 — 新岸资本关于中国私募信贷市场、政策走向、法律框架及债权人回收的研究系列。">
+<link rel="icon" type="image/png" href="assets/brand/sv-circle-fullcolor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="assets/css/homepage-rebuild.css?v=20260622-r12-warm1-foot1-menu1&t='+window.__SVT+'">');</script>
+<script>document.write('<link rel="stylesheet" href="assets/css/insights-rebuild.css?v=20260625-i5-h1-a3-c9-c10-z1-m3-img1&t='+window.__SVT+'">');</script>
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf('?')>-1?'&':'?')+'t='+T;}var s=document.createElement('script');s.src=tk('assets/js/image-slot.js');document.head.appendChild(s);})();</script>
+<style>
+  body.homepage {
+    --sv-font: "DIN 2014", "Barlow", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    --sv-serif: "DIN 2014", "Barlow", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    --sv-cn: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  }
+  body.insights-page .cdd-arc__row-title { font-family: "DIN 2014","Barlow",system-ui,sans-serif; }
+</style>
+</head>
+<body id="top" class="homepage insights-page">
+
+<header class="sv-header">
+  <div class="sv-header__inner">
+    <a class="sv-header__logo" href="index_cn.html" aria-label="新岸资本 — 首页">
+      <img src="assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest 新岸资本" width="172" height="41">
+    </a>
+    <nav class="sv-nav" aria-label="主导航">
+      <ul>
+        <li><a href="firm_cn.html">公司</a></li>
+        <li><a href="strategy_cn.html">策略</a></li>
+        <li><a href="insights_cn.html" aria-current="page">洞察</a></li>
+        <li><a href="press_cn.html">媒体</a></li>
+        <li><a href="team_cn.html">团队</a></li>
+      </ul>
+    </nav>
+    <div class="sv-utils">
+      <a class="sv-lang" href="insights.html">EN<span class="sep">|</span><span class="on">中文</span></a>
+      <a class="sv-util-btn" href="investor-portal/index.html">投资者门户</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact_cn.html">联系</a>
+    </div>
+    <button class="sv-burger" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="sv-mobile-menu">
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sv-mobile-menu" id="sv-mobile-menu">
+  <nav aria-label="移动导航">
+    <ul>
+      <li><a href="firm_cn.html">公司</a></li>
+      <li><a href="strategy_cn.html">策略</a></li>
+      <li><a href="insights_cn.html" aria-current="page">洞察</a></li>
+      <li><a href="press_cn.html">媒体</a></li>
+      <li><a href="team_cn.html">团队</a></li>
+    </ul>
+    <div class="sv-mobile-utils">
+      <a class="sv-util-btn" href="insights.html">EN</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">投资者门户</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact_cn.html">联系</a>
+    </div>
+  </nav>
+</div>
+
+<main id="content">
+
+  <!-- HERO -->
+  <section class="cdd-hero" data-screen-label="中国债务动态" aria-labelledby="cdd-hero-heading">
+    <div class="sv-shell cdd-hero__inner">
+      <div class="cdd-hero__lead">
+        <span class="cdd-hero__rule" aria-hidden="true"></span>
+        <p class="cdd-hero__eyebrow">研究系列 · 始于 2018 年</p>
+        <h1 class="cdd-hero__title" id="cdd-hero-heading">中国债务动态</h1>
+        <p class="cdd-hero__cn" lang="en">ShoreVest · China Debt Dynamics</p>
+        <p class="cdd-hero__body">聚焦中国私募信贷市场、政策走向、法律框架及债权人回收的研究。</p>
+      </div>
+      <div class="cdd-hero__panel">
+        <img src="assets/img/insights-redwood-grey.jpg" class="cdd-hero__panel-cover" alt="水中倒映的落羽杉，黑白" loading="lazy">
+        <p class="cdd-hero__panel-label">精选报告</p>
+        <p class="cdd-hero__panel-issue">第 46 期 · 第 10 卷第 1 期 · 2026 年 1 月 25 日</p>
+        <h2 class="cdd-hero__panel-title">中国「不可投资」论的终结</h2>
+        <a class="cdd-hero__panel-cta" href="china-debt-dynamics-v10i1.html">阅读本期 <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHIVE -->
+  <section class="cdd-arc" id="archive" aria-label="中国债务动态档案库" data-cdd-arc>
+    <div class="sv-shell cdd-arc__inner">
+
+      <!-- Stats -->
+      <div class="cdd-stats">
+        <div class="cdd-stat"><span class="cdd-stat__num">20</span><span class="cdd-stat__label">档案库期数</span></div>
+        <div class="cdd-stat"><span class="cdd-stat__num">2018</span><span class="cdd-stat__label">创刊年份</span></div>
+        <div class="cdd-stat"><span class="cdd-stat__num">3</span><span class="cdd-stat__label">研究主题</span></div>
+        <div class="cdd-stat"><span class="cdd-stat__num">英文</span><span class="cdd-stat__label">出版语言</span></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="cdd-arc__controls">
+        <div class="cdd-arc__chips" role="tablist" aria-label="按主题筛选文章">
+          <button type="button" class="cdd-arc__chip is-active" data-topic="all" role="tab" aria-selected="true">全部</button>
+          <button type="button" class="cdd-arc__chip" data-topic="markets" role="tab" aria-selected="false">市场</button>
+          <button type="button" class="cdd-arc__chip" data-topic="policy" role="tab" aria-selected="false">政策</button>
+          <button type="button" class="cdd-arc__chip" data-topic="structural" role="tab" aria-selected="false">结构性</button>
+        </div>
+        <p class="cdd-arc__count"><span data-cdd-arc-count>20</span> 篇文章</p>
+      </div>
+
+      <!-- Ledger -->
+      <div class="cdd-arc__list">
+<div class="cdd-arc__year"><span>2026</span></div>
+            <article class="cdd-arc__row cdd-arc__row--featured" data-topic="markets" data-href="china-debt-dynamics-v10i1.html" tabindex="0" role="link" aria-label="中国「不可投资」论的终结 — 阅读文章">
+              <span class="cdd-arc__latest-tag">最新</span>
+              <div class="cdd-arc__meta">
+                <span class="cdd-arc__chip-issue">10.1</span>
+                <span class="cdd-arc__date">2026 年 1 月</span>
+              </div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body">
+                <h3 class="cdd-arc__row-title" lang="en">The End of the “China Is Uninvestable” Myth</h3>
+                <p class="cdd-arc__excerpt">本期探讨市场错位如何改变市场机制，以及在承销纪律与执行得以维持的前提下，私募信贷何处仍具可投资性……</p>
+              </div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v10i1.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v10i1.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2025</span></div>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-45-beijings-campaign-against-overcapacity-creates-private-credit-opportunities.html" tabindex="0" role="link" aria-label="Beijings Campaign Against Overcapacity — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">9.4</span><span class="cdd-arc__date">2025 年 9 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Beijing’s Campaign Against Overcapacity Creates Private Credit Opportunities</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-45-beijings-campaign-against-overcapacity-creates-private-credit-opportunities.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v9i4.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="markets" data-href="china-debt-dynamics-into-the-shadows-of-us-private-credit.html" tabindex="0" role="link" aria-label="Into the Shadows of US Private Credit — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">9.3</span><span class="cdd-arc__date">2025 年 7 月</span></div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Into the Shadows of US Private Credit: A China Perspective</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-into-the-shadows-of-us-private-credit.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v9i3.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="markets" data-href="china-debt-dynamics-v9i2.html" tabindex="0" role="link" aria-label="China: An Uncorrelated Harbor — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">9.2</span><span class="cdd-arc__date">2025 年 4 月</span></div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">China: An Uncorrelated Harbor in a Stormy World</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v9i2.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v9i2.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="structural" data-href="china-debt-dynamics-v9i1.html" tabindex="0" role="link" aria-label="Green Finance — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">9.1</span><span class="cdd-arc__date">2025 年 1 月</span></div>
+              <span class="cdd-arc__cat">结构性</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Green Finance: Sowing the Seeds of China’s Next Wave of NPLs</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v9i1.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v9i1.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2024</span></div>
+            <article class="cdd-arc__row" data-topic="markets" data-href="china-debt-dynamics-v8i5.html" tabindex="0" role="link" aria-label="United States of China — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">8.6</span><span class="cdd-arc__date">2024 年 12 月</span></div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">United States of China</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v8i5.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v8i5.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="markets" data-href="china-debt-dynamics-v8i3.html" tabindex="0" role="link" aria-label="Private Credit in a Reset World Order — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">8.5</span><span class="cdd-arc__date">2024 年 11 月</span></div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Private Credit in a Reset World Order</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v8i3.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v8i3.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="structural" data-href="china-debt-dynamics-v8i4.html" tabindex="0" role="link" aria-label="Quantifying Chinas NPL Market — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">8.4</span><span class="cdd-arc__date">2024 年 10 月</span></div>
+              <span class="cdd-arc__cat">结构性</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Quantifying China’s NPL Market</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v8i4.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v8i4.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v8i1.html" tabindex="0" role="link" aria-label="Bailing Out the Banks — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">8.3</span><span class="cdd-arc__date">2024 年 7 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Bailing Out the Banks: The Hidden Significance of Beijing Property Support Measures</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v8i1.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v8i1.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v8i2.html" tabindex="0" role="link" aria-label="China Refocuses on Financial Risk — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">8.2</span><span class="cdd-arc__date">2024 年 3 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">China Refocuses on Financial Risk and Ramps Up NPL Disposals</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v8i2.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v8i2.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2023</span></div>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v7i4.html" tabindex="0" role="link" aria-label="Local Government Debt — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">7.4</span><span class="cdd-arc__date">2023 年 12 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Beijing’s Strategy for Dealing With Local Government Debt: No Bailouts, but a Helping Hand</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v7i4.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v7i4.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v7i3.html" tabindex="0" role="link" aria-label="Wheres the Stimulus — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">7.3</span><span class="cdd-arc__date">2023 年 10 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Where’s the Stimulus? Parsing Beijing’s Lackluster Response to Growth</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v7i3.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v7i3.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="markets" data-href="china-debt-dynamics-v7i2.html" tabindex="0" role="link" aria-label="Bank Exposure to Developers — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">7.2</span><span class="cdd-arc__date">2023 年 6 月</span></div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Bank Exposure to Developers: A Challenge but Not a Risk</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v7i2.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v7i2.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v7i1.html" tabindex="0" role="link" aria-label="New Regulations — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">7.1</span><span class="cdd-arc__date">2023 年 3 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">New Regulations Set to Accelerate NPL Disposals</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v7i1.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v7i1.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2022</span></div>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v6i3.html" tabindex="0" role="link" aria-label="Property Support Measures — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">6.3</span><span class="cdd-arc__date">2022 年 12 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">China’s Property Support Measures: Rescue, not Reflation</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v6i3.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v6i3.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2021</span></div>
+            <article class="cdd-arc__row" data-topic="markets" data-href="china-debt-dynamics-v5i7.html" tabindex="0" role="link" aria-label="Evergrande — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">5.7</span><span class="cdd-arc__date">2021 年 9 月</span></div>
+              <span class="cdd-arc__cat">市场</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Evergrande: A Result of China Deleveraging and What Next</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v5i7.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v5i7.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+            <article class="cdd-arc__row" data-topic="structural" data-href="china-debt-dynamics-v5i4.html" tabindex="0" role="link" aria-label="Shadow Banking Contraction — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">5.4</span><span class="cdd-arc__date">2021 年 4 月</span></div>
+              <span class="cdd-arc__cat">结构性</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Sustained Shadow Banking Contraction Creating Private Credit Opportunities</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v5i4.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v5i4.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2020</span></div>
+            <article class="cdd-arc__row" data-topic="structural" data-href="china-debt-dynamics-v4i4.html" tabindex="0" role="link" aria-label="Coming Surge in NPLs — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">4.4</span><span class="cdd-arc__date">2020 年 10 月</span></div>
+              <span class="cdd-arc__cat">结构性</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">Dealing With a Coming Surge in Nonperforming Loans</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v4i4.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v4i4.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2019</span></div>
+            <article class="cdd-arc__row" data-topic="structural" data-href="china-debt-dynamics-v3i5.html" tabindex="0" role="link" aria-label="Tools to Dispose NPLs — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">3.5</span><span class="cdd-arc__date">2019 年 10 月</span></div>
+              <span class="cdd-arc__cat">结构性</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">A Look at the Tools Being Deployed to Help China’s Banks Dispose of Their NPLs</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v3i5.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v3i5.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+
+            <div class="cdd-arc__year"><span>2018</span></div>
+            <article class="cdd-arc__row" data-topic="policy" data-href="china-debt-dynamics-v2i4.html" tabindex="0" role="link" aria-label="Disclose and Dispose — 阅读文章">
+              <div class="cdd-arc__meta"><span class="cdd-arc__chip-issue">2.4</span><span class="cdd-arc__date">2018 年 7 月</span></div>
+              <span class="cdd-arc__cat">政策</span>
+              <div class="cdd-arc__body"><h3 class="cdd-arc__row-title" lang="en">“Disclose &amp; Dispose”: Stricter Accounting Requirements to Push Up NPLs Further</h3></div>
+              <div class="cdd-arc__actions">
+                <a class="cdd-arc__read" href="china-debt-dynamics-v2i4.html" target="_blank" rel="noopener">阅读 <span aria-hidden="true">→</span></a>
+                <a class="cdd-arc__pdf" href="china-debt-dynamics-print.html?source=assets/data/china-debt-dynamics-v2i4.json" target="_blank" rel="noopener">PDF</a>
+              </div>
+            </article>
+      </div>
+
+      <!-- End of archive -->
+      <div class="cdd-arc__closer">
+        <span class="cdd-arc__closer-end">档案库结束</span>
+        <a class="cdd-arc__closer-sub" href="#subscribe">订阅以获取新刊 →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SUBSCRIPTION STRIP -->
+  <section class="research-sub" id="subscribe">
+    <div class="research-sub__container">
+      <p class="research-sub__notice">重要提示：《中国债务动态》仅供信息参考，不构成投资建议、投资要约，亦不构成对任何证券、基金或交易的推荐。</p>
+      <div class="research-sub__inner">
+        <div class="research-sub__copy">
+          <h3>直接订阅《中国债务动态》</h3>
+          <p>面向订阅者的中国私募信贷市场季度刊物更新。</p>
+        </div>
+        <form class="research-sub__form" action="index_cn.html#signup" method="get">
+          <label class="research-sub__field" for="subscribe-name">
+            <input id="subscribe-name" name="name" type="text" autocomplete="name" placeholder="姓名" required>
+          </label>
+          <label class="research-sub__field" for="subscribe-email">
+            <input id="subscribe-email" name="email" type="email" autocomplete="email" placeholder="电子邮箱" required>
+          </label>
+          <button class="research-sub__submit" type="submit">订阅 →</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="sv-footer" aria-label="网站页脚">
+  <div class="sv-footer__inner">
+    <div class="sv-footer__top">
+      <div>
+        <a class="sv-footer__logo" href="index_cn.html" aria-label="新岸资本 — 首页">
+          <img src="assets/brand/sv-lockup-fc-light.png" alt="ShoreVest 新岸资本" width="200" height="48">
+        </a>
+        <p class="sv-footer__offices">
+          广州 · 上海 · 北京 · 香港<br>
+          <a href="contact_cn.html">一般查询</a>
+        </p>
+      </div>
+      <nav class="sv-footer__nav" aria-label="页脚导航">
+        <a href="firm_cn.html">公司</a>
+        <a href="insights_cn.html">洞察</a>
+        <a href="strategy_cn.html">策略</a>
+        <a href="press_cn.html">媒体</a>
+        <a href="team_cn.html">团队</a>
+        <a href="contact_cn.html">联系</a>
+        <a href="investor-portal/index.html">投资者门户</a>
+        <a href="insights_cn.html#archive">中国债务动态</a>
+      </nav>
+    </div>
+    <div class="sv-footer__legal">
+      <p>新岸资本（ShoreVest Partners）及其关联机构向机构投资者提供投资管理服务。本网站仅供参考，不构成出售要约或购买任何证券或投资产品的要约邀请，亦不构成投资、法律或税务建议。</p>
+      <p>过往表现并不代表未来结果。私募信贷与私募债务投资涉及风险，包括可能损失本金。所示数据为近似值，可能发生变动。</p>
+    </div>
+    <div class="sv-footer__bottom">
+      <div class="sv-footer__links">
+        <a href="privacy-policy_cn.html">隐私政策</a>
+        <a href="cookie-notice_cn.html">Cookie 通知</a>
+        <a href="terms-of-use_cn.html">使用条款</a>
+        <a href="legal-notices-disclaimers_cn.html">法律声明与免责声明</a>
+      </div>
+      <p class="sv-footer__copy">© 2026 新岸资本（ShoreVest Partners）。保留所有权利。</p>
+    </div>
+  </div>
+</footer>
+
+<button class="sv-totop" type="button" aria-label="返回顶部">
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5"/></svg>
+</button>
+
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=document.createElement("script");s.src=tk("assets/js/cdd-archive.js");document.head.appendChild(s);})();</script>
+<script>
+(function(){
+  var burger=document.querySelector('.sv-burger'); var menu=document.getElementById('sv-mobile-menu');
+  if(burger&&menu){burger.addEventListener('click',function(){var open=menu.classList.toggle('is-open');burger.setAttribute('aria-expanded',open?'true':'false');burger.setAttribute('aria-label',open?'关闭菜单':'打开菜单');});menu.addEventListener('click',function(e){if(e.target.closest('a')){menu.classList.remove('is-open');burger.setAttribute('aria-expanded','false');}});}
+  var toTop=document.querySelector('.sv-totop');
+  if(toTop){var onScroll=function(){if(window.scrollY>600)toTop.classList.add('is-visible');else toTop.classList.remove('is-visible');};window.addEventListener('scroll',onScroll,{passive:true});onScroll();toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}
+})();
+</script>
+</body>
+</html>

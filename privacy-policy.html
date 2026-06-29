@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | Privacy Policy</title>
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2-d2&t='+window.__SVT+'">');</script>
+</head>
+<body class="privacy-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main">
+    <article class="sv-container legal-container legal-content privacy-policy__content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">Legal Notice</p>
+        <h1>Privacy Policy</h1>
+        <p class="effective-date muted"><strong>Effective Date:</strong> 8 April 2026</p>
+      </header>
+
+  <p>ShoreVest Partners, Ltd., together with its affiliates, subsidiaries, associated undertakings, representative offices, related funds, general partners, management entities and other entities operating under or in connection with the ShoreVest name, as applicable in the relevant context, are referred to in this Privacy Policy collectively as “ShoreVest”, “we”, “us” or “our”.</p>
+  <p>ShoreVest recognizes the importance of protecting personal information and processes such information with appropriate regard to confidentiality, security, legal requirements and the professional, institutional context in which ShoreVest operates.</p>
+  <p>This Privacy Policy describes how ShoreVest collects, records, organizes, stores, uses, analyzes, shares, transfers and otherwise processes personal information in connection with this website (the “Site”), any investor-access or restricted-access areas, and certain related business interactions that refer or relate to this Privacy Policy.</p>
+  <p>This Privacy Policy is not intended as a consumer-facing retail privacy notice. It is designed for professional, institutional and business audiences. It does not exhaustively describe all data processing carried out by ShoreVest. Additional or more specific notices, contractual provisions or disclosures may apply in particular contexts. Where such materials apply, they supplement and may prevail over this Privacy Policy.</p>
+  <p>By accessing or using the Site, submitting information, requesting access to materials or otherwise interacting with ShoreVest where this Privacy Policy applies, you acknowledge the practices described herein, subject always to your rights under applicable law.</p>
+
+  <h2>1. Scope and structural limitations</h2>
+  <p>This Privacy Policy applies to personal information processed by or on behalf of ShoreVest in connection with: this Site and all associated pages, content, forms and functionalities; investor-access portals, data rooms, reporting environments and restricted materials; communications initiated through or connected to the Site; investor-relations, diligence and relationship management processes linked to Site interactions; and recruitment and hiring processes initiated through Site-linked channels.</p>
+  <p>This Privacy Policy does not apply to: third-party websites not controlled by ShoreVest; fund-level processing governed by subscription agreements or offering documents; internal employment matters except where explicitly referenced; or anonymised or aggregated information that does not relate to an identifiable individual. Nothing in this Privacy Policy creates any contractual obligation or fiduciary duty beyond what is required under applicable law.</p>
+
+  <h2>2. Role of ShoreVest and allocation of responsibility</h2>
+  <p>Depending on the context, ShoreVest may act as: a data controller determining how and why personal information is processed; a joint controller with affiliated entities or funds; or a processor acting on behalf of a fund vehicle, general partner or other entity. Where ShoreVest acts as a data controller in relation to this Site, ShoreVest Partners, Ltd. is the primary responsible entity.</p>
+  <p>The applicable role in any given situation depends on the specific interaction, transaction or relationship. This Privacy Policy does not attempt to categorically assign roles in every scenario. Where ShoreVest acts on behalf of another entity, that entity’s governing documents or notices may apply.</p>
+
+  <h2>3. Categories of personal information</h2>
+  <p>ShoreVest may process a wide range of personal information. The categories listed below are illustrative and not exhaustive:</p>
+  <ul>
+    <li>Professional identity and contact data</li>
+    <li>Communications, correspondence and interaction records</li>
+    <li>Investor-access credentials, authentication data and usage logs</li>
+    <li>Identity verification and authority documentation</li>
+    <li>Compliance and screening data, including AML and sanctions-related information</li>
+    <li>Technical, device and usage data derived from Site interaction</li>
+    <li>Cookie-derived and analytics-related data</li>
+    <li>Investor diligence, relationship and engagement data</li>
+    <li>Recruitment and application-related data</li>
+    <li>Information relating to representatives of institutions and organizations</li>
+  </ul>
+  <p>Personal information may relate not only to direct contacts but also to directors, officers, employees, advisers, beneficial owners, delegates and other representatives connected to institutional relationships.</p>
+
+  <h2>4. Sources of personal information</h2>
+  <p>ShoreVest may obtain personal information:</p>
+  <ul>
+    <li>directly from you</li>
+    <li>automatically through your use of the Site</li>
+    <li>from your employer or organization</li>
+    <li>from service providers, administrators and advisers</li>
+    <li>from publicly available or professional sources</li>
+    <li>from regulatory, legal or compliance databases</li>
+  </ul>
+  <p>ShoreVest does not guarantee the accuracy of information obtained from third-party sources and takes reasonable steps to assess reliability where practicable.</p>
+
+  <h2>5. Purposes of processing and applicable legal bases</h2>
+  <p>ShoreVest processes personal information for the purposes set out below, together with the legal basis or bases on which it relies for each. Where multiple legal bases apply to a given purpose, ShoreVest may rely on any one or more of them.</p>
+  <h3>5.1 Operation and security of the Site</h3>
+  <p>ShoreVest processes personal information to operate, maintain and secure the Site, manage investor-access permissions and monitor for fraud, security incidents and unauthorized access. Legal bases: (a) legitimate interests in operating and protecting the business and its systems; and (b) compliance with legal and regulatory obligations.</p>
+  <h3>5.2 Communication and relationship management</h3>
+  <p>ShoreVest processes personal information to manage communications, distribute institutional updates and publications, and support investor-relations and diligence processes. Legal bases: (a) legitimate interests in managing institutional relationships; and (b) contractual necessity where a relationship exists.</p>
+  <h3>5.3 Compliance and regulatory obligations</h3>
+  <p>ShoreVest processes personal information to comply with applicable legal and regulatory requirements, including anti-money laundering screening, sanctions compliance and reporting obligations. Legal basis: compliance with legal obligations.</p>
+  <h3>5.4 Internal governance and record-keeping</h3>
+  <p>ShoreVest processes personal information for internal governance, analytics, audit and record-keeping purposes. Legal basis: legitimate interests in maintaining accurate and complete business records.</p>
+  <h3>5.5 Recruitment and hiring</h3>
+  <p>ShoreVest processes personal information in connection with recruitment and hiring processes. Legal bases: (a) legitimate interests in assessing candidate suitability; and (b) pre-contractual steps taken at the request of the data subject.</p>
+  <h3>5.6 Corporate transactions and legal claims</h3>
+  <p>ShoreVest processes personal information in connection with corporate transactions, strategic activity, the protection of legal rights and the defense of claims. Legal bases: (a) legitimate interests; and (b) establishment, exercise or defense of legal claims.</p>
+  <h3>5.7 Consent-based processing</h3>
+  <p>Where ShoreVest relies on consent as the legal basis for any processing activity, you have the right to withdraw that consent at any time without detriment. Withdrawal does not affect the lawfulness of processing carried out prior to withdrawal.</p>
+
+  <h2>6. Disclosure of personal information</h2>
+  <p>Personal information may be disclosed:</p>
+  <ul>
+    <li>within ShoreVest entities and to internal teams on a need-to-know basis</li>
+    <li>to service providers and infrastructure vendors acting on ShoreVest’s behalf, under appropriate contractual protections</li>
+    <li>to professional advisers including legal counsel, accountants and auditors, subject to professional confidentiality obligations</li>
+    <li>to regulators, authorities and law enforcement where required or permitted by applicable law</li>
+    <li>to counterparties and transaction participants in connection with fund or investment activity</li>
+    <li>in connection with corporate transactions such as mergers, acquisitions or restructurings</li>
+    <li>to authorized representatives of relevant institutions in the course of investor-relations activity</li>
+  </ul>
+  <p>ShoreVest does not sell personal information to consumer data brokers or to third parties for their own independent marketing purposes.</p>
+
+  <h2>7. Cookies and tracking technologies</h2>
+  <p>ShoreVest uses cookies and similar technologies for core functionality and session management, security and access control, analytics and performance monitoring, and user preference management. Full details are provided in the Cookie Notice, which forms part of this privacy framework and should be read alongside this Privacy Policy.</p>
+
+  <h2>8. Data retention</h2>
+  <p>ShoreVest retains personal information for as long as is reasonably necessary for the purposes for which it was collected, including: ongoing business operations and relationship management; legal and regulatory compliance, including applicable statutory retention periods; audit and governance requirements; defense of legal claims and disputes, including during applicable limitation periods; and security monitoring and incident investigation.</p>
+  <p>ShoreVest will respond to erasure or deletion requests within the timeframes required by applicable law, which may be up to one calendar month and may be extended in accordance with such law. ShoreVest may retain archived or backed-up copies of personal information where deletion is not technically feasible or would compromise applicable legal obligations.</p>
+
+  <h2>9. Data security</h2>
+  <p>ShoreVest maintains technical and organizational measures designed to protect personal information against unauthorized access, loss, destruction or alteration, commensurate with the nature of the data and the risks involved. No system is completely secure. ShoreVest does not guarantee absolute protection against all unauthorized access, disclosure or loss. Users are responsible for maintaining the security of their own devices, credentials and communications.</p>
+
+  <h2>10. International data transfers</h2>
+  <p>Personal information may be transferred to and processed in jurisdictions outside of your home jurisdiction where ShoreVest or its service providers operate, including jurisdictions that may not provide equivalent data protection standards. Where required by applicable law, ShoreVest implements appropriate safeguards for international transfers, which may include standard contractual clauses, adequacy decisions or equivalent mechanisms recognised under applicable law.</p>
+
+  <h2>11. Individual rights</h2>
+  <p>Where applicable under relevant data protection law, individuals may have the following rights in relation to their personal information:</p>
+  <ul>
+    <li>right of access to personal information held about them</li>
+    <li>right to correction or rectification of inaccurate information</li>
+    <li>right to erasure or deletion in certain circumstances</li>
+    <li>right to restriction of processing in certain circumstances</li>
+    <li>right to object to processing based on legitimate interests</li>
+    <li>right to data portability in certain circumstances</li>
+    <li>right to withdraw consent where processing is consent-based</li>
+    <li>right to lodge a complaint with a competent supervisory authority</li>
+  </ul>
+  <p>These rights are subject to limitations under applicable law. ShoreVest may decline or limit requests where permitted by law and will communicate the basis for any such decision. Requests should be submitted to <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>. ShoreVest will respond within one calendar month, subject to any permitted extension.</p>
+
+  <h2>12. Marketing and professional communications</h2>
+  <p>ShoreVest may send professional and institutional communications where permitted under applicable law. Where required, opt-out mechanisms will be provided. Operational, compliance-related and contractual communications may continue irrespective of marketing opt-out preferences.</p>
+
+  <h2>13. Third-party environments</h2>
+  <p>ShoreVest is not responsible for the privacy practices, security or content of third-party platforms, portals or services linked from or accessible through the Site. Users interact with such services at their own risk and should review the applicable privacy notices of those services independently.</p>
+
+  <h2>14. Changes and updates</h2>
+  <p>ShoreVest may update this Privacy Policy at any time. Changes take effect upon posting unless otherwise required by applicable law. Continued use of the Site following any update constitutes acceptance of the revised version. Where changes are material, ShoreVest will endeavour to provide reasonable notice.</p>
+
+  <h2>15. Limitation of responsibility</h2>
+  <p>To the fullest extent permitted by applicable law, ShoreVest: (a) does not warrant the completeness or accuracy of information collected or processed; (b) does not assume responsibility for the data processing activities of third parties; (c) is not liable for indirect, consequential or incidental losses arising from data processing activities; and (d) disclaims responsibility for failures arising from systems outside its reasonable control.</p>
+
+  <h2>16. Contact and registered details</h2>
+  <p>Questions or requests relating to this Privacy Policy or ShoreVest’s processing of personal information should be directed to: <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>. ShoreVest Partners, Ltd. — offices across China and Hong Kong. General enquiries: Contact Us form on the Site.</p>
+  <p>ShoreVest has not appointed a statutory Data Protection Officer but has designated a point of contact for data protection queries at the address above. Persons in the European Union or United Kingdom who wish to raise concerns regarding ShoreVest’s processing of their personal information may also contact the relevant national supervisory authority in their jurisdiction.</p>
+
+  <div class="legal-contact-actions">
+    <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>
+    <a href="index.html">Back to homepage</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

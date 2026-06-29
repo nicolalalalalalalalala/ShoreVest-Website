@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | Cookie Notice</title>
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2-d2&t='+window.__SVT+'">');</script>
+</head>
+<body class="cookie-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main">
+    <article class="sv-container legal-container legal-content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">Legal Notice</p>
+        <h1>Cookie Notice</h1>
+        <p class="effective-date muted"><strong>Effective Date:</strong> 8 April 2026</p>
+      </header>
+
+  <p>This Cookie Notice explains how ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our) use cookies and similar tracking technologies on this website (the Site).</p>
+  <p>This Cookie Notice should be read together with the Privacy Policy, Terms of Use and Legal Notices and Disclaimers. In the event of any inconsistency, those documents prevail. Where required by applicable law, ShoreVest will seek your consent before deploying non-essential cookies.</p>
+
+  <h2>1. Scope and application</h2>
+  <p>This Cookie Notice applies to all users of the Site, including visitors to public pages and users accessing restricted or investor-only areas. Certain features of the Site may not function properly without the use of strictly necessary cookies.</p>
+
+  <h2>2. What are cookies</h2>
+  <p>Cookies are small text files placed on your device when you visit a website. ShoreVest may also use local storage objects, web beacons, pixels, tracking tags, device identifiers and server-side logging mechanisms. For the purposes of this Notice, all such technologies are referred to collectively as cookies.</p>
+
+  <h2>3. Categories of cookies</h2>
+  <h3>(a) Strictly necessary cookies</h3>
+  <p>Essential for the operation, security and integrity of the Site, including page navigation, session management, fraud prevention and access control. No consent is required or sought.</p>
+  <h3>(b) Performance and analytics cookies</h3>
+  <p>Collect aggregated data on how users interact with the Site to improve functionality and experience. In jurisdictions requiring prior consent, including those subject to EU GDPR and UK GDPR, these cookies are deployed only after obtaining explicit consent. ShoreVest does not rely on legitimate interests as the basis for analytics cookies where prior consent is required.</p>
+  <h3>(c) Preference and functionality cookies</h3>
+  <p>Allow the Site to remember user choices such as language preferences and display settings. Deployed only with prior consent where required by applicable law.</p>
+  <h3>(d) Security and access control cookies</h3>
+  <p>Used in restricted or investor-access areas to authenticate users, maintain secure sessions, enforce access controls and detect suspicious activity. Deployed on the basis of legitimate interests in protecting the Site and its users.</p>
+  <h3>(e) Third-party cookies</h3>
+  <p>May be set by third-party service providers including analytics tools, hosting infrastructure, content delivery networks and cybersecurity services. ShoreVest does not control the independent practices of these providers. A summary of principal cookies in use is available on request from <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>.</p>
+
+  <h2>4. Duration</h2>
+  <p>Cookies may be session cookies deleted on browser close, or persistent cookies remaining for a defined period. Retention periods vary by purpose and technical requirements.</p>
+
+  <h2>5. Legal basis and consent</h2>
+  <p>Strictly necessary cookies require no consent. Performance, analytics and preference cookies are deployed only where required legal standards are met; in jurisdictions requiring prior consent, these are deployed only after explicit consent via the cookie consent interface. ShoreVest will implement consent banners or controls where required by applicable law.</p>
+
+  <h2>6. Managing cookies</h2>
+  <h3>(a) Consent interface</h3>
+  <p>Where required by law, the Site will present a cookie consent interface before deploying non-essential cookies. Your preferences can be updated at any time. Withdrawing consent does not affect the lawfulness of prior cookie use.</p>
+  <h3>(b) Browser settings</h3>
+  <p>Most browsers allow you to view, delete or block cookies. Blocking certain cookies may affect Site functionality or security.</p>
+  <h3>(c) Device and platform controls</h3>
+  <p>Certain devices or operating systems provide additional tracking controls. ShoreVest encourages users to review available settings on their specific device or platform.</p>
+
+  <h2>7. Third-party services</h2>
+  <p>Third-party service providers engaged by ShoreVest may set cookies and access related data under contractual arrangements requiring compliance with applicable data protection law. ShoreVest does not control the independent practices of these providers beyond those contractual requirements.</p>
+
+  <h2>8. International transfers</h2>
+  <p>Data collected through cookies may be processed in multiple jurisdictions where ShoreVest or its service providers operate. By using the Site, you acknowledge that such transfers may occur, subject to applicable legal safeguards described in the Privacy Policy.</p>
+
+  <h2>9. Security</h2>
+  <p>Cookies may form part of broader security measures to protect the Site from unauthorized access and detect malicious activity. No security system can be guaranteed to be completely effective. Users remain responsible for maintaining the security of their own devices and connections.</p>
+
+  <h2>10. Changes</h2>
+  <p>ShoreVest may update this Cookie Notice at any time. Any revised version will be posted with an updated effective date. Where changes to non-essential cookie usage are material and require fresh consent, ShoreVest will seek that consent before deploying the relevant cookies. Continued use of the Site where no fresh consent is required constitutes acknowledgement of the revised Notice.</p>
+
+  <h2>11. Contact</h2>
+  <p>For questions regarding this Cookie Notice or ShoreVest’s use of cookies, please contact: <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a></p>
+
+  <div class="legal-contact-actions">
+    <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>
+    <a href="index.html">Back to homepage</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

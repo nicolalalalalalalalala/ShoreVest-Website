@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShoreVest | Strategy</title>
+<meta name="description" content="ShoreVest's investment strategy: asset-backed private credit in China — margin of safety, proprietary sourcing, disciplined underwriting, and onshore execution across asset-based lending, asset restructuring, and debt resolutions.">
+<link rel="icon" type="image/png" href="assets/brand/sv-circle-fullcolor.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="assets/css/homepage-rebuild.css?v=20260619-r9-warm1-foot1-menu1&t='+window.__SVT+'">');</script>
+<script>document.write('<link rel="stylesheet" href="assets/css/strategy-rebuild.css?v=20260625-s12-h1-a2-c5-c6-c7-c11-c12&t='+window.__SVT+'">');</script>
+<script>document.write('<link rel="stylesheet" href="assets/css/box-system.css?v=20260626-bx3-c11&t='+window.__SVT+'">');</script>
+</head>
+<body id="top" class="homepage strategy-page">
+
+<!-- ============================================================ A · HEADER -->
+<header class="sv-header">
+  <div class="sv-header__inner">
+    <a class="sv-header__logo" href="index.html" aria-label="ShoreVest — home">
+      <img src="assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest" width="172" height="41">
+    </a>
+    <nav class="sv-nav" aria-label="Primary">
+      <ul>
+        <li><a href="firm.html">Firm</a></li>
+        <li><a href="strategy.html" aria-current="page">Strategy</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li><a href="press.html">Media</a></li>
+        <li><a href="team.html">Team</a></li>
+      </ul>
+    </nav>
+    <div class="sv-utils">
+      <a class="sv-lang" href="strategy_cn.html"><span class="on">EN</span><span class="sep">|</span>中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
+    </div>
+    <button class="sv-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sv-mobile-menu">
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sv-mobile-menu" id="sv-mobile-menu">
+  <nav aria-label="Mobile">
+    <ul>
+      <li><a href="firm.html">Firm</a></li>
+      <li><a href="strategy.html">Strategy</a></li>
+      <li><a href="insights.html">Insights</a></li>
+      <li><a href="press.html">Media</a></li>
+      <li><a href="team.html">Team</a></li>
+    </ul>
+    <div class="sv-mobile-utils">
+      <a class="sv-util-btn" href="strategy_cn.html">中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
+    </div>
+  </nav>
+</div>
+
+<main id="content">
+
+<!-- ============================================================ B · HERO (analytical briefing) -->
+<section class="sx-hero" id="hero" data-screen-label="Strategy hero" aria-labelledby="sx-hero-title">
+  <div class="sv-shell">
+    <div class="sx-hero__top">
+      <div class="sx-hero__lead">
+        <p class="sx-hero__eyebrow">Strategy</p>
+        <h1 class="sx-hero__title" id="sx-hero-title">Asset-backed private credit in China</h1>
+      </div>
+      <div class="sx-hero__body">
+        <p>ShoreVest evaluates secured opportunities through entry basis, claim priority, enforceability, and exit route.</p>
+        <p>Return outcomes are underwritten around documentation, collateral control, and resolution path rather than a directional call on China&rsquo;s economy.</p>
+      </div>
+    </div>
+    <dl class="sx-glance">
+      <div><dt>Margin of safety</dt><dd>Low loan-to-value / cost-to-value entry</dd></div>
+      <div><dt>Sub-strategies</dt><dd>Asset-Based Lending · Asset Restructuring · Debt Resolutions</dd></div>
+      <div><dt>Standard</dt><dd>Claim priority · enforceability · defined recovery</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================================================ D · THE OPPORTUNITY -->
+<section class="st-section" id="opportunity" data-screen-label="The opportunity" aria-labelledby="st-opp-title">
+  <div class="sv-shell">
+    <div class="st-head">
+      <div class="st-head__l">
+        <p class="sv-label">The opportunity</p>
+        <h2 class="sv-h2" id="st-opp-title">China remains structurally under-allocated</h2>
+      </div>
+      <div class="st-head__r">
+        <p>China is the world&rsquo;s second-largest credit market and one of the most systematically under-allocated in global portfolios.</p>
+        <p>That gap reflects the difficulty of operating here: regulatory complexity, enforcement uncertainty, and a creditor landscape that rewards local presence over capital alone.</p>
+      </div>
+    </div>
+    <div class="st-oppfacts" role="list" aria-label="China credit market scale">
+      <div class="st-oppfact" role="listitem"><span class="st-oppfact__num">2nd</span><span class="st-oppfact__label">Largest credit market globally</span></div>
+      <div class="st-oppfact" role="listitem"><span class="st-oppfact__num">$5T</span><span class="st-oppfact__label">Shadow-banking contraction</span></div>
+      <div class="st-oppfact" role="listitem"><span class="st-oppfact__num">$2T</span><span class="st-oppfact__label">Recognized non-performing loans</span></div>
+      <div class="st-oppfact" role="listitem"><span class="st-oppfact__num">&lt;3%</span><span class="st-oppfact__label">Foreign GP penetration</span></div>
+      <p class="st-oppfacts__note">Market figures are illustrative, drawn from third-party estimates, and subject to change.</p>
+    </div>
+    <p class="st-reasons__kicker">Why this persists</p>
+    <div class="st-reasons">
+      <article class="st-reason">
+        <p class="st-reason__k">Demand</p>
+        <h3 class="st-reason__title">Credit vacuum</h3>
+        <p class="st-reason__body">The contraction of shadow banking and a large stock of recognized NPLs have pulled credit out of the market, widening spreads for disciplined secured lenders.</p>
+      </article>
+      <article class="st-reason">
+        <p class="st-reason__k">Barriers</p>
+        <h3 class="st-reason__title">High barriers to entry</h3>
+        <p class="st-reason__body">Relationships, licensing, and local credibility take years to build. Competition in the situations ShoreVest targets remains structurally thin.</p>
+      </article>
+      <article class="st-reason">
+        <p class="st-reason__k">Execution</p>
+        <h3 class="st-reason__title">Execution complexity</h3>
+        <p class="st-reason__body">Outcomes turn on control, documentation, and local process. That capability cannot be acquired quickly.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ E · SUB-STRATEGIES -->
+<section class="st-section st-band" id="sub-strategies" data-screen-label="Sub-strategies" aria-labelledby="st-sleeves-title">
+  <div class="sv-shell">
+    <div class="st-head">
+      <div class="st-head__l">
+        <p class="sv-label">Three sub-strategies</p>
+        <h2 class="sv-h2" id="st-sleeves-title">One underwriting standard</h2>
+      </div>
+      <div class="st-head__r">
+        <p>Deployment weights shift with the opportunity set. Underwriting does not.</p>
+        <p>Across asset-based lending, asset restructuring, and debt resolutions, each position must clear the same threshold before capital is committed.</p>
+      </div>
+    </div>
+
+    <div class="st-thresholds">
+      <p class="st-thresholds__label">Common principles applied to every deal</p>
+      <div class="st-threshold">
+        <span class="st-threshold__v">Conservative basis</span>
+        <span class="st-threshold__l">Entry priced below assessed collateral value</span>
+      </div>
+      <div class="st-threshold">
+        <span class="st-threshold__v">Defined horizon</span>
+        <span class="st-threshold__l">Shorter-dated positions with clear exit paths</span>
+      </div>
+      <div class="st-threshold">
+        <span class="st-threshold__v">Cash yielding</span>
+        <span class="st-threshold__l">Emphasis on near-term recovery</span>
+      </div>
+      <p class="st-thresholds__note">Principles are general and illustrative, apply differently by situation, and are not a representation of any specific or expected outcome.</p>
+    </div>
+
+    <div class="st-sleeves">
+      <div class="st-sleeve">
+        <h3 class="st-sleeve__title">Asset-based lending</h3>
+        <div>
+          <p class="st-sleeve__body">First-lien asset-backed financing to well-performing companies within China&rsquo;s private credit market.</p>
+          <p class="st-sleeve__meta">
+            <span class="st-sleeve__tag">Bridge · refinance · acquisition</span>
+          </p>
+        </div>
+      </div>
+      <div class="st-sleeve">
+        <h3 class="st-sleeve__title">Asset restructuring</h3>
+        <div>
+          <p class="st-sleeve__body">Credit clean-up opportunities involving good assets and challenged balance sheets, including select China distressed debt situations.</p>
+          <p class="st-sleeve__meta">
+            <span class="st-sleeve__tag">Loan-to-own · bankruptcy</span>
+          </p>
+        </div>
+      </div>
+      <div class="st-sleeve">
+        <h3 class="st-sleeve__title">Debt resolutions</h3>
+        <div>
+          <p class="st-sleeve__body">Assisting financial institutions seeking to divest distressed debt, such as non-performing loans, as part of broader China distressed debt solutions.</p>
+          <p class="st-sleeve__meta">
+            <span class="st-sleeve__tag">Negotiation · auction · sale</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ F · ORIGINATION DISCIPLINE -->
+<section class="sv-exec" id="origination" data-screen-label="Origination" aria-labelledby="st-orig-title">
+  <div class="sv-shell sv-exec__inner">
+    <div class="sv-grid12 sv-exec__head">
+      <div class="sv-exec__head-l">
+        <p class="sv-label">Sourcing &amp; diligence</p>
+        <h2 class="sv-h2" id="st-orig-title">Origination discipline</h2>
+      </div>
+      <div class="sv-exec__head-r">
+        <p class="sv-exec__intro">Sourcing is relationship-led and not intermediated. Opportunities are advanced only where legal control and recoverability can be evidenced through diligence.</p>
+      </div>
+    </div>
+    <ol class="sv-flow" aria-label="Origination process">
+      <li class="sv-flow__step">
+        <h3 class="sv-flow__title">Sourcing</h3>
+        <p class="sv-flow__body">Bank, AMC, legal, and servicing channels across the firm&rsquo;s onshore networks.</p>
+      </li>
+      <li class="sv-flow__step">
+        <h3 class="sv-flow__title">Screening</h3>
+        <p class="sv-flow__body">Collateral quality, claim priority, and enforcement path reviewed before committee.</p>
+      </li>
+      <li class="sv-flow__step">
+        <h3 class="sv-flow__title">Diligence</h3>
+        <p class="sv-flow__body">Full legal and asset-level underwriting with stressed downside testing.</p>
+      </li>
+      <li class="sv-flow__step">
+        <h3 class="sv-flow__title">Committee</h3>
+        <p class="sv-flow__body">Only structures with defined recovery routes are approved for deployment.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ G · RECOVERY -->
+<section class="sv-bridge st-band" id="recovery" data-screen-label="Recovery" aria-labelledby="st-rec-title">
+  <div class="sv-shell sv-grid12 sv-bridge__inner">
+    <div class="sv-bridge__head">
+      <p class="sv-label">Recovery</p>
+      <h2 class="sv-h2" id="st-rec-title">Multiple paths to monetization</h2>
+    </div>
+    <div class="sv-bridge__body">
+      <p>Enforcement is a capability, not the strategy. Most positions resolve through negotiated settlement or secondary sale.</p>
+      <p>When court processes are involved, secured-creditor outcomes depend on perfected collateral, a clean documentation chain, and the right venue.</p>
+      <p>The availability of multiple resolution paths means recovery rarely depends on any single route.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ H · RISK CONTROLS -->
+<section class="st-section" id="risk" data-screen-label="Risk controls" aria-labelledby="st-risk-title">
+  <div class="sv-shell">
+    <div class="st-head">
+      <div class="st-head__l">
+        <p class="sv-label">Downside protection</p>
+        <h2 class="sv-h2" id="st-risk-title">Risk controls</h2>
+      </div>
+      <div class="st-head__r">
+        <p>Downside controls are embedded in both deal-level underwriting and portfolio construction.</p>
+      </div>
+    </div>
+    <div class="st-risk">
+      <div class="st-risk__cols">
+        <div class="st-risk__col">
+          <h3>Underwriting controls</h3>
+          <ul>
+            <li>Conservative entry basis with stressed recovery assumptions.</li>
+            <li>First-lien claims and enforceability reviewed under PRC-law documentation.</li>
+            <li>Limited reliance on refinancing to realize value.</li>
+          </ul>
+        </div>
+        <div class="st-risk__col">
+          <h3>Portfolio controls</h3>
+          <ul>
+            <li>Diversification by borrower, collateral, province, and vintage.</li>
+            <li>Continuous surveillance from origination through disposition.</li>
+            <li>Predefined exit pathways to reduce duration and execution risk.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="st-risk__panel svb svb--split">
+        <div class="svb-card">
+          <p class="svb-label" style="color:var(--sv-cinnabar)">Downside protection</p>
+          <h3 class="svb-title">Collateral first</h3>
+          <p class="svb-body">Every position is underwritten around legal control and recoverability, so value does not depend on spread, refinancing, or market direction.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ I · DISCLOSURES -->
+<section class="st-disc" id="disclosures" data-screen-label="Disclosures" aria-labelledby="st-disc-title">
+  <div class="sv-shell st-disc__inner">
+    <p class="st-disc__label" id="st-disc-title">Disclosures</p>
+    <p class="st-disc__note">Past performance is not indicative of future results. All investments involve risk, including possible loss of principal. Information on this page reflects ShoreVest&rsquo;s current investment approach and is subject to change without notice. Nothing on this page constitutes an offer to sell or a solicitation to buy any security or investment product.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================ FOOTER -->
+<footer class="sv-footer" aria-label="Site footer">
+  <div class="sv-footer__inner">
+    <div class="sv-footer__top">
+      <div>
+        <a class="sv-footer__logo" href="index.html" aria-label="ShoreVest — home">
+          <img src="assets/brand/sv-lockup-fc-light.png" alt="ShoreVest" width="200" height="48">
+        </a>
+        <p class="sv-footer__offices">
+          Guangzhou · Shanghai · Beijing · Hong Kong<br>
+          <a href="contact.html">General inquiries</a>
+        </p>
+      </div>
+      <nav class="sv-footer__nav" aria-label="Footer">
+        <a href="firm.html">Firm</a>
+        <a href="insights.html">Insights</a>
+        <a href="strategy.html">Strategy</a>
+        <a href="press.html">Media</a>
+        <a href="team.html">Team</a>
+        <a href="contact.html">Contact</a>
+        <a href="investor-portal/index.html">Investor Portal</a>
+        <a href="insights.html#archive">China Debt Dynamics</a>
+      </nav>
+    </div>
+
+    <div class="sv-footer__legal">
+      <p>ShoreVest Partners and its affiliates provide investment management services to institutional investors. This website is for informational purposes only and does not constitute an offer to sell or a solicitation of an offer to buy any security or investment product, nor investment, legal, or tax advice.</p>
+      <p>Past performance is not indicative of future results. Investments in private credit and private debt involve risk, including the possible loss of principal. Figures shown are approximate and subject to change.</p>
+    </div>
+
+    <div class="sv-footer__bottom">
+      <div class="sv-footer__links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-notice.html">Cookie Notice</a>
+        <a href="terms-of-use.html">Terms of Use</a>
+        <a href="legal-notices-disclaimers.html">Legal Notices &amp; Disclaimers</a>
+      </div>
+      <p class="sv-footer__copy">© 2026 ShoreVest Partners. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<button class="sv-totop" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5"/></svg>
+</button>
+
+<script>
+(function(){
+  var burger = document.querySelector('.sv-burger');
+  var menu = document.getElementById('sv-mobile-menu');
+  if (burger && menu) {
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('is-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    menu.addEventListener('click', function(e){ if (e.target.closest('a')) { menu.classList.remove('is-open'); burger.setAttribute('aria-expanded','false'); } });
+  }
+  var toTop = document.querySelector('.sv-totop');
+  if (toTop) {
+    var onScroll = function(){ if (window.scrollY > 600) toTop.classList.add('is-visible'); else toTop.classList.remove('is-visible'); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+    toTop.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+})();
+</script>
+
+</body>
+</html>

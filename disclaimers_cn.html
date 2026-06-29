@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | 法律声明与免责声明</title>
+  <!--svstripped-->
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="assets/css/chinese-latin-typography.css?t='+window.__SVT+'">');</script>
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2&t='+window.__SVT+'">');</script>
+</head>
+<body class="legal-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main">
+    <article class="sv-container legal-container legal-content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">法律声明</p>
+        <h1>法律声明与免责声明</h1>
+        <p class="effective-date muted"><strong>生效日期：</strong>2026年4月8日</p>
+      </header>
+
+  <p>请在使用本网站前仔细阅读本法律声明与免责声明。通过访问、浏览或以其他方式使用本网站，您确认已阅读、理解并接受本法律声明与免责声明以及适用的使用条款、隐私政策、<span class="latin-text" lang="en">Cookie</span> 通知及任何补充推定。如您不接受，请不要访问或使用本网站。</p>
+
+  <h2>1. 范围与目的</h2>
+  <p>本网站由新岸资本及其相关关联公司提供，仅供一般信息参考目的。内容属概要性质，可能不完整，可能不经通知就发生变动，且不旨在提供评估新岸资本、其管理的基金载体或任何投资机会的全部依据。本网站不面向零售投资者。</p>
+
+  <h2>2. 无要约、无招募</h2>
+  <p>本网站上的任何内容均不构成就任何证券、基金份额、投资产品、顾问委托或金融服务的出售要约、购买要约招募、认购邀请、投资建议或认可。任何要约将仅通过正式机密发售文件向合法具备资格的人士进行。</p>
+
+  <h2>3. 仅供信息参考</h2>
+  <p>相关内容仅供信息参考目的，可能包括新岸资本业务、投资方式、项目来源模式、历史经验、市场观点、交易案例、团队介绍及第三方信息的描述。此类内容不旨在提供完整信息。</p>
+
+  <h2>4. 非专业建议</h2>
+  <p>本网站上的任何内容均不构成投资、法律、税务、会计、监管、财务、估值、架构或其他专业建议。内容未考虑任何人的特定情况。考虑投资的任何人士应和自己的独立专业顾问商议。</p>
+
+  <h2>5. 不得依赖</h2>
+  <p>就本网站上任何内容的公平性、正确性、准确性、完整性或时效性，均不作任何陈述或保证。相关信息可能基于估算、假设或第三方来源，并可能不经通知就发生变动。在适用法律允许的最大范围内，新岸资本及其关联公司就任何使用或依赖本网站所导致的责任一概免除。</p>
+
+  <h2>6. 前瞻性陈述</h2>
+  <p>本网站可能包含有关预期市场动态、投资机会、业务计划、战略重点、目标回报、预期退出或其他未来事项的陈述。此类陈述具有固有的不确定性，基于相关时点可获得的假设、判断及信念。实际事件或结果可能存在重大差异。新岸资本不承担更新前瞻性陈述的义务，除非适用法律另有要求。</p>
+
+  <h2>7. 历史业绩与目标回报</h2>
+  <p>过往业绩不是未来结果的保证或可靠指示。不能保证任何新岸资本策略、基金或投资将实现其目标、保全本金、产生目标回报或避免损失。任何目标、预测或示意性回报指标均仅为愿景性质。</p>
+
+  <h2>8. 未实现价值</h2>
+  <p>涉及未实现投资、参考估值、抵押价值、预估回收价值、目标回报或情景结果的陈述具有固有的主观性，并可能随时发生变化。由于市场状况变化、借款人表现、法律结果、执行时间、税务漏出、外汇汇率及其他因素，实际实现结果可能与任何参考或假设数据存在重大差异。</p>
+
+  <h2>9. 示意性示例</h2>
+  <p>本网站展示的任何投资案例、案例研究、示例交易、项目进展参考、资产类型、抵押物描述、法律架构或退出途径均属示意性质，可能并不代表新岸资本已进行或将进行的所有投资。任何案例的列入不意味着类似交易将来仍可获得或将实现类似结果。</p>
+
+  <h2>10. 第三方信息</h2>
+  <p>本网站可能引用来自第三方来源的市场数据、统计数据、基准指标、法律动态或行业评论。新岸资本未必对所有此类信息进行独立核实，并就其准确性、完整性或适用性不作任何陈述。</p>
+
+  <h2>11. 保密与限制性材料</h2>
+  <p>某些材料可能属于机密、专有及限制性资料。访问可能仅限于经批准的人士，并需履行保密承诺、资格确认及投资者验证等条件。除新岸资本书面明确允许或法律有所要求外，任何人均不得复制、分发、公布、披露、传输或以其他方式使用限制性材料。</p>
+
+  <h2>12. 司法管辖区限制</h2>
+  <p>本网站不面向在相关访问、公布或使用会违反适用法律或法规的司法管辖区内的任何人士。访问本网站的人士将自行承担履行所有适用当地法律、法规及规则的责任。</p>
+
+  <h2>13. 投资者资格</h2>
+  <p>对某些材料的访问可能仅限于符合适用资格标准（包括专业投资者、合格投资者、合格买家、机构投资者或同类分类）的人士。新岸资本可要求提供资格证明，并保留随时拒绝、暂停或撤销访问权限的权利。虚报资格状可能构成违反适用法律的行为。</p>
+
+  <h2>14. 美国声明</h2>
+  <p>本网站涉及的新岸资本任何基金的主项担负均未也不预期将根据美国、1933年《证券法》（经修订）或任何美国各州证券法律予以登记。此类主项担负仅可通过免除登记的交易进行发售。美国联邦或各州证券监管机构均未推荐或批准此类主项担负或就相关材料的准确性予以评定。本网站上的任何内容均不构成D规则第502条（c）项下所指的公开拉拟。美国人士对限制区域及发售材料的访问仅限于经新岸资本预先资格确认的人士。</p>
+
+  <h2>15. 中华人民共和国声明</h2>
+  <p>不得就新岸资本任何基金主项担负向中国大陆公众（不包括香港、澳门及台湾）发出要约邀请或进行销售。发售相关信息未经中国证监会或其他中国政府机构审批。中国境内投资者有责任自行获得当地要求的批准、备案及外汇登记。新岸资本不就任何投资或回报所受中国监管限制、资本管制或税务影响的情况作出陈述。</p>
+
+  <h2>16. 香港声明</h2>
+  <p>新岸资本任何基金均未经香港证券及期货事务监察委员会授权。本网站上的任何内容均不构成向香港公众作出的要约，也不构成《公司（清盘及杂项）条例》（第32章）所定义的广告。新岸资本主项担负在香港的发售仅限于适用法律允许的情况，包括《证券及期货条例》（第571章）所定义的专业投资者。</p>
+
+  <h2>17. 新加坡声明</h2>
+  <p>对新岸资本基金的提及不构成新加坡、2001年《证券及期货法》意义下的招股说明书。在新加坡的任何要约将仅依据适用豁免，且仅针对新加坡法律允许的机构投资者及认证投资者进行。本网站未经新加坡金融管理局审阅。</p>
+
+  <h2>18. 开曼群岛声明</h2>
+  <p>不得向开曼群岛公众发出认购主项担负的要约邀请。在开曼群岛的新岸资本基金可根据《私人基金法》（经修订）向 <span class="latin-text" lang="en">CIMA</span> 登记为私人基金。此类登记不构成 <span class="latin-text" lang="en">CIMA</span> 就基金业绩或信用资质的任何保证，也不构成对该基金、其策略或其材料的批准。</p>
+
+  <h2>19. 监管状态</h2>
+  <p>涉及注册、监管、许可、豁免或监管状态的提及，必须仔细阅读，且仅递对相关的特定新岸资本实体、活动及司法管辖区。根据目前的发售材料：新岸资本投资合伙有限公司受英属维尔京金融服务委员会监管，并已在美国证券交易委员会登记为投资顾问；新岸资本作为新岸资本信贷解决方案<span class="latin-text" lang="en">III</span>的管理人，已在美国证券交易委员会登记为投资顾问。监管状态因实体、产品及司法管辖区不同而有所差异，且可能发生变化。</p>
+
+  <h2>20. 无监管批准</h2>
+  <p>无任何证券监管机构、政府机关或监管机构就新岸资本任何基金、本网站描述的任何投资或本网站信息的充分性予以评定或认可。任何涉及注册或合规状态的提及均不得被解释为监管机构的认可或批准。</p>
+
+  <h2>21. 风险因素</h2>
+  <p>对私募信贷、不良资产、特殊机遇、债务处置、资产重组、不良贷款或相关策略的投资存在重大风险，仅适合具备评估和承担此类风险能力的老练投资者。风险可能包括但不限于：</p>
+  <p>流动性不足及缺乏二级市场</p>
+  <p>基金或资产层面的杠杆作用</p>
+  <p>借款人违约、延期付款或重组</p>
+  <p>执行风险，包括实现抵押权益时的延迟及不确定性</p>
+  <p>估值不确定性及未实现资产价值的主观性</p>
+  <p>法律及监管变化，包括中国有关抵押贷款及执行的法律变化</p>
+  <p>影响资产价值、资金汇回或执行的政治风险及地缘政治动态</p>
+  <p>中国监管风险，包括外商投资、资本清奇管制、资产执行及产权相关规则变化</p>
+  <p>地理、行业或资产层面的集中风险</p>
+  <p>税务漏出、预扣税及适用税制变化</p>
+  <p>资金汇回时间及跨境资本流动限制</p>
+  <p>外汇风险，包括货币贬値及对冲成本</p>
+  <p>本金部分或全部损失的风险</p>
+  <p>上述列举仅为示意性质，并非穷尽。潜在投资者应在作出任何投资决定前全面阅读适用的发售文件。</p>
+
+  <h2>22. 正式文件优先</h2>
+  <p>就与本网站内容不一致的部分，以管制性发售文件、认购材料、章程文件及相关法律协议为准。本网站上的任何内容均不修改任何具有约束力的基金文件、认购协议、保密协议或其他合同文件。</p>
+
+  <h2>23. 网站可用性</h2>
+  <p>新岸资本不保证本网站将持续可用、安全、无错误或不含有害组件。访问权限可能随时无需通知地被暂停、限制或终止。用户不得滥用本网站、尝试未经授权访问、干扰其运行或以违法方式使用。</p>
+
+  <h2>24. 知识产权</h2>
+  <p>本网站上的所有内容，包括文字、图形、图表、设计元素、标志、商号、页面版式、品牌及相关材料，均归新岸资本所有或经许可使用，并受适用知识产权法律保护。除个人非商业性查阅所必需的有限权利外，不授予任何其他权利或许可。未经事先书面同意，任何复制或分发均属禁止行为，除非法律另有要求。</p>
+
+  <h2>25. 链接网站</h2>
+  <p>本网站可能包含外部网站链接，仅供便捷。新岸资本不控制也不对任何第三方网站的内容、准确性、安全性、可用性或隐私做法承担责任。链接的列入并不意味着认可。</p>
+
+  <h2>26. 变更</h2>
+  <p>新岸资本可随时无需事先通知地对本法律声明与免责声明进行修改、修订、补充或更新。最新版本将连同上述生效日期一并公布。在任何更新后继续使用本网站，即表示接受修订后的版本。</p>
+
+  <h2>27. 权利保留</h2>
+  <p>新岸资本保留就本网站及其内容的一切权利，包括随时无需通知地限制、暂停、终止或附条件开放本网站全部或任何部分的访问权限。</p>
+
+  <h2>28. 联系方式</h2>
+  <p>如就本法律声明与免责声明有任何疑问，请通过本网站上的「联系我们」表单提交。</p>
+
+  <div class="legal-contact-actions">
+    <a href="index_cn.html">返回首页</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

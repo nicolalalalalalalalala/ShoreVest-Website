@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | Terms of Use</title>
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2-d2&t='+window.__SVT+'">');</script>
+</head>
+<body class="terms-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main">
+    <article class="sv-container legal-container legal-content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">Legal Notice</p>
+        <h1>Terms of Use</h1>
+        <p class="effective-date muted"><strong>Effective Date:</strong> 8 April 2026</p>
+      </header>
+
+  <p>These Terms of Use govern your access to and use of this website (the Site) operated by ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our).</p>
+
+  <h2>1. Acceptance of terms</h2>
+  <p>By accessing, browsing or otherwise using this Site, you agree to be bound by these Terms of Use, together with the Legal Notices and Disclaimers, Privacy Policy, Cookie Notice and any supplemental terms. If you do not agree, you must discontinue use of the Site immediately. These Terms apply solely to your use of the Site and do not amend any separate agreement between you and ShoreVest.</p>
+
+  <h2>2. Scope and informational nature</h2>
+  <p>The Site is provided for general informational purposes only and is not directed at retail investors. Content is summary in nature, may be incomplete and may change without notice. Nothing on the Site constitutes investment, legal, tax, accounting or other professional advice, or an offer to sell, solicitation to buy, or recommendation of any security, fund interest, investment strategy or advisory service.</p>
+
+  <h2>3. Investor access and restricted areas</h2>
+  <p>Certain areas of the Site may be restricted to eligible persons and are subject to the Investor Portal Terms. By accessing restricted areas, you represent and warrant that: you meet all applicable legal, regulatory and eligibility requirements; you are accessing materials lawfully; and any information you provide is accurate, complete and not misleading. ShoreVest reserves the right to grant, deny, suspend or revoke access at any time without notice.</p>
+
+  <h2>4. Jurisdiction and legal restrictions</h2>
+  <p>The Site is not directed at persons in any jurisdiction where access would be contrary to applicable law or regulation or would require any registration, licensing or approval. You are solely responsible for ensuring your use complies with all applicable laws. ShoreVest may block access from certain jurisdictions at its sole discretion.</p>
+
+  <h2>5. No reliance</h2>
+  <p>You must not rely on the Site as the basis for any investment, legal, tax, commercial or regulatory decision. Information may be based on assumptions or estimates, may omit material information, and may become outdated. To the fullest extent permitted by applicable law, ShoreVest accepts no responsibility for any reliance placed on Site content.</p>
+
+  <h2>6. Forward-looking statements</h2>
+  <p>The Site may include forward-looking statements, projections, targets or expectations. These are inherently uncertain. Actual results may differ materially. Past performance is not a reliable indicator of future results. There can be no assurance that any ShoreVest strategy or investment will achieve its objectives or avoid losses.</p>
+
+  <h2>7. Permitted use and prohibited conduct</h2>
+  <p>You may use the Site solely for lawful informational purposes. You must not:</p>
+  <p>attempt to gain unauthorized access to any system, server, account, data or restricted area</p>
+  <p>interfere with or disrupt the operation, integrity, availability or security of the Site</p>
+  <p>introduce or transmit viruses, malware, ransomware, spyware or any other harmful code</p>
+  <p>use automated systems including bots, scrapers or data harvesting tools to extract data without ShoreVest’s prior written consent</p>
+  <p>reproduce, distribute or create derivative works from any Site content for commercial purposes without prior written consent</p>
+  <p>misrepresent your identity, affiliation, jurisdiction or eligibility status</p>
+  <p>use the Site in any way that is unlawful, misleading, defamatory or harmful to ShoreVest or others</p>
+
+  <h2>8. Intellectual property</h2>
+  <p>All content on the Site, including text, design, layout, graphics, data, charts, branding and trade names, is owned by or licensed to ShoreVest and protected by applicable intellectual property laws. No rights are granted other than a limited, revocable, non-exclusive right to access and view the Site for personal, non-commercial informational purposes. Any unauthorized use may constitute infringement.</p>
+
+  <h2>9. Third-party content and links</h2>
+  <p>The Site may contain links to third-party websites or include third-party content for convenience only. ShoreVest does not control, endorse or assume responsibility for any third-party content. Access to third-party websites is entirely at your own risk.</p>
+
+  <h2>10. No warranties</h2>
+  <p>The Site is provided on an as is and as available basis. To the fullest extent permitted by applicable law, ShoreVest disclaims all representations and warranties, express or implied, including as to accuracy, completeness, uninterrupted operation, absence of viruses, and fitness for any particular purpose.</p>
+
+  <h2>11. Limitation of liability</h2>
+  <p>To the fullest extent permitted by applicable law, ShoreVest and its affiliates, subsidiaries, directors, officers, partners, employees and agents shall not be liable for any loss, damage, cost or expense arising from: access to, use of or inability to use the Site; reliance on any content; errors, omissions or inaccuracies; interruptions, delays or security breaches; or any third-party content or linked websites. This applies regardless of the legal theory on which any claim is based.</p>
+
+  <h2>12. Indemnification</h2>
+  <p>You agree to indemnify, defend and hold harmless ShoreVest and its affiliates, subsidiaries, directors, officers, partners, employees and agents from any claims, liabilities, damages, losses, costs or expenses arising from: your breach of these Terms; your misuse of the Site; or your violation of any applicable law, regulation or third-party right.</p>
+
+  <h2>13. Privacy</h2>
+  <p>Your use of the Site is subject to the Privacy Policy and Cookie Notice. By using the Site, you acknowledge those practices.</p>
+
+  <h2>14. Changes</h2>
+  <p>ShoreVest may modify, suspend or discontinue any part of the Site; restrict access to certain users or jurisdictions; and update these Terms at any time without notice. Updated Terms are effective upon posting. Continued use constitutes acceptance of the revised Terms.</p>
+
+  <h2>15. Governing law</h2>
+  <p>[Governing law to be confirmed by counsel. This clause will specify the applicable governing law, courts or arbitration forum following legal review.]</p>
+
+  <h2>16. Severability</h2>
+  <p>If any provision is found invalid, unlawful or unenforceable, it shall be severed and the remaining Terms shall continue in full force. The invalid provision shall be modified to the minimum extent necessary to make it enforceable.</p>
+
+  <h2>17. Entire agreement</h2>
+  <p>These Terms, together with the Legal Notices and Disclaimers, Privacy Policy, Cookie Notice and any supplemental terms, constitute the entire agreement between you and ShoreVest with respect to your use of the Site and supersede all prior representations, communications and understandings.</p>
+
+  <h2>18. Contact</h2>
+  <p>For questions regarding these Terms, please use the Contact Us form on the Site.</p>
+
+  <div class="legal-contact-actions">
+    <a href="index.html">Back to homepage</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

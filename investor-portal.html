@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style id="sv-boot-cover">html.sv-booting{background:#F2ECD8!important}html.sv-booting body{visibility:hidden!important}html.sv-booting .site-loader{visibility:visible!important}</style>
+<script>document.documentElement.classList.add('sv-booting');setTimeout(function(){document.documentElement.classList.remove('sv-booting');},6500);</script>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in · ShoreVest Investor Portal</title>
+  <meta name="description" content="Secure sign-in to the ShoreVest investor data room — for authorized investors and their representatives. Access is granted by invitation." />
+  <meta name="robots" content="noindex, nofollow" />
+  <!--svstripped-->
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>document.write('<link rel="stylesheet" href="assets/css/shorevest-brand-tokens.css?t='+window.__SVT+'">');</script>
+  <script>document.write('<link rel="stylesheet" href="assets/css/typography-lockdown.css?t='+window.__SVT+'">');</script>
+  <script>document.write('<link rel="stylesheet" href="assets/css/shared-header.css?t='+window.__SVT+'">');</script>
+  <script>document.write('<link rel="stylesheet" href="assets/css/investor-portal-signin.css?t='+window.__SVT+'">');</script>
+<script>document.write('<link rel="stylesheet" href="assets/css/shorevest-unify.css?t='+window.__SVT+'">');</script>
+  <!-- Investor portal neat-boxes layout pass — MUST load last (layout only). -->
+  <script>document.write('<link rel="stylesheet" href="assets/css/investor-portal-clean.css?v=20260602-neat&t='+window.__SVT+'">');</script>
+  <!-- Portal carries the shared top-bar navigation in the same transparent
+       over-hero style as the rest of the site: the dark brand panel runs up
+       underneath the bar (it's registered as this page's hero), the cream
+       lockup floats over it, and the bar settles solid on scroll. The MENU
+       chip sits over the LIGHT form panel, so while the bar is transparent it
+       keeps its dark ink instead of the over-hero cream. -->
+  <style>
+    body.sv-signin .signin {
+      min-height: 100svh;
+    }
+    body.sv-signin .signin__lockup { display: none !important; }
+    /* Clear the floating bar (it floats at >=768px only; phones keep the
+       solid in-flow bar and need no extra offset). */
+    @media (min-width: 768px) {
+      body.sv-signin .signin__brand {
+        padding-top: calc(var(--sv-header-height, 88px) + 8px);
+      }
+      body.sv-signin .signin__form-inner {
+        padding-top: calc(var(--sv-header-height, 88px) + 8px);
+      }
+    }
+    /* While the bar is transparent, right-side controls sit over the light
+       form panel — keep them in settled (dark) ink, not over-hero cream. */
+    body.sv-signin:not(.sv-head-solid) #site-header-mount#site-header-mount #nav#nav.site-header .nav__menu-btn,
+    body.sv-signin:not(.sv-head-solid) #site-header-mount#site-header-mount #nav#nav.site-header .nav__menu-btn-label,
+    body.sv-signin:not(.sv-head-solid) #site-header-mount#site-header-mount #nav#nav.site-header .nav__lp {
+      color: #1f2a26 !important;
+    }
+    body.sv-signin:not(.sv-head-solid) #site-header-mount#site-header-mount #nav#nav.site-header .nav__menu-btn {
+      border-color: rgba(31, 42, 38, 0.45) !important;
+    }
+
+    /* ----------------------------------------------------------------
+       MOBILE FIX (≤900px): a later sheet was zeroing the brand panel's
+       horizontal padding, so the eyebrow / headline / lede ran flush to
+       both screen edges. Restore comfortable side gutters, give the dark
+       header band real vertical presence, and size the headline so it
+       reads as a title rather than body copy.
+       ---------------------------------------------------------------- */
+    @media (max-width: 900px) {
+      body.sv-signin .signin__brand {
+        padding: clamp(30px, 8vw, 44px) clamp(24px, 6.4vw, 36px) !important;
+      }
+      body.sv-signin .signin__intro { padding: 0 !important; }
+      body.sv-signin .signin__title {
+        font-size: clamp(26px, 7vw, 34px) !important;
+        line-height: 1.08 !important;
+        margin-top: 10px !important;
+      }
+      body.sv-signin .signin__lede {
+        display: block !important;
+        margin-top: 12px !important;
+        max-width: 52ch !important;
+      }
+      body.sv-signin .signin__form-panel {
+        padding-left: clamp(24px, 6.4vw, 36px) !important;
+        padding-right: clamp(24px, 6.4vw, 36px) !important;
+      }
+      body.sv-signin .signin__form-inner { padding-left: 0 !important; padding-right: 0 !important; }
+    }
+    @media (max-width: 480px) {
+      body.sv-signin .signin__brand { padding: clamp(28px, 8vw, 38px) 22px !important; }
+      body.sv-signin .signin__form-panel { padding-left: 22px !important; padding-right: 22px !important; }
+    }
+
+    /* ----------------------------------------------------------------
+       PORTAL REFINEMENT (Jun 2026): the desaturated background footage
+       read as a muddy sage wash. Replace it with a clean, even deep-green
+       brand panel — calmer and more institutional. Balance the vertical
+       composition so the copy isn't stranded in dead space.
+       ---------------------------------------------------------------- */
+    body.sv-signin .signin__video { display: none !important; }
+    body.sv-signin .signin__brand {
+      background-image:
+        radial-gradient(120% 90% at 12% 8%, rgba(40, 78, 70, 0.55) 0%, rgba(15, 34, 6, 0) 58%),
+        linear-gradient(160deg, #143A1C 0%, #0F2206 52%, #0C1B08 100%) !important;
+    }
+    body.sv-signin .signin__brand::before { display: none !important; }
+    @media (min-width: 901px) {
+      body.sv-signin .signin__intro {
+        justify-content: center;
+        padding-block: clamp(28px, 4vh, 48px) !important;
+      }
+    }
+  </style>
+</head>
+<body class="sv-signin">
+  <div id="site-header-mount"></div>
+  <main class="signin">
+
+    <!-- ===================== LEFT — Brand panel ===================== -->
+    <section class="signin__brand" aria-label="ShoreVest investor portal">
+
+      <!-- Background motion (relocated from the homepage hero) -->
+      <video class="signin__video" data-src="assets/video/hero-option-b.mp4" muted loop playsinline preload="auto" aria-hidden="true"></video>
+
+      <!-- Middle: institutional framing -->
+      <div class="signin__intro">
+        <p class="signin__eyebrow">Investor Portal</p>
+        <h1 class="signin__title">Secure access for ShoreVest investors</h1>
+        <p class="signin__lede">A private data room for current investors and their authorized representatives. Access is granted by invitation.</p>
+      </div>
+
+      <!-- Bottom: trust + legal strip -->
+      <div class="signin__trust">
+        <hr class="signin__trust-rule" aria-hidden="true" />
+        <p class="signin__confidential">Confidential. For authorized users only. Unauthorized access is prohibited.</p>
+        <span class="signin__secured">
+          <span class="signin__secured-label">Secured by</span>
+          <svg class="signin__ideals-mark" viewBox="0 0 156 42" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="iDeals">
+            <path d="M0.691101 4.67743C0.691101 2.22886 2.67064 0.363281 5.17418 0.363281C7.61949 0.363281 9.54081 2.22886 9.54081 4.67743C9.54081 7.18429 7.61949 8.99157 5.17418 8.99157C2.61242 8.99157 0.691101 7.18429 0.691101 4.67743ZM1.56443 40.9396V12.3729H8.49282V40.9396H1.56443Z"/>
+            <path d="M42.2032 1.00488V40.9982H35.4495V37.267C33.3535 39.7739 30.3842 41.6978 26.2504 41.6978C18.0412 41.6978 11.9279 35.2266 11.9279 26.7149C11.9279 18.3198 18.0994 11.7902 26.1922 11.7902C30.2677 11.7902 33.1788 13.6558 35.2748 16.1044V1.00488H42.2032ZM35.6824 26.6566C35.6824 21.9343 32.3637 17.97 27.2402 17.97C22.1749 17.97 18.8563 21.9343 18.8563 26.6566C18.8563 31.4954 22.1749 35.4015 27.2402 35.4015C32.3055 35.4015 35.6824 31.4954 35.6824 26.6566Z"/>
+            <path d="M74.3999 29.1051H52.4503C53.3236 32.778 56.0018 35.6929 61.2418 35.6929C64.5022 35.6929 68.2284 34.4686 70.7319 32.7197L73.4683 37.6168C70.7901 39.599 66.1906 41.5812 60.9506 41.5812C50.1214 41.5812 45.3472 34.2355 45.3472 26.6565C45.3472 18.1449 51.344 11.7319 60.3102 11.7319C68.403 11.7319 74.5745 17.0372 74.5745 26.0736C74.6328 27.2395 74.5163 28.1723 74.3999 29.1051ZM52.4503 23.9165H67.8208C67.2386 19.8938 64.2693 17.4453 60.3102 17.4453C56.3511 17.4453 53.3818 19.9521 52.4503 23.9165Z"/>
+            <path d="M107.47 12.3732V40.9399H100.891V37.4419C98.7366 39.8905 95.6508 41.6395 91.5171 41.6395C83.1914 41.6395 77.2527 34.9933 77.2527 26.5399C77.2527 17.97 83.3078 11.7319 91.5171 11.7319C95.6508 11.7319 98.6784 13.5975 100.891 16.0461V12.4315H107.47V12.3732ZM101.065 26.6565C101.065 21.9343 97.6304 17.97 92.5651 17.97C87.4998 17.97 84.1229 21.9343 84.1229 26.6565C84.1229 31.4371 87.4998 35.4014 92.5651 35.4014C97.5722 35.4014 101.065 31.4371 101.065 26.6565Z"/>
+            <path d="M111.836 40.9399V1.00488H118.707V40.9982H111.836V40.9399Z"/>
+            <path d="M121.56 36.0427L125.46 31.8452C127.44 34.4103 130.409 35.8678 133.204 35.8678C135.707 35.8678 137.454 34.5269 137.454 32.8946C137.454 31.6703 136.639 30.8541 135.3 30.1545C133.67 29.3383 129.943 28.114 128.139 27.1812C124.878 25.6072 123.306 23.042 123.306 19.8938C123.306 14.9967 127.382 11.4404 133.786 11.4404C137.454 11.4404 141.064 12.723 143.684 15.638L140.074 20.0104C138.036 17.9116 135.591 17.0372 133.611 17.0372C131.399 17.0372 130.118 18.2614 130.118 19.7189C130.118 20.71 130.759 21.8177 132.622 22.5173C134.485 23.2752 137.279 24.208 139.55 25.374C142.752 27.0646 144.441 29.28 144.441 32.6614C144.441 37.7334 140.074 41.6978 133.262 41.6978C128.663 41.6978 124.296 39.8322 121.56 36.0427Z"/>
+            <path d="M146.187 37.675C146.187 35.4013 148.05 33.6523 150.379 33.6523C152.592 33.6523 154.397 35.4013 154.397 37.675C154.397 40.0653 152.592 41.7559 150.379 41.7559C148.05 41.8142 146.187 40.0653 146.187 37.675Z"/>
+          </svg>
+        </span>
+      </div>
+    </section>
+
+    <!-- ===================== RIGHT — Form panel ===================== -->
+    <section class="signin__form-panel" aria-labelledby="signin-heading">
+      <div class="signin__form-inner">
+
+        <div class="signin__form-head">
+          <p class="signin__form-eyebrow">Sign in</p>
+          <h2 class="signin__form-title" id="signin-heading">Sign in to the data room</h2>
+          <p class="signin__form-sub">Enter your registered email to continue.</p>
+        </div>
+
+        <form name="login" id="vdr-login-form" class="login-form" method="POST" novalidate>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" class="form-control" placeholder="name@institution.com" autocomplete="email" autocapitalize="off" spellcheck="false" />
+            <small class="error" role="alert"></small>
+          </div>
+
+          <button type="submit" class="btn btn-primary" name="submit">Sign in</button>
+
+          <nav class="signin__aux" aria-label="Sign-in help">
+            <a class="signin__aux-link" href="contact.html#cp-form-title">Trouble signing in?</a>
+            <div class="signin__aux-div" role="separator"></div>
+            <a class="signin__ir-link" href="investor-access.html">Need access? Contact investor relations <span class="signin__ir-arrow" aria-hidden="true">&rarr;</span></a>
+          </nav>
+        </form>
+
+        <p class="signin__secure-note">
+          <svg class="signin__lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4.5" y="10.5" width="15" height="10" rx="1.4" />
+            <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+          </svg>
+          <span>Connection is encrypted. Two-factor authentication may be required.</span>
+        </p>
+
+        <!-- Trust signals relocated here on narrow screens; hidden on desktop -->
+        <div class="signin__form-foot" aria-hidden="false">
+          <p class="signin__confidential">Confidential. For authorized users only. Unauthorized access is prohibited.</p>
+          <span class="signin__secured">
+            <span class="signin__secured-label">Secured by</span>
+            <svg class="signin__ideals-mark" viewBox="0 0 156 42" fill="currentColor" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="iDeals">
+              <path d="M0.691101 4.67743C0.691101 2.22886 2.67064 0.363281 5.17418 0.363281C7.61949 0.363281 9.54081 2.22886 9.54081 4.67743C9.54081 7.18429 7.61949 8.99157 5.17418 8.99157C2.61242 8.99157 0.691101 7.18429 0.691101 4.67743ZM1.56443 40.9396V12.3729H8.49282V40.9396H1.56443Z"/>
+              <path d="M42.2032 1.00488V40.9982H35.4495V37.267C33.3535 39.7739 30.3842 41.6978 26.2504 41.6978C18.0412 41.6978 11.9279 35.2266 11.9279 26.7149C11.9279 18.3198 18.0994 11.7902 26.1922 11.7902C30.2677 11.7902 33.1788 13.6558 35.2748 16.1044V1.00488H42.2032ZM35.6824 26.6566C35.6824 21.9343 32.3637 17.97 27.2402 17.97C22.1749 17.97 18.8563 21.9343 18.8563 26.6566C18.8563 31.4954 22.1749 35.4015 27.2402 35.4015C32.3055 35.4015 35.6824 31.4954 35.6824 26.6566Z"/>
+              <path d="M74.3999 29.1051H52.4503C53.3236 32.778 56.0018 35.6929 61.2418 35.6929C64.5022 35.6929 68.2284 34.4686 70.7319 32.7197L73.4683 37.6168C70.7901 39.599 66.1906 41.5812 60.9506 41.5812C50.1214 41.5812 45.3472 34.2355 45.3472 26.6565C45.3472 18.1449 51.344 11.7319 60.3102 11.7319C68.403 11.7319 74.5745 17.0372 74.5745 26.0736C74.6328 27.2395 74.5163 28.1723 74.3999 29.1051ZM52.4503 23.9165H67.8208C67.2386 19.8938 64.2693 17.4453 60.3102 17.4453C56.3511 17.4453 53.3818 19.9521 52.4503 23.9165Z"/>
+              <path d="M107.47 12.3732V40.9399H100.891V37.4419C98.7366 39.8905 95.6508 41.6395 91.5171 41.6395C83.1914 41.6395 77.2527 34.9933 77.2527 26.5399C77.2527 17.97 83.3078 11.7319 91.5171 11.7319C95.6508 11.7319 98.6784 13.5975 100.891 16.0461V12.4315H107.47V12.3732ZM101.065 26.6565C101.065 21.9343 97.6304 17.97 92.5651 17.97C87.4998 17.97 84.1229 21.9343 84.1229 26.6565C84.1229 31.4371 87.4998 35.4014 92.5651 35.4014C97.5722 35.4014 101.065 31.4371 101.065 26.6565Z"/>
+              <path d="M111.836 40.9399V1.00488H118.707V40.9982H111.836V40.9399Z"/>
+              <path d="M121.56 36.0427L125.46 31.8452C127.44 34.4103 130.409 35.8678 133.204 35.8678C135.707 35.8678 137.454 34.5269 137.454 32.8946C137.454 31.6703 136.639 30.8541 135.3 30.1545C133.67 29.3383 129.943 28.114 128.139 27.1812C124.878 25.6072 123.306 23.042 123.306 19.8938C123.306 14.9967 127.382 11.4404 133.786 11.4404C137.454 11.4404 141.064 12.723 143.684 15.638L140.074 20.0104C138.036 17.9116 135.591 17.0372 133.611 17.0372C131.399 17.0372 130.118 18.2614 130.118 19.7189C130.118 20.71 130.759 21.8177 132.622 22.5173C134.485 23.2752 137.279 24.208 139.55 25.374C142.752 27.0646 144.441 29.28 144.441 32.6614C144.441 37.7334 140.074 41.6978 133.262 41.6978C128.663 41.6978 124.296 39.8322 121.56 36.0427Z"/>
+              <path d="M146.187 37.675C146.187 35.4013 148.05 33.6523 150.379 33.6523C152.592 33.6523 154.397 35.4013 154.397 37.675C154.397 40.0653 152.592 41.7559 150.379 41.7559C148.05 41.8142 146.187 40.0653 146.187 37.675Z"/>
+            </svg>
+          </span>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+<!-- Shared top-bar navigation (also injects the consistent page loader) -->
+<script>(function(){var T=window.__SVT;var e=document.createElement('script');e.src='assets/js/shared-header.js'+(T?('?t='+encodeURIComponent(T)):'');document.body.appendChild(e);})();</script>
+
+<script>
+  (function(ELEMENT) {
+    ELEMENT.matches = ELEMENT.matches || ELEMENT.mozMatchesSelector || ELEMENT.msMatchesSelector || ELEMENT.oMatchesSelector || ELEMENT.webkitMatchesSelector;
+    ELEMENT.closest = ELEMENT.closest || function closest(selector) {
+      if (!this) return null;
+      if (this.matches(selector)) return this;
+      if (!this.parentElement) {return null}
+      else return this.parentElement.closest(selector)
+    };
+  }(Element.prototype));
+</script>
+<script>
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+  (function () {
+    var ERROR_MESSAGES = {
+      INVALID_EMAIL: 'Enter a valid email',
+      REQUIRED_FIELD: 'Fill in to continue'
+    };
+
+    var Login = /*#__PURE__*/function () {
+      "use strict";
+
+      function Login(form) {
+        _classCallCheck(this, Login);
+
+        this.form = form;
+        this.emailField = this.form.email;
+        this.submitBtn = this.form.submit;
+        this.addListeners();
+      }
+
+      _createClass(Login, [{
+        key: "addListeners",
+        value: function addListeners() {
+          this.form.addEventListener('submit', this.submit.bind(this));
+          this.emailField.addEventListener('keydown', this.clearErrors.bind(this));
+          this.emailField.addEventListener('change', this.clearErrors.bind(this));
+        }
+      }, {
+        key: "submit",
+        value: function submit(event) {
+          var _this = this;
+
+          event.preventDefault();
+
+          if (this.validateForm()) {
+            var email = encodeURIComponent(_this.emailField.value);
+            window.location.href = "https://app.idealsvdr.com/projects/all?email=".concat(email);
+          }
+        }
+      }, {
+        key: "setErrorText",
+        value: function setErrorText(element, text) {
+          element.closest('.form-group').querySelector('.error').innerText = text;
+        }
+      }, {
+        key: "showError",
+        value: function showError(element) {
+          var formGroup = element.closest('.form-group');
+
+          if (!formGroup.classList.contains('has-error')) {
+            formGroup.classList.add('has-error');
+          }
+        }
+      }, {
+        key: "hideError",
+        value: function hideError(element) {
+          var formGroup = element.closest('.form-group');
+
+          if (formGroup.classList.contains('has-error')) {
+            formGroup.classList.remove('has-error');
+          }
+        }
+      }, {
+        key: "clearErrors",
+        value: function clearErrors(event) {
+          this.hideError(event.target);
+          this.setErrorText(event.target, '');
+        }
+      }, {
+        key: "validateForm",
+        value: function validateForm() {
+          var emailValid = this.validateEmail();
+          return emailValid;
+        }
+      }, {
+        key: "validateEmail",
+        value: function validateEmail() {
+          var re = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
+          var value = this.emailField.value;
+
+          if (value === "" || value === undefined) {
+            this.setErrorText(this.emailField, ERROR_MESSAGES.REQUIRED_FIELD);
+            this.showError(this.emailField);
+            return false;
+          }
+
+          if (!re.test(value)) {
+            this.setErrorText(this.emailField, ERROR_MESSAGES.INVALID_EMAIL);
+            this.showError(this.emailField);
+            return false;
+          }
+
+          return true;
+        }
+      }]);
+
+      return Login;
+    }();
+
+    window.addEventListener('load', function () {
+      new Login(document.getElementById('vdr-login-form'));
+    });
+  })();
+</script>
+<script>
+  /* Load the brand-panel background video (blob fetch keeps the token interceptor happy). */
+  (function () {
+    var v = document.querySelector('.signin__brand .signin__video[data-src]');
+    if (!v || v.src) return;
+    var src = (window.__svTok ? window.__svTok(v.dataset.src) : v.dataset.src);
+    fetch(src)
+      .then(function (r) { return r.blob(); })
+      .then(function (blob) {
+        v.src = URL.createObjectURL(blob);
+        var p = v.play(); if (p && p.catch) p.catch(function () {});
+      })
+      .catch(function () {});
+  })();
+</script>
+</body>
+</html>

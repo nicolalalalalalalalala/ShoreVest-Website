@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+  <head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShoreVest | Team</title>
+    <!--svstripped-->
+    <!--svstripped-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Team now uses the HOMEPAGE self-contained shell as the single design authority
+       (same header, footer, tokens, type, container). The legacy shared stack
+       (shared-header/footer, shorevest-unify, shared-hero, typography-lockdown,
+       burford-polish) is intentionally NOT loaded here — it was what made Team
+       look like a different site. -->
+  <script>document.write('<link rel="stylesheet" href="assets/css/homepage-rebuild.css?v=20260619-r9-warm1-foot1-menu1&t='+window.__SVT+'">');</script>
+  <!-- team-page.css: bio expand + profile base behaviour only. -->
+  <script>document.write('<link rel="stylesheet" href="assets/css/team-page.css?v=20260501-hero-unify-2-h1&t='+window.__SVT+'">');</script>
+  <!-- Team refine: team hero + portrait grid + sections, on homepage tokens — MUST load LAST. -->
+  <script>document.write('<link rel="stylesheet" href="assets/css/team-refine.css?v=20260626-tr11-h1-2-a2-m3&t='+window.__SVT+'">');</script>
+</head>
+  <body class="homepage team-page team-page-v2">
+
+<header class="sv-header">
+  <div class="sv-header__inner">
+    <a class="sv-header__logo" href="index.html" aria-label="ShoreVest — home">
+      <img src="assets/brand/sv-lockup-fc-dark.png" alt="ShoreVest" width="172" height="41">
+    </a>
+    <nav class="sv-nav" aria-label="Primary">
+      <ul>
+        <li><a href="firm.html">Firm</a></li>
+        <li><a href="strategy.html">Strategy</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li><a href="press.html">Media</a></li>
+        <li><a href="team.html" aria-current="page">Team</a></li>
+      </ul>
+    </nav>
+    <div class="sv-utils">
+      <a class="sv-lang" href="team_cn.html"><span class="on">EN</span><span class="sep">|</span>中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
+    </div>
+    <button class="sv-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sv-mobile-menu">
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<div class="sv-mobile-menu" id="sv-mobile-menu">
+  <nav aria-label="Mobile">
+    <ul>
+      <li><a href="firm.html">Firm</a></li>
+      <li><a href="strategy.html">Strategy</a></li>
+      <li><a href="insights.html">Insights</a></li>
+      <li><a href="press.html">Media</a></li>
+      <li><a href="team.html" aria-current="page">Team</a></li>
+    </ul>
+    <div class="sv-mobile-utils">
+      <a class="sv-util-btn" href="team_cn.html">中文</a>
+      <a class="sv-util-btn" href="investor-portal/index.html">Investor Portal</a>
+      <a class="sv-util-btn sv-util-btn--cta" href="contact.html">Contact</a>
+    </div>
+  </nav>
+</div>
+
+    <section class="team-hero hero--team" id="team-top">
+      <div class="team-inner">
+        <div class="team-hero__layout">
+          <div class="pagehero__intro">
+            <div class="eyebrow eyebrow--red">Team</div>
+            <h1 class="team-hero__title">The people<br />behind the<br />platform</h1>
+            <p class="pagehero__lede">
+              ShoreVest is comprised of many of the most experienced senior professionals in China&rsquo;s private credit market. The firm has built and maintained a long-term team with complementary backgrounds and skillsets.
+            </p>
+          </div>
+          <div class="team-hero__proof" aria-label="Team platform highlights">
+            <div class="team-hero__statcard">
+              <p class="team-hero__statcard-label">Platform continuity</p>
+              <article>
+                <span>~20 yrs</span>
+                <p>Senior partners working together</p>
+              </article>
+              <article>
+                <span>14</span>
+                <p>Senior professionals across the platform</p>
+              </article>
+              <article>
+                <span>4</span>
+                <p>Investment committee members</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="team-groups team-section">
+      <div class="team-inner">
+        <section class="group group--leadership" aria-labelledby="leadership-investment">
+          <div class="group__head">
+            <div class="group__head-main">
+              <h2 id="leadership-investment" class="sv-section-title">Leadership &amp; investment</h2>
+            </div>
+            <p class="group__summary">
+              Sourcing, underwriting, legal structuring, and portfolio execution across ShoreVest's China private credit platform.
+            </p>
+          </div>
+          <div class="grid" data-team-grid>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-benjamin-fanger">
+                <img
+                  src="assets/images/team/benjamin_fanger.jpg"
+                  alt="Benjamin Fanger"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Benjamin Fanger</div>
+
+              <div class="team-profile__role">Managing Partner & Founder</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-benjamin-fanger">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/benjamin-fanger-540b1?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-benjamin-fanger" hidden>
+                <p>Benjamin Fanger is the Managing Partner and Founder of ShoreVest Partners and a pioneer in China’s private credit markets. He has managed over $2 billion in the space, invested by institutions from all over the world, and sits on ShoreVest’s Investment Committee. In over 20 years of Chinese private credit experience, Mr. Fanger has worked to create capital solutions with countless asset sellers, borrowers, and financial institutions in China. Prior to founding ShoreVest and Shoreline Capital, Mr. Fanger started several companies, two of which he sold to public companies. During graduate school, he also worked at the law firm O’Melveny &amp; Myers on early Chinese distressed debt and private equity transactions, as well as the first foreign-purchased NPL portfolio in China in 2003. Mr. Fanger has been fluent in spoken and written Chinese for almost 30 years. He also holds a JD and MBA from the University of Chicago and is a licensed attorney in the State of California.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-mecy-mei">
+                <img
+                  src="assets/images/team/mecy_mei.jpg"
+                  alt="Mecy Mei"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Mecy Mei</div>
+
+              <div class="team-profile__role">Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-mecy-mei">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/翠-梅-599882102?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-mecy-mei" hidden>
+                <p>Ms. Mei is a Partner at ShoreVest. She also sits on the Investment Committee. Prior to ShoreVest, she was a Partner at Shoreline Capital where she served for eight years. Her investment experience runs the full spectrum of Chinese private credit investments. Ms. Mei has overseen the successful completion of numerous deals, from deal sourcing, due diligence, deal structure to acquisition/negotiation and monitoring and exits. Prior to ShoreVest and Shoreline Capital, Ms. Mei worked at Morningstar as a fund analyst where she focused on fund strategy analysis. In that capacity Ms. Mei worked closely with outside clients in creating portfolios of debt and equity in China. She holds a bachelor’s degree in economics from Hefei University of Technology and a master’s degree in economics from Nanjing University. She was awarded the CFA designation in 2018.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-hui-zheng">
+                <img
+                  src="assets/images/team/hui_zheng.jpg"
+                  alt="Hui Zheng"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Hui Zheng</div>
+
+              <div class="team-profile__role">Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-hui-zheng">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/hui-zheng-b82b5230?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-hui-zheng" hidden>
+                <p>Ms. Zheng is a Partner at ShoreVest. She also sits on the Investment Committee. Prior to ShoreVest, she was a Partner at Shoreline Capital where she served for eight years. Her investment experience runs the full spectrum of Chinese private credit investments. Ms. Zheng has overseen the successful completion of numerous deals, from deal sourcing, due diligence, deal structure to acquisition/negotiation and monitoring and exits. Prior to ShoreVest and Shoreline Capital, Ms. Zheng was involved in the liquidation of non-performing loan assets when she was with a Guangdong law firm as an attorney. Ms. Zheng has published several papers including &ldquo;Negative Impacts the New Bankruptcy Law has on the Liquidation of Non-performing Assets.&rdquo; She holds a law degree from Nanchang University of Law and holds an LLM in economic law on foreign business from Sun Yat-sen University School of Law.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-ada-bi">
+                <img
+                  src="assets/images/team/ada_bi.jpg"
+                  alt="Ada Bi"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Ada Bi</div>
+
+              <div class="team-profile__role">Partner & CFO</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-ada-bi">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/ada-bi-cpa-cga-fcca-6185a218?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-ada-bi" hidden>
+                <p>Ms. Bi is a Partner and the Chief Financial Officer of ShoreVest. She also sits on the Investment Committee. She oversees the firm’s finances, tax, fund reporting, cash management, and invested projects’ financial control, and as such has overseen structural operational elements of numerous deals. Prior to joining ShoreVest, Ms. Bi was the CFO at Shoreline Capital from 2008 until 2016. Prior to 2008, Ms. Bi was the Head of Finance for AIG Insurance Company in charge of financial reporting, treasury, tax and budgeting for the property and casualty arm of AIG in China. She also worked previously for CITIC-Prudential and Royal Bank of Canada. Ms. Bi is a Fellow member of the Association of Chartered Certified Accountants, as well as a member of Chartered Professional Accountants (Canada) and holds a bachelor’s degree in international trade from Guangdong University of Foreign Studies in Guangzhou, China.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-shanjuan-jiang">
+                <img
+                  src="assets/images/team/shanjuan_jiang.jpg"
+                  alt="Shanjuan Jiang"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Shanjuan Jiang</div>
+
+              <div class="team-profile__role">Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-shanjuan-jiang">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/shanjuan-jiang-381b713?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-shanjuan-jiang" hidden>
+                <p>Ms. Jiang is a Partner at ShoreVest and an observing member of the Investment Committee. Prior to ShoreVest, she worked in private equity investments at CICC (China’s largest investment bank), CalPERS, and Franklin Templeton’s China alternatives business. Ms. Jiang holds a PhD in Mechanical Engineering from UCLA and an MBA from UC Davis. She also has a Bachelor of Science from Tsinghua University.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-lillian-xu">
+                <img
+                  src="assets/images/team/lillian_xu.jpg"
+                  alt="Lillian Xu"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Lillian Xu</div>
+
+              <div class="team-profile__role">General Counsel</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-lillian-xu">Bio</button>
+
+              <div class="team-profile__bio" id="bio-lillian-xu" hidden>
+                <p>Lillian Xu serves as General Counsel of ShoreVest, overseeing all legal matters across the firm’s investment activities and fund operations. She brings more than fifteen years of specialist legal experience, with a practice focused on legal due diligence for alternative investments &mdash; the discipline most critical to a firm that acquires complex, multi-layered distressed credits in the Chinese market. Within the investment process she leads legal structuring and documentation, manages regulatory and compliance matters, and assesses the enforceability and counterparty risk that sits at the heart of underwriting distressed and special-situations credit; her involvement runs the full life of an investment, from diligence and acquisition through to resolution and exit. Prior to ShoreVest, she trained and practiced at multiple red circle law firms in China, the tier of elite domestic practices whose deal experience and institutional relationships define the upper end of PRC legal work.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-james-li">
+                <img
+                  src="assets/images/team/james_li.jpg"
+                  alt="James Li"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">James Li</div>
+
+              <div class="team-profile__role">Director of Capital Solutions</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-james-li">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/james-li-9377a64a?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-james-li" hidden>
+                <p>James brings more than a decade of investment and advisory experience on Wall Street to ShoreVest’s capital solutions function. He has advised on corporate restructurings and special situations as an investment banker at Perella Weinberg Partners, and previously served as a portfolio manager at Citi. His expertise in structuring and executing complex financial transactions across challenging mandates directly supports the implementation of ShoreVest’s China private credit strategy.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-yao-fu">
+                <img
+                  src="assets/images/team/yao_fu.jpg"
+                  alt="Yao Fu"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Yao Fu</div>
+
+              <div class="team-profile__role">Senior Investment Manager</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-yao-fu">Bio</button>
+
+              <div class="team-profile__bio" id="bio-yao-fu" hidden>
+                <p>Yao Fu is a Senior Investment Manager at ShoreVest with over eight years of experience at the firm, where he focuses on investment opportunities across Hong Kong and Southwest China. Prior to joining ShoreVest, Yao spent three years as a Senior Auditor at Deloitte’s Guangzhou branch, developing a strong foundation in financial analysis and risk assessment. Yao holds a degree in Professional Accounting from Macquarie University and is a Fellow Member of the Association of Chartered Certified Accountants (ACCA).</p>
+              </div>
+
+            </article>
+          </div>
+        </section>
+
+        <section class="group group--sas" aria-labelledby="asset-solutions">
+          <div class="group__head">
+            <div class="group__head-main">
+              <h2 id="asset-solutions" class="sv-section-title">ShoreVest Asset Solutions</h2>
+            </div>
+            <p class="group__summary">
+              ShoreVest's captive debt servicing platform — on-the-ground sourcing, servicing, and resolution of distressed credit across China.
+            </p>
+          </div>
+          <div class="grid" data-team-grid>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-daoping-yang">
+                <img
+                  src="assets/images/team/daoping_yang.jpg"
+                  alt="Daoping Yang"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Daoping Yang</div>
+
+              <div class="team-profile__role">Managing Director, ShoreVest Asset Solutions</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-daoping-yang">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/daoping-yang?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-daoping-yang" hidden>
+                <p>Mr. Yang is a Managing Director and a head of Eastern China at ShoreVest Asset Solutions, or SAS (ShoreVest’s captive servicer platform, which manages the servicing of distressed assets for the ShoreVest funds across China). He is a seasoned senior executive in China; since 2015 Mr. Yang has worked on alternative investments focused on NPLs, real estate and energy. Prior to 2015, Mr. Yang spent twenty years as an executive at Sinopec, responsible for various aspects of global and regional supply, pricing, and trading. Mr. Yang holds an MBA from China Renmin University and has studied at Georgia Institute of Technology.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-hongyu-wei">
+                <img
+                  src="assets/images/team/hongyu_wei.jpg"
+                  alt="Hongyu Wei"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Hongyu Wei</div>
+
+              <div class="team-profile__role">Managing Director, ShoreVest Asset Solutions</div>
+
+              <div class="team-profile__actions">
+                <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-hongyu-wei">Bio</button>
+                <a class="team-profile__linkedin"
+                   href="https://www.linkedin.com/in/hongyu-wei-a262127"
+                   target="_blank"
+                   rel="noopener noreferrer">LinkedIn</a>
+              </div>
+
+              <div class="team-profile__bio" id="bio-hongyu-wei" hidden>
+                <p>Hongyu Wei is a Managing Director based in Beijing at ShoreVest Asset Solutions, or SAS (ShoreVest’s captive servicer platform, which manages the servicing of distressed assets for the ShoreVest funds across China). His career spans over 20 years in distressed asset management, loan recovery, and illiquid credit in China, with firms such as Nomura International Hong Kong, Deutsche Bank’s Global Markets Special Investments Group, Lone Star Funds, CarVal Investors, and Kaili Assets Management (the local Chinese NPL servicer formed by Morgan Stanley to service the first foreign-purchased NPL portfolio in China). At ShoreVest, Mr. Wei focuses on sourcing, onshore borrower engagement, collateral-level resolution, and cross-border enforcement opportunities across ShoreVest’s China portfolio. He holds a Master of Finance from the University of International Business and Economics and completed an Executive MBA jointly through UCLA Anderson and the National University of Singapore.</p>
+              </div>
+
+            </article>
+          </div>
+        </section>
+
+        <section class="group group--client-solutions" aria-labelledby="client-solutions">
+          <div class="group__head">
+            <div class="group__head-main">
+              <h2 id="client-solutions" class="sv-section-title">Client solutions</h2>
+            </div>
+            <p class="group__summary">
+              Investor engagement, mandate dialogue, and capital development across Asia and international markets.
+            </p>
+          </div>
+          <div class="grid" data-team-grid>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-john-jones">
+                <img
+                  src="assets/images/team/john_jones.jpg"
+                  alt="John Jones"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">John Jones</div>
+
+              <div class="team-profile__role">Director of Client Solutions (ex-Asia)</div>
+
+              <div class="team-profile__actions">
+                <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-john-jones">Bio</button>
+
+                <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/john-jones-a150aa2?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+              </div>
+
+              <div class="team-profile__bio" id="bio-john-jones" hidden>
+                <p>As Director of Client Solutions (ex-Asia), Mr. Jones leads client engagement across the Americas, Middle East, and Europe. With over 15 years of experience, he has directed business development efforts across public and private credit investment strategies. He was previously a member of PIMCO’s FIG business and provided asset management and advisory services for insurance company general account investments. He also worked with two emerging systematic alternative managers focusing on corporate strategy and fundraising. Mr. Jones earned a BA in economics from the University of Southern California and an MBA from The University of Chicago. While pursuing his undergraduate degree, he spent two years as a volunteer on a Mandarin speaking service mission for his church.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-kelvin-chan">
+                <img
+                  src="assets/images/team/kelvin_chan.jpg"
+                  alt="Kelvin Chan"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Kelvin Chan</div>
+
+              <div class="team-profile__role">Director of Client Solutions (Asia)</div>
+
+              <div class="team-profile__actions">
+                <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-kelvin-chan">Bio</button>
+
+                <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/kkpchan?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+              </div>
+
+              <div class="team-profile__bio" id="bio-kelvin-chan" hidden>
+                <p>Kelvin Chan leads ShoreVest’s client engagement across Asia from Hong Kong, having joined the firm in December 2024. His career spans nearly two decades across private equity, venture capital, strategic investment, and financial advisory in Greater China and Southeast Asia. He developed Ping An Group’s overseas private equity platform at Ping An Asset Management in Hong Kong, served as Executive Director of Strategic Development at Fosun Hani Securities, and was Investment Director for International Investment at Ant Financial, where he led global initiatives across payments, fintech, and emerging technology. Most recently he was Associate Director of Strategic Development at 500 Global, covering deal analysis, investor relations, and exit strategy for its Southeast Asia Growth Fund.</p>
+              </div>
+
+            </article>
+          </div>
+        </section>
+
+        <section class="group group--advisory" aria-labelledby="advisory-partners">
+          <div class="group__head">
+            <div class="group__head-main">
+              <h2 id="advisory-partners" class="sv-section-title">Advisory partners</h2>
+            </div>
+            <p class="group__summary">
+              Strategic, market, and policy insight contributed to the firm and the investment committee.
+            </p>
+          </div>
+          <div class="grid" data-team-grid>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-michael-chang">
+                <img
+                  src="assets/images/team/michael_chang.jpg"
+                  alt="Michael Chang"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Michael Chang</div>
+
+              <div class="team-profile__role">Senior Advisory Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-michael-chang">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/michael-chang-49b1887?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-michael-chang" hidden>
+                <p>Michael Chang is a Senior Advisory Partner at ShoreVest. In this role, Mr. Chang advises on ShoreVest’s human resources, information technology, finance, and compliance departments. He brings over a decade of experience in investment management in the United States and Asia, having worked at Stamos Capital Partners, Bridgewater Associates, and Cambridge Associates. He holds an MBA from MIT Sloan and a BA from Stanford University.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-philip-young">
+                <img
+                  src="assets/images/team/philip_young.jpg"
+                  alt="Philip Young"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Philip Young</div>
+
+              <div class="team-profile__role">Senior Advisory Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-philip-young">Bio</button>
+
+              <div class="team-profile__bio" id="bio-philip-young" hidden>
+                <p>Philip Young is a Senior Advising Partner at ShoreVest, working with the firm to advise on investment strategy and business development. Previously, Philip was an Independent Director at TransGlobe Life Insurance Company in Taiwan. He also served as a Senior Advisor in several wealth management companies in China. Earlier in his career, Philip directed investments of various Chinese and Japanese insurance companies. Years of working in the financial industry in Greater China and the Asian region give him a deep-rooted network in the senior management of the industry and broad knowledge of the Asian capital markets. He interacts with the traditional and alternative assets outside the region as well. Philip holds a BS degree from National Taiwan University and an MBA from University of Chicago. He also has a Diploma in International Investment from Stanford University. Philip currently teaches in the Finance Department at National Taiwan University in Taipei and the Institute for China Business of Hong Kong University. In addition, he authored &ldquo;The Essence of Wealth Management,&rdquo; published in 2022.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-dinny-mcmahon">
+                <img
+                  src="assets/images/team/dinny_mcmahon.jpg"
+                  alt="Dinny McMahon"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Dinny McMahon</div>
+
+              <div class="team-profile__role">Senior Advisory Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-dinny-mcmahon">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/dinnymcmahon?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-dinny-mcmahon" hidden>
+                <p>Dinny McMahon is an Economic Advisor to ShoreVest, working with the firm to analyze the dynamics of China’s credit markets, and assisting the investment committee in its strategic directions. In this role, Dinny actively analyzes the state of China’s commercial banking system, the volume and nature of the banks’ non-performing loans and clean-up efforts, as well as other macroeconomic matters affecting ShoreVest’s deal sourcing and execution. Dinny McMahon spent ten years as a financial journalist in China, including six years in Beijing with The Wall Street Journal, and four years with Dow Jones Newswires in Shanghai, where he also contributed to the Far Eastern Economic Review. In 2015, he left China and The Wall Street Journal to take up a fellowship at the Woodrow Wilson International Center for Scholars, a think tank in Washington DC, where he wrote &ldquo;China’s Great Wall of Debt: Shadow Banks, Ghost Cities, Massive Loans, and the End of the Chinese Miracle,&rdquo; a book about the Chinese economy that was published in 2018. Until recently he was a fellow at MacroPolo, the Paulson Institute’s think tank, where he wrote about China’s efforts to clean up its financial system. Dinny currently does research on China’s financial system for financial services firms. Dinny is fluent in Chinese, having studied the language in Beijing and Kunming, followed by a year at the Johns Hopkins SAIS campus in Nanjing where he studied international relations in Chinese.</p>
+              </div>
+
+            </article>
+            <article class="team-profile" data-team-profile>
+
+              <div class="team-profile__photo" data-team-photo="bio-steve-poon">
+                <img
+                  src="assets/images/team/steve_poon.jpg"
+                  alt="Steve Poon"
+                  width="640" height="800"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                />
+              </div>
+
+              <div class="team-profile__name">Steve Poon</div>
+
+              <div class="team-profile__role">Senior Advisory Partner</div>
+
+              <button class="team-profile__bio-toggle" type="button" aria-expanded="false" aria-controls="bio-steve-poon">Bio</button>
+
+              <a class="team-profile__linkedin"
+                 href="https://www.linkedin.com/in/steve-poon-66671028?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios"
+                 target="_blank"
+                 rel="noopener noreferrer">LinkedIn</a>
+
+              <div class="team-profile__bio" id="bio-steve-poon" hidden>
+                <p>Steve Poon has spent more than twenty years building and leading credit investment platforms across Asia, accumulating a career that tracks the full arc of institutional private credit in the region. He moved from structured solutions at Standard Chartered Bank, to heading China special situations at Soci&eacute;t&eacute; G&eacute;n&eacute;rale, to building and leading Ping An’s institutional private credit investment team over approximately a decade, to serving as Managing Director of Asia Credit at The Carlyle Group in Hong Kong. At Carlyle, Poon led the firm’s Greater China-focused credit platform before departing in late 2022. His advisory contribution to ShoreVest draws on an unusually complete accumulation of experience &mdash; from origination and structuring through portfolio management and credit resolution &mdash; across every major phase of China’s credit cycle. Earlier in his career he held roles at BNP Paribas Peregrine and Bank of America Merrill Lynch. He holds an MBA from the University of Sheffield and is an Associate Member of the Institute of Chartered Accountants of England and Wales (ACA, ICAEW).</p>
+              </div>
+
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+<footer class="sv-footer" aria-label="Site footer">
+  <div class="sv-footer__inner">
+    <div class="sv-footer__top">
+      <div>
+        <a class="sv-footer__logo" href="index.html" aria-label="ShoreVest — home">
+          <img src="assets/brand/sv-lockup-fc-light.png" alt="ShoreVest" width="200" height="48" />
+        </a>
+        <p class="sv-footer__offices">
+          Guangzhou · Shanghai · Beijing · Hong Kong<br />
+          <a href="contact.html">General inquiries</a>
+        </p>
+      </div>
+      <nav class="sv-footer__nav" aria-label="Footer">
+        <a href="firm.html">Firm</a>
+        <a href="insights.html">Insights</a>
+        <a href="strategy.html">Strategy</a>
+        <a href="press.html">Media</a>
+        <a href="team.html">Team</a>
+        <a href="contact.html">Contact</a>
+        <a href="investor-portal/index.html">Investor Portal</a>
+        <a href="insights.html#archive">China Debt Dynamics</a>
+      </nav>
+    </div>
+
+    <div class="sv-footer__legal">
+      <p>ShoreVest Partners and its affiliates provide investment management services to institutional investors. This website is for informational purposes only and does not constitute an offer to sell or a solicitation of an offer to buy any security or investment product, nor investment, legal, or tax advice.</p>
+      <p>Past performance is not indicative of future results. Investments in private credit and private debt involve risk, including the possible loss of principal. Figures shown are approximate and subject to change.</p>
+    </div>
+
+    <div class="sv-footer__bottom">
+      <div class="sv-footer__links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-notice.html">Cookie Notice</a>
+        <a href="terms-of-use.html">Terms of Use</a>
+        <a href="legal-notices-disclaimers.html">Legal Notices &amp; Disclaimers</a>
+      </div>
+      <p class="sv-footer__copy">© 2026 ShoreVest Partners. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<button class="sv-totop" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 13V3M8 3L3.5 7.5M8 3l4.5 4.5" stroke="currentColor" stroke-width="1.5"/></svg>
+</button>
+
+<script>document.write('<scr'+'ipt src="assets/js/team-page.js?t='+window.__SVT+'" defer><\/scr'+'ipt>');</script>
+<script>
+(function(){
+  var burger=document.querySelector('.sv-burger'); var menu=document.getElementById('sv-mobile-menu');
+  if(burger&&menu){burger.addEventListener('click',function(){var open=menu.classList.toggle('is-open');burger.setAttribute('aria-expanded',open?'true':'false');burger.setAttribute('aria-label',open?'Close menu':'Open menu');});menu.addEventListener('click',function(e){if(e.target.closest('a')){menu.classList.remove('is-open');burger.setAttribute('aria-expanded','false');}});}
+  var toTop=document.querySelector('.sv-totop');
+  if(toTop){var onScroll=function(){if(window.scrollY>600)toTop.classList.add('is-visible');else toTop.classList.remove('is-visible');};window.addEventListener('scroll',onScroll,{passive:true});onScroll();toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});}
+})();
+</script>
+</body>
+</html>

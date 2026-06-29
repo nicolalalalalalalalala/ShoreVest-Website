@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | Investor Access / Portal Terms</title>
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2&t='+window.__SVT+'">');</script>
+</head>
+<body class="legal-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main legal-page__main">
+    <article class="sv-container legal-page__content legal-container legal-content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">Legal Notice</p>
+        <h1>Investor Portal Terms</h1>
+        <p class="effective-date muted"><strong>Effective Date:</strong> 8 April 2026</p>
+      </header>
+
+  <p>These Investor Portal Terms (Portal Terms) govern access to and use of the investor-access portal, restricted materials, data room environments and any downloadable documents made available by ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our) through this website (the Portal). These Portal Terms supplement the Terms of Use, Legal Notices and Disclaimers, Privacy Policy and Cookie Notice. In the event of any inconsistency, these Portal Terms prevail with respect to your Portal access. By clicking Confirm and Continue, you confirm you have read, understood and agree to be bound by these Portal Terms and all referenced documents.</p>
+
+  <h2>1. Eligibility</h2>
+  <p>Access to the Portal is strictly limited to persons who satisfy all of the following conditions: (a) you are a professional investor, institutional investor, qualified purchaser, accredited investor or equivalent classification recognised under the laws of your jurisdiction; (b) you are not a retail investor; (c) access to these materials is lawful in the jurisdiction from which you are accessing the Portal; (d) you are accessing the Portal on your own account, or if acting on behalf of an institution, you have full authority to bind that entity to these Portal Terms; and (e) you are not a person subject to sanctions administered by the UN, EU, UK, US, Hong Kong or any other relevant jurisdiction.</p>
+  <p>ShoreVest may request evidence of eligibility at any time and reserves the right to deny, suspend or revoke access at its sole discretion and without explanation.</p>
+
+  <h2>2. Purpose of access</h2>
+  <p>Materials made available through the Portal are provided solely to enable eligible persons to conduct diligence on ShoreVest and any ShoreVest-managed vehicle in connection with a potential investment relationship. Access must not be used for any other purpose. Nothing in the Portal constitutes an offer to sell, solicitation of an offer to buy or a recommendation regarding any security or investment product. Any offering will be made only through definitive offering documents delivered separately to eligible persons.</p>
+
+  <h2>3. Confidentiality</h2>
+  <p>All materials accessed through the Portal are confidential and proprietary. By accessing the Portal, you agree: (a) to treat all materials as strictly confidential and not to disclose them to any third party without ShoreVest’s prior written consent, except to professional advisers bound by equivalent confidentiality obligations; (b) not to reproduce, copy, distribute, publish, upload, transmit or otherwise disseminate any Portal materials in any form; (c) to use Portal materials solely for the purpose described in section 2; and (d) to notify ShoreVest promptly if you become aware of any unauthorised access to or disclosure of Portal materials. The obligations in this section survive termination or withdrawal of Portal access.</p>
+
+  <h2>4. No reliance and no advice</h2>
+  <p>Materials in the Portal are provided for informational and diligence purposes only. They are not complete, may contain assumptions and estimates, and are subject to change without notice. You must not rely on Portal materials as the sole basis for any investment decision. Nothing in the Portal constitutes investment, legal, tax, accounting or other professional advice. You are responsible for conducting your own independent analysis and consulting your own advisers before making any investment decision.</p>
+
+  <h2>5. Authentication and account security</h2>
+  <p>Where access requires authentication credentials, you are responsible for maintaining their confidentiality and security. You must not share your credentials with any other person. You must notify ShoreVest immediately at <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a> if you become aware of any actual or suspected unauthorised access to your account. ShoreVest reserves the right to require re-authentication at any time and to revoke credentials where security may have been compromised.</p>
+
+  <h2>6. Monitoring and logging</h2>
+  <p>ShoreVest may log and monitor all access to and activity within the Portal for security, compliance and regulatory purposes, including recording the time, nature and extent of access to specific materials. By accessing the Portal, you consent to such monitoring and logging. Records of access may be retained for the periods required by applicable law and ShoreVest’s internal policies.</p>
+
+  <h2>7. No warranty as to materials</h2>
+  <p>Materials in the Portal are provided on an as is basis. ShoreVest makes no representation or warranty as to the accuracy, completeness, timeliness or fitness for purpose of any Portal material. ShoreVest reserves the right to update, correct, withdraw or supplement any material at any time without notice.</p>
+
+  <h2>8. Intellectual property</h2>
+  <p>All Portal materials are proprietary and confidential information of ShoreVest or its affiliates. No right, title or licence is granted other than the limited right to access and review materials for the purpose described in section 2. Any unauthorised use, reproduction or distribution may constitute a breach of these Portal Terms and applicable intellectual property law.</p>
+
+  <h2>9. Termination of access</h2>
+  <p>ShoreVest may terminate or suspend your Portal access at any time and without notice, including where: (a) you breach these Portal Terms; (b) ShoreVest determines at its sole discretion that your continued access is inappropriate; or (c) ShoreVest ceases to make the Portal available. Termination does not affect any accrued obligations, including confidentiality obligations under section 3.</p>
+
+  <h2>10. Data protection</h2>
+  <p>Personal data collected in connection with Portal registration, access and use will be processed in accordance with ShoreVest’s Privacy Policy. By registering for and accessing the Portal, you acknowledge that processing in accordance with the Privacy Policy will occur.</p>
+
+  <h2>11. Limitation of liability</h2>
+  <p>To the fullest extent permitted by applicable law, ShoreVest and its affiliates, directors, officers, partners, employees and agents shall not be liable for any loss, damage, cost or expense arising from your access to or use of, or inability to access or use, the Portal or any Portal materials, including for reliance on Portal materials, technical failures, interruptions or unauthorised access by third parties despite reasonable security measures.</p>
+
+  <h2>12. Governing law</h2>
+  <p>[Governing law to be confirmed by counsel.]</p>
+
+  <h2>13. Contact</h2>
+  <p>Questions regarding these Portal Terms or your Portal access should be directed to: <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a></p>
+  <p>Access Gate Text</p>
+  <p>Access to ShoreVest investor materials is strictly restricted to qualified institutional and eligible investors. To proceed, you must confirm each of the following:</p>
+  <p>You are a professional investor, institutional investor, qualified purchaser, accredited investor or equivalent classification under the laws of your jurisdiction.</p>
+  <p>You are not a retail investor.</p>
+  <p>Access to these materials is lawful in the jurisdiction from which you are accessing this portal.</p>
+  <p>You are accessing these materials solely for diligence purposes in connection with a potential investment relationship with ShoreVest.</p>
+  <p>You are not a person subject to applicable sanctions.</p>
+  <p>By clicking CONFIRM AND CONTINUE, you confirm that each of the above statements is true and accurate, and that you have read and agree to the Investor Portal Terms, Terms of Use, Legal Notices and Disclaimers, Privacy Policy and Cookie Notice.</p>
+  <p>[ CONFIRM AND CONTINUE</p>
+  <p>[ I DO NOT MEET THESE CRITERIA</p>
+  <p>If you do not meet the eligibility criteria above, please click I Do Not Meet These Criteria. You will be returned to the public homepage. Misrepresentation of eligibility status may constitute a breach of applicable law.</p>
+
+  <div class="legal-contact-actions">
+    <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>
+    <a href="index.html">Back to homepage</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

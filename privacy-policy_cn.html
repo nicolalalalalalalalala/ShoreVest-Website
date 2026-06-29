@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script>
+try{window.addEventListener('error',function(e){if(e&&typeof e.message==='string'&&e.message.indexOf('ResizeObserver loop')!==-1){e.stopImmediatePropagation();e.preventDefault();}},true);}catch(_){}
+window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
+(function(){
+  var T=window.__SVT;
+  function tok(u){try{var url=new URL(u,location.href);if(url.origin===location.origin&&!url.searchParams.get('t')){url.searchParams.set('t',T);return url.href;}return u;}catch(e){return u;}}
+  window.__svTok=tok;
+  (function(){var _f=window.fetch;if(_f){window.fetch=function(i,n){try{var u;if(typeof i==='string'){u=new URL(i,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=u.href;}}else if(i&&i.url){u=new URL(i.url,location.href);if(u.origin===location.origin&&!u.searchParams.get('t')){u.searchParams.set('t',T);i=new Request(u.href,i);}}}catch(e){}return _f.call(this,i,n);};}var _o=window.XMLHttpRequest&&window.XMLHttpRequest.prototype.open;if(_o){window.XMLHttpRequest.prototype.open=function(m,u){try{var x=new URL(u,location.href);if(x.origin===location.origin&&!x.searchParams.get('t')){x.searchParams.set('t',T);u=x.href;}}catch(e){}return _o.apply(this,[m,u].concat([].slice.call(arguments,2)));};}})();
+  function fixEl(el){
+    if(el.nodeType!==1)return;
+    if(el.hasAttribute('data-svsrc')&&!el.__sd){el.__sd=1;el.setAttribute('src',tok(el.getAttribute('data-svsrc')));}
+    if(el.hasAttribute('data-svsrcset')&&!el.__ss){el.__ss=1;el.setAttribute('srcset',el.getAttribute('data-svsrcset').split(',').map(function(p){var q=p.trim().split(/\s+/);if(q[0])q[0]=tok(q[0]);return q.join(' ');}).join(', '));}
+    if(el.tagName==='IMG'){var s=el.getAttribute('src');if(s){var ts=tok(s);if(ts!==s)el.setAttribute('src',ts);}}
+  }
+  function scan(root){if(!root||root.nodeType!==1)return;fixEl(root);if(root.querySelectorAll){var n=root.querySelectorAll('img,source,[data-svsrc],[data-svsrcset]');for(var i=0;i<n.length;i++)fixEl(n[i]);}}
+  new MutationObserver(function(ms){for(var j=0;j<ms.length;j++){var a=ms[j].addedNodes;for(var i=0;i<a.length;i++)scan(a[i]);}}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState!=='loading')scan(document.body);else document.addEventListener('DOMContentLoaded',function(){scan(document.body);});
+  document.addEventListener('click',function(e){var t=e.target;var a=t&&t.closest?t.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|https?:|\/\/)/i.test(h))return;var url;try{url=new URL(h,location.href);}catch(_){return;}if(url.origin!==location.origin)return;e.preventDefault();if(!url.searchParams.get('t'))url.searchParams.set('t',T);window.location.href=url.href;},true);
+})();
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoreVest | 隐私政策</title>
+  <!--svstripped-->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- TODO: ADD ADOBE FONTS KIT FOR DIN 2014 — replace [KIT_ID] below and uncomment. Until configured, pages use the canonical DIN 2014 stack with only a generic sans-serif emergency fallback. -->
+  <!-- <link rel="stylesheet" href="https://use.typekit.net/[KIT_ID].css"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>document.write('<link rel="stylesheet" href="assets/css/chinese-latin-typography.css?t='+window.__SVT+'">');</script>
+  
+  <!-- Typography lockdown — MUST load last; final authority over all type. -->
+
+
+  <script>document.write('<link rel="stylesheet" href="assets/css/legal-rebuild.css?v=20260627-lg2-d2&t='+window.__SVT+'">');</script>
+</head>
+<body class="privacy-page">
+  <div id="site-header-mount"></div>
+
+  <main class="legal-main">
+    <article class="sv-container legal-container legal-content privacy-policy__content legal-document__content">
+      <header class="legal-page__intro-block">
+        <p class="legal-page__kicker">法律声明</p>
+        <h1>隐私政策</h1>
+        <p class="effective-date muted"><strong>生效日期：</strong>2026年4月8日</p>
+      </header>
+
+  <p>新岸资本（<span class="latin-text" lang="en">ShoreVest Partners, Ltd.</span>）及其关联公司、子公司、关联主体、代表处、相关基金、普通合伙人、管理实体及其他在相关情境下以新岸资本名义运营或与之关联的实体，在本隐私政策中统称为“新岸资本”、“我们”或“我方”。</p>
+  <p>新岸资本充分认识到保护个人信息的重要性，并在处理相关信息时，充分顾及保密性、安全性、法律合规要求以及新岸资本所处的专业机构环境。</p>
+  <p>本隐私政策说明新岸资本如何收集、记录、整理、存储、使用、分析、共享、传输及以其他方式处理与本网站（以下简称「本网站」）、任何投资者访问区域或限制访问区域，以及适用本隐私政策的相关业务互动所涉及的个人信息。</p>
+  <p>本隐私政策并非面向消费者的零售隐私声明，而是面向专业人士、机构及商业受众。本政策并未穷尽新岸资本的全部数据处理活动。在特定情境下，可能另行适用更具体的通知、合同条款或披露文件。若存在此类文件，其将对本隐私政策形成补充，且在相关方面优先适用。</p>
+  <p>通过访问或使用本网站、提交信息、申请获取材料，或以其他方式在本隐私政策适用范围内与新岸资本互动，您即表示认可本政策所述的相关做法，但您在适用法律下的权利始终不受影响。</p>
+
+  <h2>1. 范围与结构性限制</h2>
+  <p>本隐私政策适用于新岸资本或代表新岸资本处理的以下个人信息：与本网站及所有相关页面、内容、表单及功能相关的信息；与投资者访问门户、数据室、报告环境及限制性材料相关的信息；通过本网站发起或与之关联的通信所涉及的信息；与本网站互动相关的投资者关系、尽职调查及关系管理流程所涉及的信息；以及通过本网站相关渠道发起的招聘及录用流程所涉及的信息。</p>
+  <p>本隐私政策不适用于：新岸资本无法控制的第三方网站；受认购协议或发售文件约束的基金层面数据处理；除明确提及外的内部雇佣事宜；以及无法识别特定个人的匿名化或汇总信息。本隐私政策中的任何内容均不产生超出适用法律要求范围之外的合同义务或受信义务。</p>
+
+  <h2>2. 新岸资本的角色及责任分配</h2>
+  <p>视具体情境，新岸资本可能作为以下角色：决定个人信息处理方式及目的的数据控制者；与关联实体或基金共同担任联合控制者；或代表基金载体、普通合伙人或其他实体担任数据处理者。在新岸资本就本网站担任数据控制者时，新岸资本（<span class="latin-text" lang="en">ShoreVest Partners, Ltd.</span>）为主要责任实体。</p>
+  <p>具体角色取决于特定互动、交易或关系的性质。本隐私政策不就每一情境明确指定角色。若新岸资本代表其他实体行事，则该实体的管治文件或通知可能适用。</p>
+
+  <h2>3. 个人信息类别</h2>
+  <p>新岸资本可能处理多种类别的个人信息，以下列举属于示例性质，并非穷举：</p>
+  <ul>
+    <li>职业身份及联系信息</li>
+    <li>通信、往来函件及互动记录</li>
+    <li>投资者访问凭证、身份验证数据及使用日志</li>
+    <li>身份验证及授权文件</li>
+    <li>合规及筛查数据，包括反洗钱及制裁相关信息</li>
+    <li>源于网站互动的技术、设备及使用数据</li>
+    <li><span class="latin-text" lang="en">Cookie</span>及分析相关数据</li>
+    <li>投资者尽职调查、关系及参与数据</li>
+    <li>招聘及申请相关数据</li>
+    <li>机构及组织代表人相关信息</li>
+  </ul>
+  <p>个人信息不仅涉及直接联系人，还可能涉及与机构关系相关的董事、高管、雇员、顾问、实益所有人、代表及其他相关人士。</p>
+
+  <h2>4. 个人信息来源</h2>
+  <p>新岸资本可能通过以下途径获取个人信息：</p>
+  <ul>
+    <li>直接从您处获取</li>
+    <li>通过您对本网站的使用自动收集</li>
+    <li>从您的雇主或所属机构处获取</li>
+    <li>从服务提供商、管理人及顾问处获取</li>
+    <li>从公开或专业来源获取</li>
+    <li>从监管、法律或合规数据库获取</li>
+  </ul>
+  <p>新岸资本不对从第三方来源获取的信息的准确性作出保证，并在切实可行的情况下采取合理措施评估信息的可靠性。</p>
+
+  <h2>5. 处理目的及适用法律依据</h2>
+  <p>新岸资本按以下目的处理个人信息，并就各目的列明所依据的法律基础。若某一目的存在多项适用法律基础，新岸资本可依赖其中一项或多项。</p>
+  <h3>5.1 网站运营与安全</h3>
+  <p>新岸资本处理个人信息以运营、维护及保障本网站安全，管理投资者访问权限，以及监测欺诈、安全事件及未授权访问。法律依据：（a）运营和保护业务及其系统的合法利益；（b）遵守法律及监管义务。</p>
+  <h3>5.2 通信与关系管理</h3>
+  <p>新岸资本处理个人信息以管理通信、分发机构更新及出版物，并支持投资者关系及尽职调查流程。法律依据：（a）管理机构关系的合法利益；（b）在存在合同关系时的合同履行必要性。</p>
+  <h3>5.3 合规与监管义务</h3>
+  <p>新岸资本处理个人信息以遵守适用的法律及监管要求，包括反洗钱筛查、制裁合规及报告义务。法律依据：遵守法律义务。</p>
+  <h3>5.4 内部治理与记录保存</h3>
+  <p>新岸资本为内部治理、数据分析、审计及记录保存目的处理个人信息。法律依据：维护准确完整业务记录的合法利益。</p>
+  <h3>5.5 招聘与录用</h3>
+  <p>新岸资本在招聘及录用流程中处理个人信息。法律依据：（a）评估候选人适合性的合法利益；（b）应数据主体请求采取的合同前措施。</p>
+  <h3>5.6 企业交易与法律主张</h3>
+  <p>新岸资本在企业交易、战略活动、维护法律权利及应对索赔中处理个人信息。法律依据：（a）合法利益；（b）设立、行使或抗辩法律主张。</p>
+  <h3>5.7 基于同意的处理</h3>
+  <p>若新岸资本以同意作为任何处理活动的法律依据，您有权随时撤回该同意，且不因此受到损害。撤回同意不影响撤回前已进行处理的合法性。</p>
+
+  <h2>6. 个人信息披露</h2>
+  <p>个人信息可能被披露于：</p>
+  <ul>
+    <li>在新岸资本各实体内部及内部团队之间，以知情必要为限</li>
+    <li>在适当合同保护下，向代表新岸资本行事的服务提供商及基础设施供应商</li>
+    <li>在专业保密义务约束下，向法律顾问、会计师及审计师等专业顾问</li>
+    <li>在适用法律要求或允许的情况下，向监管机构、政府部门及执法机关</li>
+    <li>在基金或投资活动中，向交易对手方及交易参与方</li>
+    <li>在合并、收购或重组等企业交易中</li>
+    <li>在投资者关系活动中，向相关机构的授权代表</li>
+  </ul>
+  <p>新岸资本不向消费者数据经纪商或第三方出售个人信息用于其独立营销目的。</p>
+
+  <h2>7. <span class="latin-text" lang="en">Cookie</span>及追踪技术</h2>
+  <p>新岸资本使用<span class="latin-text" lang="en">Cookie</span>及类似技术用于核心功能及会话管理、安全与访问控制、分析及性能监测，以及用户偏好管理。详情请参阅<span class="latin-text" lang="en">Cookie</span>通知，该通知构成本隐私框架的组成部分，应与本隐私政策一并阅读。</p>
+
+  <h2>8. 数据保留</h2>
+  <p>新岸资本在收集目的所合理必要的期限内保留个人信息，包括：持续的业务运营及关系管理；法律及监管合规，包括适用的法定保留期限；审计及治理要求；法律主张及争议的抗辩，包括在适用诉讼时效期间内；以及安全监测及事件调查。</p>
+  <p>新岸资本将在适用法律规定的期限内（最长一个日历月，并可依法延长）回应删除请求。若技术上无法删除或删除将违反适用法律义务，新岸资本可保留个人信息的存档或备份副本。</p>
+
+  <h2>9. 数据安全</h2>
+  <p>新岸资本采取与数据性质及相关风险相称的技术和组织措施，以保护个人信息免受未授权访问、丢失、销毁或篡改。任何系统均无法做到绝对安全，新岸资本不对所有未授权访问、披露或丢失提供绝对保障。用户有责任维护自身设备、凭证及通信的安全。</p>
+
+  <h2>10. 个人信息的跨境传输</h2>
+  <p>个人信息可能被传输至新岸资本或其服务提供商运营所在的其他司法管辖区进行处理，包括数据保护标准可能与您所在地区不同的司法管辖区。在适用法律要求的情况下，新岸资本将为跨境传输实施适当保障措施，包括标准合同条款、充分性认定或适用法律认可的同等机制。</p>
+
+  <h2>11. 个人权利</h2>
+  <p>在相关数据保护法律适用的范围内，个人就其个人信息可能享有以下权利：</p>
+  <ul>
+    <li>查阅所持有的相关个人信息的权利</li>
+    <li>更正不准确信息的权利</li>
+    <li>在特定情况下要求删除的权利</li>
+    <li>在特定情况下限制处理的权利</li>
+    <li>就基于合法利益的处理提出异议的权利</li>
+    <li>在特定情况下数据可携带的权利</li>
+    <li>在处理基于同意时撤回同意的权利</li>
+    <li>向主管监督机构提出投诉的权利</li>
+  </ul>
+  <p>上述权利受适用法律的限制。在法律允许的情况下，新岸资本可拒绝或限制相关请求，并将说明理由。请求应发送至<a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>，新岸资本将在一个日历月内回复，如有延期将依法告知。</p>
+
+  <h2>12. 营销及专业通信</h2>
+  <p>新岸资本可在适用法律允许的情况下发送专业及机构通信。在法律要求的情况下，将提供退订机制。运营、合规相关及合同性通信可不受营销退订选择的影响而继续发送。</p>
+
+  <h2>13. 第三方环境</h2>
+  <p>新岸资本对本网站链接或可访问的第三方平台、门户或服务的隐私做法、安全性或内容不承担责任。用户自行承担与此类服务互动的风险，并应独立审阅相关服务的隐私声明。</p>
+
+  <h2>14. 变更与更新</h2>
+  <p>新岸资本可随时更新本隐私政策。除适用法律另有要求外，变更自发布之日起生效。在更新后继续使用本网站，即表示接受修订版本。若变更属于重大变更，新岸资本将尽力提前发出合理通知。</p>
+
+  <h2>15. 责任限制</h2>
+  <p>在适用法律允许的最大范围内，新岸资本：（a）不就所收集或处理信息的完整性或准确性作出保证；（b）不对第三方的数据处理活动承担责任；（c）不对数据处理活动引起的间接、后果性或附带性损失承担责任；（d）对超出其合理控制范围的系统故障不承担责任。</p>
+
+  <h2>16. 联系方式及注册信息</h2>
+  <p>有关本隐私政策或新岸资本个人信息处理的问题或请求，请发送至：<a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>。新岸资本伙伴有限公司——在中国大陆及香港设有办事处。一般查询请使用网站上的「联系我们」表单。</p>
+  <p>新岸资本未设立法定数据保护官，但已在上述地址指定数据保护查询联系人。欧盟或英国境内的人士如对新岸资本处理其个人信息存有疑虑，亦可联系其所在司法管辖区的相关国家监督机构。</p>
+
+  <div class="legal-contact-actions">
+    <a href="mailto:privacy@shorevest.com">privacy@shorevest.com</a>
+    <a href="index_cn.html">返回首页</a>
+  </div>
+
+    </article>
+  </main>
+
+  <footer class="sv-footer" data-shared-footer></footer>
+  
+<script>(function(){var T=window.__SVT;function tk(u){return u+(u.indexOf("?")>-1?"&":"?")+"t="+T;}var s=["assets/js/shared-header.js","assets/js/shared-footer.js"];(function n(i){if(i>=s.length)return;var e=document.createElement("script");e.src=tk(s[i]);e.onload=e.onerror=function(){n(i+1);};document.head.appendChild(e);})(0);})();</script>
+</body>
+</html>

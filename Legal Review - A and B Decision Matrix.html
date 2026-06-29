@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShoreVest — Legal Review Decision Matrix (Sections A & B)</title>
+<style>
+  :root{
+    --ink:#1c1c1a; --muted:#6b6b64; --line:#d9d6cc; --paper:#ffffff; --band:#f4f2ec;
+    --teal:#1e4040; --cinnabar:#9a3324; --amber:#8a6d1f;
+    --keep:#1f5b3a; --confirm:#8a6d1f; --replace:#9a3324; --hold:#5a534a; --none:#6b6b64;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#e7e5de;color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;}
+  .page{max-width:1180px;margin:32px auto;background:var(--paper);padding:56px 60px 64px;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .kicker{font-family:"Helvetica Neue",Arial,sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;color:var(--cinnabar);font-weight:700;margin:0 0 10px;}
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em;}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 4px;}
+  .meta{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--muted);margin:2px 0 0;}
+  .note{background:var(--band);border-left:3px solid var(--teal);padding:14px 18px;margin:26px 0 8px;font-size:13.5px;line-height:1.55;}
+  .note strong{font-weight:700;}
+  h2{font-family:"Helvetica Neue",Arial,sans-serif;font-size:15px;letter-spacing:.04em;text-transform:uppercase;margin:40px 0 6px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
+  h2 .h2sub{display:block;text-transform:none;letter-spacing:0;font-weight:400;font-size:12.5px;color:var(--muted);margin-top:5px;font-family:inherit;}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-family:"Helvetica Neue",Arial,sans-serif;}
+  th,td{text-align:left;vertical-align:top;padding:11px 12px;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.45;}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1.5px solid var(--ink);font-weight:700;}
+  tbody tr:nth-child(even){background:#faf9f5;}
+  td.id{font-weight:700;white-space:nowrap;color:var(--teal);}
+  .wording{font-family:"Iowan Old Style",Georgia,serif;font-size:13px;color:var(--ink);}
+  .wording .cn{display:block;color:var(--muted);font-size:12px;margin-top:3px;}
+  .loc{color:var(--muted);font-size:11.5px;}
+  .loc code{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:11px;background:#f0eee7;padding:1px 4px;border-radius:3px;color:#444;}
+  .mirror{font-weight:600;font-size:11.5px;}
+  .pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap;}
+  .a-keep{background:#e3efe7;color:var(--keep);}
+  .a-confirm{background:#f3ecd6;color:var(--confirm);}
+  .a-replace{background:#f3e0db;color:var(--replace);}
+  .a-hold{background:#eceae4;color:var(--hold);}
+  .a-none{background:#eceae4;color:var(--none);}
+  .a-done{background:#dfeeea;color:var(--teal);}
+  .blank{color:#b9b5a9;font-style:italic;font-family:"Iowan Old Style",Georgia,serif;}
+  .legend{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11.5px;color:var(--muted);margin:14px 0 0;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .legend .pill{cursor:default;}
+  footer.doc{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;color:var(--muted);line-height:1.6;}
+  @media print{
+    html,body{background:#fff;}
+    .page{box-shadow:none;margin:0;max-width:none;padding:24px 28px;}
+    tbody tr:nth-child(even){background:#f7f6f2 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .pill,.note{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    h2{page-break-after:avoid;} tr{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="kicker">ShoreVest — Website Legal Review</p>
+  <h1>Decision Matrix — Sections A &amp; B</h1>
+  <p class="sub">Figures &amp; claims for confirmation, and phrases flagged for legal sensitivity review.</p>
+  <p class="meta">Prepared for Ben / legal sign-off · Working draft · Live-site audit as of 26 June 2026</p>
+
+  <div class="note">
+    <strong>Status &amp; ground rules.</strong> No live wording below has been changed. The only confirmed edit applied to date is <strong>CDD &ldquo;Established 2018&rdquo;</strong> (corrected from 2017, per the review doc). Per instruction, <strong>no figures, claims, or flagged phrases will be rewritten or softened without approved wording from Ben/legal</strong>, and <strong>no new figures will be introduced</strong> — including &ldquo;60+ transactions executed&rdquo; and &ldquo;20,000+ loan positions,&rdquo; which are <em>not</em> currently published anywhere on the site. Replacement column is intentionally blank until wording is approved.
+  </div>
+
+  <h2>Section A — Figures &amp; claims for confirmation
+    <span class="h2sub">Legal flag: each figure should be substantiable and current before publication. Recommended action for live figures defaults to &ldquo;Confirm&rdquo; (verify accuracy/support); none requires rewriting.</span>
+  </h2>
+  <table>
+    <thead>
+      <tr><th style="width:3%">#</th><th style="width:22%">Current live wording</th><th style="width:26%">Page / location</th><th style="width:7%">Mirror</th><th style="width:19%">Legal risk flag</th><th style="width:10%">Rec. action</th><th style="width:13%">Approved replacement</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="id">A1</td>
+        <td class="wording">Founded <strong>2004</strong> / &ldquo;Since 2004&rdquo;<span class="cn">成立 2004 年</span></td>
+        <td class="loc"><code>index.html</code> (hero &ldquo;Since&rdquo;), <code>firm.html</code> (&ldquo;Founded&rdquo;)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Founding-year accuracy</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A2</td>
+        <td class="wording">&ldquo;20+ yrs&rdquo; / &ldquo;over 20 years&rdquo; / &ldquo;two decades&rdquo;<span class="cn">20+ 年 / 二十多年</span></td>
+        <td class="loc"><code>firm.html</code> (stat; opening; &ldquo;20+ year track record&rdquo;), <code>index.html</code> (&ldquo;over two decades&rdquo;)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Track-record duration claim</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A3</td>
+        <td class="wording">&ldquo;US$2B+&rdquo; / &ldquo;over US$2 billion&rdquo;<span class="cn">20 亿美元+ / 逾 20 亿美元</span></td>
+        <td class="loc"><code>firm.html</code> (&ldquo;Platform at a glance&rdquo; stat; &ldquo;Who We Are&rdquo; body)</td>
+        <td class="mirror">EN + CN</td>
+        <td>AUM / capital-managed figure</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A4</td>
+        <td class="wording">&ldquo;Four&rdquo; offices · Guangzhou · Shanghai · Beijing · Hong Kong<span class="cn">四个 · 广州 · 上海 · 北京 · 香港</span></td>
+        <td class="loc"><code>index.html</code>, <code>firm.html</code>, every page footer</td>
+        <td class="mirror">EN + CN</td>
+        <td>Office count / locations</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A5</td>
+        <td class="wording">&ldquo;world&rsquo;s second-largest credit market&rdquo; / &ldquo;2nd — Largest credit market globally&rdquo;<span class="cn">全球第二大信贷市场</span></td>
+        <td class="loc"><code>strategy.html</code> (intro + stat), <code>firm.html</code> (&ldquo;find and create value in…&rdquo;)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Market-ranking assertion</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A6</td>
+        <td class="wording">&ldquo;$5T — Shadow-banking contraction&rdquo;<span class="cn">5 万亿美元 — 影子银行收缩</span></td>
+        <td class="loc"><code>strategy.html</code> (market-scale stat)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Market figure (already labelled illustrative / third-party)</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A7</td>
+        <td class="wording">&ldquo;$2T — Recognized non-performing loans&rdquo;<span class="cn">2 万亿美元 — 已确认不良贷款</span></td>
+        <td class="loc"><code>strategy.html</code> (market-scale stat)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Market figure (illustrative / third-party)</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A8</td>
+        <td class="wording">&ldquo;&lt;3% — Foreign GP penetration&rdquo;<span class="cn">&lt;3% — 外资普通合伙人渗透率</span></td>
+        <td class="loc"><code>strategy.html</code> (market-scale stat)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Market figure (illustrative / third-party)</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A9</td>
+        <td class="wording">CDD &ldquo;Research series · Established <strong>2018</strong>&rdquo;<span class="cn">研究系列 · 始于 2018 年</span></td>
+        <td class="loc"><code>insights.html</code>, <code>index.html</code>, <code>index-print…</code> (+ CN)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Confirmed in review doc (&ldquo;Established 2018&rdquo;)</td>
+        <td><span class="pill a-done">Done</span></td>
+        <td class="wording">2018 — <strong>applied</strong> (was 2017)</td>
+      </tr>
+      <tr>
+        <td class="id">A10</td>
+        <td class="wording">&ldquo;Issue 46 · 25 January 2026&rdquo;</td>
+        <td class="loc"><code>index.html</code>, <code>insights.html</code> (hero), <code>index-print…</code></td>
+        <td class="mirror">EN + CN</td>
+        <td>Publication number / date accuracy</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A11</td>
+        <td class="wording">All publication titles, issue dates &amp; media references</td>
+        <td class="loc"><code>insights.html</code> (CDD archive), <code>press.html</code> (+ CN)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Title/date/attribution accuracy</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">A12</td>
+        <td class="wording">&ldquo;60+ transactions executed&rdquo; · &ldquo;20,000+ loan positions&rdquo;</td>
+        <td class="loc"><em>Not present on the live site</em> (appears only in the review draft&rsquo;s sample &ldquo;Proof row&rdquo;)</td>
+        <td class="mirror">—</td>
+        <td>Figures to confirm before any use</td>
+        <td><span class="pill a-none">Do not add</span></td>
+        <td class="wording">Hold — introduce only if separately confirmed</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Section B — Phrases flagged for legal sensitivity review
+    <span class="h2sub">No approved replacements were provided in the review doc. Recommended actions below are suggestions only, pending Ben/legal. &ldquo;Replace&rdquo; = recommend softening the superlative/absolute; &ldquo;Confirm&rdquo; = retain if legal is comfortable it is supportable.</span>
+  </h2>
+  <table>
+    <thead>
+      <tr><th style="width:3%">#</th><th style="width:26%">Current live wording</th><th style="width:22%">Page / location</th><th style="width:7%">Mirror</th><th style="width:19%">Legal risk flag</th><th style="width:10%">Rec. action</th><th style="width:13%">Approved replacement</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="id">B1</td>
+        <td class="wording">&ldquo;a <strong>leading</strong> institutional China private credit and private debt investment manager&rdquo;<span class="cn">中国领先的机构级私募信贷与私募债务投资管理机构</span></td>
+        <td class="loc"><code>firm.html</code> (meta description + opening paragraph)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Unsubstantiated superlative (&ldquo;leading&rdquo;)</td>
+        <td><span class="pill a-replace">Replace</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B2</td>
+        <td class="wording">&ldquo;<strong>pioneered</strong> private credit solutions in the market over 20 years ago&rdquo;<span class="cn">二十多年前即在该市场率先开创私募信贷解决方案</span></td>
+        <td class="loc"><code>firm.html</code> (opening paragraph)</td>
+        <td class="mirror">EN + CN</td>
+        <td>&ldquo;Pioneered&rdquo; claim + 20-yr figure</td>
+        <td><span class="pill a-replace">Replace</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B3</td>
+        <td class="wording">&ldquo;20+ year track record of <strong>consistent returns</strong>&rdquo;</td>
+        <td class="loc"><code>firm.html</code> (Track Record competency)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Performance implication / returns language</td>
+        <td><span class="pill a-replace">Replace</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B4</td>
+        <td class="wording">&ldquo;find and create value in the world&rsquo;s second largest credit market&rdquo;</td>
+        <td class="loc"><code>firm.html</code> (core competencies intro)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Value-creation + market-ranking claim (see A5)</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B5</td>
+        <td class="wording">&ldquo;<strong>first-lien downside protection</strong>&rdquo; &amp; &ldquo;<strong>margin of safety</strong>&rdquo;</td>
+        <td class="loc"><code>firm.html</code> (Track Record); <code>strategy.html</code> (&ldquo;Margin of safety&rdquo;); <code>index/strategy</code> meta</td>
+        <td class="mirror">EN + CN</td>
+        <td>Risk-mitigation / safety implication</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B6</td>
+        <td class="wording">&ldquo;tailored China credit solutions … distressed debt opportunities … broader experience across Asia&rsquo;s private credit markets&rdquo;</td>
+        <td class="loc"><code>firm.html</code> (&ldquo;Who We Are&rdquo;)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Scope / capability claims</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B7</td>
+        <td class="wording">&ldquo;local execution capability integrated with the <strong>highest</strong> international institutional standards&rdquo;</td>
+        <td class="loc"><code>firm.html</code> (Local Execution competency)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Superlative (&ldquo;highest&rdquo; / &ldquo;unparalleled&rdquo;)</td>
+        <td><span class="pill a-replace">Replace</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B8</td>
+        <td class="wording">&ldquo;high barriers to entry&rdquo; · &ldquo;competition … remains <strong>structurally thin</strong>&rdquo;</td>
+        <td class="loc"><code>strategy.html</code> (&ldquo;Why China&rdquo; reasons)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Market-structure / competitive assertion</td>
+        <td><span class="pill a-confirm">Confirm</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B9</td>
+        <td class="wording">&ldquo;<strong>every</strong> position is underwritten around legal control and recoverability … value <strong>does not depend</strong> on spread, refinancing, or market direction&rdquo;</td>
+        <td class="loc"><code>strategy.html</code> (&ldquo;Collateral first&rdquo;)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Absolute claims (&ldquo;every&rdquo;, &ldquo;does not depend&rdquo;)</td>
+        <td><span class="pill a-replace">Replace</span></td>
+        <td class="blank">—</td>
+      </tr>
+      <tr>
+        <td class="id">B10</td>
+        <td class="wording">&ldquo;proprietary opportunities, information, and exit channels&rdquo;</td>
+        <td class="loc"><em>Not live in this form</em> — site uses the milder &ldquo;proprietary sourcing&rdquo; (<code>index</code>, <code>strategy</code>, <code>index-print</code>)</td>
+        <td class="mirror">EN + CN</td>
+        <td>Flagged phrasing not published</td>
+        <td><span class="pill a-keep">Keep</span></td>
+        <td class="wording">No change needed</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="legend">
+    <span><span class="pill a-keep">Keep</span> retain as-is</span>
+    <span><span class="pill a-confirm">Confirm</span> verify / approve support</span>
+    <span><span class="pill a-replace">Replace</span> recommend revised wording</span>
+    <span><span class="pill a-none">Do not add</span> keep absent</span>
+    <span><span class="pill a-done">Done</span> already applied</span>
+  </p>
+
+  <footer class="doc">
+    Section C (standalone legal pages — Privacy Policy, Cookie Notice, Terms of Use, Legal Notices &amp; Disclaimers, Investor Portal Terms) verified against the uploaded bilingual final versions: all ten EN + CN pages are a verbatim match; no substantive changes required.<br>
+    This matrix is a working aid for legal review and does not constitute legal advice. All recommended actions are subject to Ben/legal confirmation before any site change is made.
+  </footer>
+</div>
+</body>
+</html>
