@@ -1,0 +1,10 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ShoreVest logo wordmark</title>
+  <desc id="desc">Horizontal ShoreVest logo lockup with the red ShoreVest mark, English wordmark, and Chinese wordmark.</desc>
+  <defs>
+    
+  </defs>
+  <image x="70" y="72" width="276" height="252" preserveAspectRatio="xMidYMid meet" href="vectorink-vectorizer-result.svg"></image>
+  <text class="wordmark-en" x="410" y="198" dominant-baseline="middle">ShoreVest</text>
+  <text class="wordmark-cn" x="418" y="292" dominant-baseline="middle">新岸資本</text>
+</svg>
