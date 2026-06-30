@@ -353,7 +353,7 @@ body {
       transparent 0%,
       var(--hero-overlay-tint) 100%
     ),
-    var(--press-hero-image, url("../images/_N1_1071.jpg")) !important;
+    var(--press-hero-image, url("../../press-hero-final.png")) !important;
 }
 
 .press-hero :is(.eyebrow, h1, .lead, .press-note span, .press-note p) {
