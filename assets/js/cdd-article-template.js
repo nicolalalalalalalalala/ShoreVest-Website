@@ -6,9 +6,14 @@
   const source = sourceFromQuery || document.body.dataset.articleSource || document.body.dataset.defaultArticleSource;
   if (!source) return;
 
-  const response = await fetch(source);
-  if (!response.ok) throw new Error('Unable to load article content.');
-  const data = await response.json();
+  let data;
+  try {
+    const response = await fetch(source);
+    if (!response.ok) throw new Error('Unable to load article content.');
+    data = await response.json();
+  } catch (error) {
+    data = await buildArchiveFallback(source, error);
+  }
 
   const meta = document.querySelector('[data-cdd-meta]');
   const title = document.querySelector('[data-cdd-title]');
@@ -42,7 +47,7 @@
   dek.textContent = data.dek;
   document.title = `${data.title} | ShoreVest`;
 
-  data.sections.forEach((section) => {
+  (data.sections || []).forEach((section) => {
     if (section.heading) {
       const h2 = document.createElement('h2');
       h2.textContent = section.heading;
@@ -111,6 +116,87 @@
     requestAnimationFrame(() => {
       setTimeout(() => window.print(), 120);
     });
+  }
+
+
+  async function buildArchiveFallback(source, error) {
+    const pageName = (window.location.pathname.split('/').pop() || '').replace(/-print\.html$/, '.html');
+    const pdfLink = document.querySelector('.cdd-actions a[href*="china-debt-dynamics-print"]');
+    const archive = await findArchiveRecord(pageName);
+    const titleText = archive.title || document.title.replace(/\s*\|\s*ShoreVest\s*$/, '') || 'China Debt Dynamics';
+    const published = archive.date || '';
+    const issue = archive.issue || (source && source.match(/v(\d+)i(\d+)/i) ? `Volume ${RegExp.$1} | Issue ${RegExp.$2}` : 'China Debt Dynamics');
+    const directPdf = archive.pdf || '';
+    if (pdfLink && directPdf) {
+      pdfLink.href = directPdf;
+    }
+    console.warn('CDD article JSON unavailable; rendering archive fallback.', error);
+    return {
+      series: 'China Debt Dynamics',
+      volumeIssue: issue,
+      published,
+      edition: archive.category ? `${archive.category} Edition` : 'ShoreVest Insights',
+      title: titleText,
+      dek: archive.excerpt || 'Read the latest China Debt Dynamics issue from ShoreVest.',
+      keyFindings: [],
+      sections: [
+        {
+          heading: 'Issue available as PDF',
+          paragraphs: [
+            'The HTML article data for this issue is temporarily unavailable, so this page is showing the issue summary and direct publication link instead of a blank article.',
+            directPdf ? `Open the PDF for the complete issue: ${directPdf}` : 'Use the PDF button above to open the complete issue.'
+          ]
+        }
+      ],
+      disclaimer: 'This material is for informational purposes only and does not constitute an offer to sell or a solicitation of an offer to buy any security or investment product, nor investment, legal, or tax advice.',
+      copyright: '© 2026 ShoreVest Partners. All rights reserved.'
+    };
+  }
+
+  async function findArchiveRecord(pageName) {
+    const row = Array.from(document.querySelectorAll('.cdd-arc__row')).find((item) => {
+      const href = item.dataset.href || item.querySelector('.cdd-arc__read')?.getAttribute('href') || '';
+      return href.split('?')[0].split('/').pop() === pageName;
+    });
+    if (row) return readArchiveRow(row);
+
+    const archiveMarkup = document.getElementById('cdd-archive-data');
+    if (archiveMarkup) {
+      const doc = new DOMParser().parseFromString(archiveMarkup.textContent, 'text/html');
+      const match = Array.from(doc.querySelectorAll('.cdd-arc__row')).find((item) => {
+        const href = item.dataset.href || item.querySelector('.cdd-arc__read')?.getAttribute('href') || '';
+        return href.split('?')[0].split('/').pop() === pageName;
+      });
+      if (match) return readArchiveRow(match);
+    }
+
+    try {
+      const response = await fetch('insights.html');
+      if (response.ok) {
+        const markup = await response.text();
+        const doc = new DOMParser().parseFromString(markup, 'text/html');
+        const match = Array.from(doc.querySelectorAll('.cdd-arc__row')).find((item) => {
+          const href = item.dataset.href || item.querySelector('.cdd-arc__read')?.getAttribute('href') || '';
+          return href.split('?')[0].split('/').pop() === pageName;
+        });
+        if (match) return readArchiveRow(match);
+      }
+    } catch (error) {
+      console.warn('CDD archive fallback unavailable.', error);
+    }
+
+    return {};
+  }
+
+  function readArchiveRow(row) {
+    return {
+      issue: row.querySelector('.cdd-arc__chip-issue')?.textContent.trim() || '',
+      date: row.querySelector('.cdd-arc__date')?.textContent.trim() || '',
+      category: row.querySelector('.cdd-arc__cat')?.textContent.trim() || '',
+      title: row.querySelector('.cdd-arc__row-title')?.textContent.trim() || '',
+      excerpt: row.querySelector('.cdd-arc__excerpt')?.textContent.trim() || '',
+      pdf: row.querySelector('.cdd-arc__pdf')?.getAttribute('href') || ''
+    };
   }
 
   function enhanceScreenLayout() {
