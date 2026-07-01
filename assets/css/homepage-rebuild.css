@@ -767,7 +767,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
   body.homepage .sv-hero__inner { padding-top: 88px; padding-bottom: 72px; min-height: 0; }
   body.homepage .sv-hero__br { display: none; }
   body.homepage .sv-hero__main { padding-block: 56px 40px; }
-  body.homepage .sv-hero__field { padding: clamp(28px, 7vw, 44px) clamp(22px, 6vw, 36px); background: linear-gradient(152deg, #CF3A2B 0%, #C93B2A 52%, #8F2A20 100%); }
+  body.homepage .sv-hero__field { margin-block: 0; padding: clamp(28px, 7vw, 44px) clamp(22px, 6vw, 36px); background: linear-gradient(152deg, #CF3A2B 0%, #C93B2A 52%, #8F2A20 100%); }
   body.homepage .sv-hero__field::before { display: none; }
   body.homepage .sv-hero__panel { max-width: none; padding: 28px 22px; background: #FCFAF4; border-left: 3px solid var(--sv-cinnabar); box-shadow: 0 12px 30px rgba(23,28,28,0.18); }
   body.homepage .sv-hero__body { max-width: none; }
@@ -828,6 +828,10 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
     overflow-wrap: break-word;
   }
 
+  body.homepage .sv-shell {
+    padding-inline: var(--pad-x);
+  }
+
   body.homepage .sv-header__inner {
     padding-inline: var(--pad-x);
   }
@@ -861,7 +865,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
     font-size: clamp(34px, 10.8vw, 44px);
     line-height: 1.07;
     letter-spacing: -0.026em;
-    max-width: 14ch;
+    max-width: 13.8ch;
     text-wrap: balance;
   }
 
@@ -903,10 +907,11 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
   body.homepage .sv-cdd__title {
     font-size: clamp(28px, 9vw, 36px);
     line-height: 1.12;
+    letter-spacing: -0.018em;
   }
 
   body.homepage .home-firm-preview .home-firm-preview__copy .sv-h2 {
-    max-width: 14ch;
+    max-width: 16ch;
   }
 
   body.homepage .home-firm-preview .home-firm-preview__statement p,
@@ -918,6 +923,14 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
   body.homepage .sv-strategy__inner,
   body.homepage .sv-cdd__inner {
     padding-block: 62px;
+  }
+
+  body.homepage .home-firm-preview {
+    padding-block: 58px;
+  }
+
+  body.homepage .home-firm-preview .home-firm-preview__grid {
+    padding-block: 30px 34px;
   }
 
   body.homepage .sv-srow {
@@ -945,6 +958,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
   body.homepage .sv-cddrow {
     gap: 10px 12px;
     padding: 20px 0;
+    min-width: 0;
   }
 
   body.homepage .sv-cddrow__id {
@@ -960,6 +974,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
   body.homepage .sv-cddrow__title {
     font-size: 15.5px;
     line-height: 1.36;
+    overflow-wrap: break-word;
   }
 
   body.homepage .sv-cdd__archive-btn {
