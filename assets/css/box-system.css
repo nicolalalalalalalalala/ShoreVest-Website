@@ -109,9 +109,16 @@ body.firm-page .fm-statcard.svb--band .svb-stats--row .svb-stat { border-left-co
 
 /* Firm · "A human business" closing → 03 Offset (kept inside .sv-shell) */
 body.firm-page .fm-close__inner.svb { display: block; border-left: 0; padding-left: 0; }
-body.firm-page .fm-close__inner .svb--offset { width: 100%; }
+body.firm-page .fm-close__inner .svb--offset {
+  width: calc(100% - clamp(32px, 5vw, 72px));
+  margin-inline: auto;
+  box-sizing: border-box;
+}
 body.firm-page .fm-close__inner .svb-card { max-width: none; }
 body.firm-page .fm-close__inner .svb-statement { max-width: none; }
+@media (max-width: 700px) {
+  body.firm-page .fm-close__inner .svb--offset { width: 100%; }
+}
 
 /* Strategy · risk "Collateral first" panel → 02 Split Field */
 body.strategy-page .st-risk__panel.svb--split {
