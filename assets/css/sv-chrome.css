@@ -242,3 +242,42 @@ html body .sv-mobile-menu a {
   font-family: "DIN 2014", "DIN 2014", "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif !important;
   font-weight: 600 !important;
 }
+
+/* Mobile header balance pass: keep the official ShoreVest lockup intact while
+   tightening phone chrome so the logo, Chinese characters, and hamburger sit on
+   one optical centerline with professional edge spacing. */
+@media (max-width: 767px) {
+  .sv-header { height: 68px; }
+  body.contact-page, body.insights-page, body.press-page, body.investor-portal-page { padding-top: 68px; }
+  .sv-header__inner {
+    padding-inline: clamp(18px, 5.625vw, 22px);
+    gap: 16px;
+    align-items: center;
+  }
+  .sv-header__logo {
+    min-width: 0;
+  }
+  .sv-header__logo img {
+    width: clamp(150px, 42vw, 164px);
+    max-width: calc(100vw - (clamp(18px, 5.625vw, 22px) * 2) - 56px);
+  }
+  .sv-burger {
+    width: 40px;
+    height: 40px;
+  }
+  .sv-mobile-menu {
+    top: 68px;
+    padding: 10px clamp(18px, 5.625vw, 22px) 24px;
+    max-height: calc(100vh - 68px);
+  }
+}
+
+@media (max-width: 360px) {
+  .sv-header__logo img {
+    width: clamp(140px, 44vw, 150px);
+  }
+  .sv-burger {
+    width: 38px;
+    height: 38px;
+  }
+}
