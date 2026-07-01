@@ -47,6 +47,12 @@
   dek.textContent = data.dek;
   document.title = `${data.title} | ShoreVest`;
 
+  const pdfHref = typeof data.pdf === 'string' ? data.pdf.trim() : '';
+  const pdfLink = document.querySelector('.cdd-actions a[href*="china-debt-dynamics-print"]');
+  if (pdfHref && pdfLink) {
+    pdfLink.href = pdfHref;
+  }
+
   (data.sections || []).forEach((section) => {
     if (section.heading) {
       const h2 = document.createElement('h2');
