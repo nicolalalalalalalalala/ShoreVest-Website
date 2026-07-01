@@ -50,7 +50,7 @@ html { scroll-behavior: smooth; }
   --page-max: 1280px;
   --gutter: 24px;
   --pad-x: clamp(24px, 5vw, 48px);
-  --section-y: clamp(58px, 5.8vw, 82px);
+  --section-y: clamp(68px, 6.4vw, 96px);
 
   --sv-font: "DIN 2014", "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
   /* One type system site-wide: the former Spectral serif now resolves to the
@@ -129,7 +129,7 @@ body.homepage :is(h1, h2, h3, .sv-h2, .sv-hero__headline, .sv-hero__panel-label)
 }
 body.homepage .sv-lede {
   margin: 0;
-  font: 400 clamp(16px, 1.2vw, 17px)/1.62 var(--sv-font);
+  font: 400 clamp(16px, 1.2vw, 17px)/1.66 var(--sv-font);
   color: var(--sv-ink-2);
 }
 
@@ -307,29 +307,29 @@ body.homepage .sv-hero__inner {
   max-width: var(--page-max);
   margin-inline: auto;
   padding-inline: var(--pad-x);
-  min-height: 680px;
+  min-height: 650px;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 32px;
+  gap: clamp(28px, 3.2vw, 44px);
   align-items: stretch;
 }
 body.homepage .sv-hero__main {
   grid-column: 1 / 8; min-width: 0;
   align-self: center;
-  padding-block: 92px 80px;
+  padding-block: clamp(84px, 8vw, 104px) clamp(76px, 7vw, 92px);
 }
 body.homepage .sv-hero__rule {
   display: none;
 }
 body.homepage .sv-hero__label {
-  margin: 0 0 22px;
+  margin: 0 0 18px;
   font: 600 12px/1.4 var(--sv-font);
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--sv-oxide);
 }
 body.homepage .sv-hero__headline {
   margin: 0;
-  font: 500 clamp(38px, 4.6vw, 62px)/1.04 var(--sv-font);
+  font: 500 clamp(40px, 4.4vw, 60px)/1.06 var(--sv-font);
   letter-spacing: -0.03em;
   color: var(--sv-ink);
   max-width: 620px;
@@ -340,8 +340,8 @@ body.homepage .sv-hero__headline {
 }
 body.homepage .sv-hero__body {
   margin: 24px 0 0;
-  max-width: 540px;
-  font: 400 17px/1.66 var(--sv-font);
+  max-width: 560px;
+  font: 400 17px/1.68 var(--sv-font);
   color: var(--sv-ink-2);
 }
 body.homepage .sv-hero__body + .sv-hero__body { margin-top: 16px; }
@@ -362,9 +362,9 @@ body.homepage .sv-hero__field {
   grid-column: 8 / 13;
   position: relative;
   align-self: stretch;
-  margin-block: 56px;
-  min-height: 520px;
-  background: linear-gradient(152deg, #CF3A2B 0%, #C93B2A 52%, #8F2A20 100%);
+  margin-block: clamp(56px, 6vw, 72px);
+  min-height: 500px;
+  background: var(--sv-cinnabar);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -380,14 +380,14 @@ body.homepage .sv-hero__field::after {
   content: "";
   position: absolute; top: 0; bottom: 0; left: 100%;
   width: 50vw;
-  background: #8F2A20;
+  background: var(--sv-oxide);
 }
 
 /* Ivory institutional reference panel — slightly offset toward the field edge */
 body.homepage .sv-hero__panel {
   position: relative; z-index: 1;
   width: 100%; max-width: 450px;
-  padding: 32px 36px;
+  padding: 34px 36px;
   border: 1px solid rgba(27,31,30,0.16);
   border-top: 2px solid var(--sv-oxide);
   background: #FFFFFF;
@@ -405,8 +405,8 @@ body.homepage .sv-hero__panel-label {
 }
 body.homepage .sv-hero__panel dl { margin: 0; }
 body.homepage .sv-hero__panel-row {
-  display: grid; grid-template-columns: 96px 1fr; gap: 18px;
-  padding: 17px 0; border-top: 1px solid rgba(27,31,30,0.12);
+  display: grid; grid-template-columns: 104px 1fr; gap: 20px;
+  padding: 18px 0; border-top: 1px solid rgba(27,31,30,0.12);
   align-items: baseline;
 }
 body.homepage .sv-hero__panel-row:first-child { border-top: 0; }
@@ -452,7 +452,7 @@ body.homepage .sv-proof__note {
    D · WHAT SHOREVEST DOES  (bridge)
    ========================================================================== */
 body.homepage .sv-bridge { background: var(--sv-ivory); }
-body.homepage .sv-bridge__inner { padding-block: 60px; }
+body.homepage .sv-bridge__inner { padding-block: var(--section-y); }
 body.homepage .sv-bridge__head { grid-column: 1 / 6; }
 body.homepage .sv-bridge__head .sv-label::before,
 body.homepage .sv-platform__head-l .sv-label::before { display: none; }
@@ -469,14 +469,14 @@ body.homepage .sv-bridge__body p {
    Overrides the shared .sv-bridge layout for this one section without touching
    the Strategy page's .sv-bridge.st-band Recovery section or any other page.
    ========================================================================== */
-body.homepage .home-firm-preview { background: var(--sv-ivory); padding-block: clamp(84px, 8.5vw, 124px); }
+body.homepage .home-firm-preview { background: var(--sv-ivory); padding-block: clamp(76px, 7.8vw, 108px); }
 
 /* The whole block sits inside a thin warm ruled band: top + bottom boundary,
    both columns aligned to the upper rule. */
 body.homepage .home-firm-preview .home-firm-preview__grid {
   align-items: stretch;
   border-top: 2px solid var(--sv-cinnabar);
-  padding-block: clamp(40px, 4vw, 58px);
+  padding-block: clamp(42px, 4.2vw, 60px);
 }
 
 /* Left — eyebrow + heading (cols 1–6), anchored to the upper rule. */
@@ -521,24 +521,23 @@ body.homepage .home-firm-preview .home-firm-preview__link {
    E · STRATEGY (memo)
    ========================================================================== */
 body.homepage .sv-strategy { background: var(--sv-stone); }
-body.homepage .sv-strategy__inner { padding-block: 70px; align-items: start; }
+body.homepage .sv-strategy__inner { padding-block: var(--section-y); align-items: start; }
 body.homepage .sv-strategy__lead { grid-column: 1 / 6; }
 body.homepage .sv-strategy__lead .sv-h2 { margin: 16px 0 22px; }
-body.homepage .sv-strategy__lead p:not(.sv-label) { margin: 0 0 26px; max-width: 42ch; font: 400 16px/1.62 var(--sv-font); color: var(--sv-ink-2); }
+body.homepage .sv-strategy__lead p:not(.sv-label) { margin: 0 0 26px; max-width: 44ch; font: 400 16px/1.66 var(--sv-font); color: var(--sv-ink-2); }
 body.homepage .sv-strategy__rows { grid-column: 7 / 13; }
 body.homepage .sv-strategy__rows { display: flex; flex-direction: column; gap: 0; border-top: 2px solid var(--sv-cinnabar); }
 body.homepage .sv-srow {
   display: flex; align-items: center;
   padding: clamp(22px, 2.2vw, 30px) 0;
   border-bottom: 1px solid var(--sv-border-light-strong);
-  position: relative; transition: padding-left .15s ease;
+  position: relative;
 }
 body.homepage .sv-srow::before {
   content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 0;
-  background: var(--sv-cinnabar); transition: width .15s ease;
+  background: var(--sv-cinnabar);
 }
-body.homepage .sv-srow:hover { padding-left: 22px; }
-body.homepage .sv-srow:hover::before { width: 3px; }
+body.homepage .sv-srow:hover::before { width: 2px; }
 body.homepage .sv-srow__title { margin: 0; font: 500 21px/1.2 var(--sv-font); letter-spacing: -0.012em; color: var(--sv-ink); }
 body.homepage .sv-srow__body { margin: 0; font: 400 15.5px/1.6 var(--sv-font); color: var(--sv-ink-2); }
 
@@ -601,7 +600,7 @@ body.homepage .sv-platform__proof {
    H · CHINA DEBT DYNAMICS (dark research archive)
    ========================================================================== */
 body.homepage .sv-cdd { background: var(--sv-dark); color: var(--sv-text-on-dark); }
-body.homepage .sv-cdd__inner { padding-block: 70px; }
+body.homepage .sv-cdd__inner { padding-block: var(--section-y); }
 body.homepage .sv-cdd__head {
   display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(24px, 4vw, 64px);
   align-items: end; padding-bottom: clamp(28px, 3vw, 44px);
@@ -610,7 +609,7 @@ body.homepage .sv-cdd__head {
 body.homepage .sv-cdd__label { margin: 0 0 16px; font: 600 12px/1 var(--sv-font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--sv-cinnabar); }
 body.homepage .sv-cdd__title { margin: 0; font: 500 clamp(34px, 4vw, 56px)/1.0 var(--sv-serif); letter-spacing: -0.01em; color: var(--sv-ivory); }
 body.homepage .sv-cdd__cn { margin: 10px 0 0; font: 500 16px/1.4 var(--sv-cn); letter-spacing: 0.06em; color: var(--sv-meta-on-dark); }
-body.homepage .sv-cdd__desc { margin: 0; font: 400 16px/1.62 var(--sv-font); color: var(--sv-meta-on-dark); max-width: 52ch; }
+body.homepage .sv-cdd__desc { margin: 0; font: 400 16px/1.66 var(--sv-font); color: var(--sv-meta-on-dark); max-width: 52ch; }
 
 /* Featured report — prioritized with a cinnabar top ledge */
 body.homepage .sv-cdd__feature {
@@ -635,7 +634,7 @@ body.homepage .sv-cdd__recent { margin: clamp(30px,3.4vw,46px) 0 0; font: 600 11
 body.homepage .sv-cdd__list { margin-top: 14px; }
 body.homepage .sv-cddrow {
   display: grid; grid-template-columns: 160px 1fr 120px 80px; align-items: center; gap: 24px;
-  padding: 22px 0; border-top: 1px solid var(--sv-border-dark);
+  padding: 24px 0; border-top: 1px solid var(--sv-border-dark);
   text-decoration: none; color: inherit; transition: background .15s ease;
 }
 body.homepage .sv-cddrow:hover { background: rgba(252,249,241,0.04); }
@@ -661,7 +660,7 @@ body.homepage .sv-cdd { border-bottom: 3px solid var(--sv-cinnabar); }
    I · FOOTER / LEGAL (dark teal)
    ========================================================================== */
 body.homepage .sv-footer { background: var(--sv-dark-footer); color: var(--sv-meta-on-dark); }
-body.homepage .sv-footer__inner { padding: 56px var(--pad-x) 28px; max-width: var(--page-max); margin-inline: auto; }
+body.homepage .sv-footer__inner { padding: 64px var(--pad-x) 30px; max-width: var(--page-max); margin-inline: auto; }
 body.homepage .sv-footer__top {
   display: grid; grid-template-columns: minmax(0,1fr) auto; gap: clamp(32px,5vw,72px);
   align-items: start; padding-bottom: 36px; border-bottom: 1px solid var(--sv-border-dark);
@@ -676,9 +675,9 @@ body.homepage .sv-footer__nav a {
 }
 body.homepage .sv-footer__nav a:hover { color: var(--sv-ivory); }
 body.homepage .sv-footer__legal {
-  margin: 28px 0 0; padding: 22px 0 0;
+  margin: 30px 0 0; padding: 24px 0 0;
   border-top: 1px solid var(--sv-border-dark);
-  font: 400 12px/1.55 var(--sv-font); color: var(--sv-faint-on-dark);
+  font: 400 12px/1.6 var(--sv-font); color: var(--sv-faint-on-dark);
 }
 body.homepage .sv-footer__legal p { margin: 0 0 10px; }
 body.homepage .sv-footer__legal p:last-child { margin-bottom: 0; }
@@ -767,9 +766,9 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
   body.homepage .sv-hero__inner { padding-top: 88px; padding-bottom: 72px; min-height: 0; }
   body.homepage .sv-hero__br { display: none; }
   body.homepage .sv-hero__main { padding-block: 56px 40px; }
-  body.homepage .sv-hero__field { margin-block: 0; padding: clamp(28px, 7vw, 44px) clamp(22px, 6vw, 36px); background: linear-gradient(152deg, #CF3A2B 0%, #C93B2A 52%, #8F2A20 100%); }
+  body.homepage .sv-hero__field { margin-block: 0; padding: clamp(28px, 7vw, 44px) clamp(22px, 6vw, 36px); background: var(--sv-cinnabar); }
   body.homepage .sv-hero__field::before { display: none; }
-  body.homepage .sv-hero__panel { max-width: none; padding: 28px 22px; background: #FCFAF4; border-left: 3px solid var(--sv-cinnabar); box-shadow: 0 12px 30px rgba(23,28,28,0.18); }
+  body.homepage .sv-hero__panel { max-width: none; padding: 28px 22px; background: #FCFAF4; border-left: 3px solid var(--sv-cinnabar); box-shadow: none; }
   body.homepage .sv-hero__body { max-width: none; }
   body.homepage .sv-hero__cta { flex-direction: column; align-items: stretch; }
   body.homepage .sv-hero__cta .sv-btn { justify-content: center; }
@@ -889,7 +888,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
 
   body.homepage .sv-hero__panel {
     padding: 24px 20px;
-    box-shadow: 0 10px 24px rgba(23,28,28,0.16);
+    box-shadow: none;
   }
 
   body.homepage .sv-hero__panel-row {
@@ -1088,7 +1087,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
     border: 1px solid rgba(27,31,30,0.14);
     border-top: 2px solid var(--sv-oxide);
     border-left: 0;
-    box-shadow: 0 14px 26px rgba(23,28,28,0.14);
+    box-shadow: none;
   }
 
   body.homepage .sv-hero__panel-label {
