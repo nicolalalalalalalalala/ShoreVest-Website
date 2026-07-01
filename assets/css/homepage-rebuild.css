@@ -118,6 +118,15 @@ body.homepage .sv-h2 {
   color: var(--sv-ink);
   text-wrap: balance;
 }
+
+/* Heading wrap safeguards: preserve whole words and balanced short lines
+   without browser hyphenation or emergency word breaks. */
+body.homepage :is(h1, h2, h3, .sv-h2, .sv-hero__headline, .sv-hero__panel-label) {
+  hyphens: none;
+  overflow-wrap: normal;
+  text-wrap: balance;
+  word-break: normal;
+}
 body.homepage .sv-lede {
   margin: 0;
   font: 400 clamp(16px, 1.2vw, 17px)/1.62 var(--sv-font);
@@ -324,6 +333,10 @@ body.homepage .sv-hero__headline {
   letter-spacing: -0.03em;
   color: var(--sv-ink);
   max-width: 620px;
+  hyphens: none;
+  overflow-wrap: normal;
+  text-wrap: balance;
+  word-break: normal;
 }
 body.homepage .sv-hero__body {
   margin: 24px 0 0;
@@ -384,6 +397,11 @@ body.homepage .sv-hero__panel-label {
   font: 600 11px/1 var(--sv-font);
   letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--sv-oxide);
+  hyphens: none;
+  line-height: 1.2;
+  overflow-wrap: normal;
+  text-wrap: balance;
+  word-break: normal;
 }
 body.homepage .sv-hero__panel dl { margin: 0; }
 body.homepage .sv-hero__panel-row {
