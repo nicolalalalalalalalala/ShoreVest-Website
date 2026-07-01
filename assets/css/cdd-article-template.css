@@ -347,6 +347,8 @@ body.cdd-article-page .cdd-pager__home:hover { color: var(--sv-cinnabar); border
   body.cdd-article-page .cdd-topline__inner { flex-direction: column; align-items: flex-start; gap: 16px; }
   body.cdd-article-page .cdd-nameplate__right { align-items: flex-start; text-align: left; }
   body.cdd-article-page .cdd-intro__bar { align-items: flex-start; }
+  body.cdd-article-page .cdd-actions { width: 100%; }
+  body.cdd-article-page .cdd-btn { flex: 1 1 150px; justify-content: center; }
   body.cdd-article-page .cdd-body p { font-size: 16.5px; }
   body.cdd-article-page .sv-back-to-top { right: 16px; bottom: 16px; }
 }

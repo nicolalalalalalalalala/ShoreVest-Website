@@ -152,7 +152,7 @@ body.investor-portal-page .ip-assure__v { margin: 0; font: 400 13.5px/1.55 var(-
   body.investor-portal-page .investor-portal-hero__inner { grid-template-columns: 1fr; }
   body.investor-portal-page .ip-hero__red { padding-block: clamp(48px, 9vw, 72px); }
   body.investor-portal-page .ip-hero__red::after { width: 220px; height: 220px; }
-  body.investor-portal-page .ip-hero__signin { padding-left: var(--pad-x); }
+  body.investor-portal-page .ip-hero__signin { padding-left: 0; }
   body.investor-portal-page .login-form-container { max-width: none; }
   body.investor-portal-page .ip-assure__inner { grid-template-columns: 1fr; gap: 32px; }
 }
@@ -160,4 +160,15 @@ body.investor-portal-page .ip-assure__v { margin: 0; font: 400 13.5px/1.55 var(-
   body.investor-portal-page .ip-assure__grid { grid-template-columns: 1fr; }
   body.investor-portal-page .ip-access__row { grid-template-columns: 40px minmax(0, 1fr); gap: 14px; }
   body.investor-portal-page #investor-portal-title { max-width: none; }
+  body.investor-portal-page .investor-portal-hero__inner {
+    padding-top: 40px;
+    padding-bottom: 48px;
+    gap: 28px;
+  }
+  body.investor-portal-page .ip-hero__red { padding-block: 0; }
+  body.investor-portal-page .login-form-container { padding: 24px 20px; }
+  body.investor-portal-page .login-form h3 {
+    display: grid;
+    gap: 10px;
+  }
 }
