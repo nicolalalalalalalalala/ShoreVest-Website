@@ -106,7 +106,8 @@
 
 .grid[data-team-grid] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: clamp(26px, 2.5vw, 34px); row-gap: clamp(38px, 4vw, 56px); align-items: start; }
 .team-profile { position: relative; min-width: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
-.team-profile__photo { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: var(--sv-xuan-dark); cursor: pointer; max-height: clamp(250px, 20vw, 305px); margin-bottom: clamp(18px, 1.8vw, 24px); }
+.team-profile__photo { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: linear-gradient(135deg, rgba(216, 206, 176, 0.45), rgba(250, 246, 238, 0.78)); cursor: pointer; max-height: clamp(250px, 20vw, 305px); margin-bottom: clamp(18px, 1.8vw, 24px); }
+.team-profile__photo::before { content: ""; width: clamp(54px, 5vw, 72px); aspect-ratio: 1; border: 1px solid rgba(61, 112, 112, 0.35); border-radius: 50%; background: radial-gradient(circle at 50% 34%, rgba(61, 112, 112, 0.18) 0 18%, transparent 19%), radial-gradient(ellipse at 50% 82%, rgba(61, 112, 112, 0.18) 0 38%, transparent 39%); }
 .team-profile__photo::after { content: ""; position: absolute; inset: 0; border: 1px solid rgba(216, 206, 176, 0.45); pointer-events: none; }
 .team-profile__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; filter: grayscale(100%); transition: filter var(--team-photo-filter-transition); }
 
@@ -259,7 +260,6 @@
     aspect-ratio: 4 / 5;
     height: auto;
     overflow: hidden;
-    background: var(--sv-xuan-dark);
   }
   .team-profile__photo img {
     width: 100%;
