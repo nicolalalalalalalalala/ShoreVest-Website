@@ -7,6 +7,12 @@
    Scoped to .team-page-v2.
    ========================================================================== */
 
+html {
+  /* This stylesheet only loads on Team pages; keep the browser canvas
+     footer-colored so no white seam appears below short/rounded viewports. */
+  background: #20211F;
+}
+
 body.team-page-v2 {
   --tr-ink: #1A1B17;
   --tr-ink-2: #202118;
@@ -322,7 +328,11 @@ html body.team-page-v2 .team-profile__linkedin:hover::after {
 /* ==========================================================================
    4 · FOOTER — dark ink, matching the homepage footer
    ========================================================================== */
-body.team-page-v2 .sv-footer { /* footer governed by homepage-rebuild.css (body.homepage) — no team override */ }
+body.team-page-v2 .sv-footer {
+  /* Footer governed by homepage-rebuild.css (body.homepage); repeat the ink
+     color here so the footer and Team-page canvas resolve identically. */
+  background: var(--tr-dark-footer, #20211F) !important;
+}
 
 /* Active nav state — subtle cinnabar, matching the homepage hover treatment */
 body.homepage.team-page-v2 .sv-nav a[aria-current="page"] {
