@@ -815,6 +815,7 @@ body.homepage .sv-totop svg { width: 16px; height: 16px; }
 
   body.homepage .sv-opmodel { grid-template-columns: 1fr; }
   body.homepage .sv-cdd__head { grid-template-columns: 1fr; align-items: start; }
+  body.homepage .sv-cdd__desc { text-align: left; text-align-last: auto; }
   body.homepage .sv-cdd__feature { grid-template-columns: 1fr; gap: 14px; }
 }
 
