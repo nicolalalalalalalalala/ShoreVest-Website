@@ -106,16 +106,11 @@
 
 .grid[data-team-grid] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: clamp(26px, 2.5vw, 34px); row-gap: clamp(38px, 4vw, 56px); align-items: start; }
 .team-profile { position: relative; min-width: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
-.team-profile__photo { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: var(--sv-xuan-dark); cursor: pointer; max-height: clamp(250px, 20vw, 305px); margin-bottom: clamp(18px, 1.8vw, 24px); }
+.team-profile__photo { position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; background: linear-gradient(135deg, rgba(216, 206, 176, 0.45), rgba(250, 246, 238, 0.78)); cursor: pointer; max-height: clamp(250px, 20vw, 305px); margin-bottom: clamp(18px, 1.8vw, 24px); }
 .team-profile__photo::after { content: ""; position: absolute; inset: 0; border: 1px solid rgba(216, 206, 176, 0.45); pointer-events: none; }
 .team-profile__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; filter: grayscale(100%); transition: filter var(--team-photo-filter-transition); }
 
-/* ── Team photo protection ─────────────────────────────────────────────
-   Deterrent layer: blocks drag-to-save, text/image selection, the iOS
-   long-press "Save Image" callout, and routes pointer events to the
-   container so right-click lands on a non-image element (no "Save image"
-   / "Open image in new tab"). Container keeps click-to-open-bio + hover.
-   NOTE: client-side only — not absolute. See team-page.js for the JS guard. */
+/* Image styles are retained only as a defensive fallback if a future portrait is added. */
 .team-profile__photo img {
   pointer-events: none;
   -webkit-user-select: none;
@@ -259,7 +254,6 @@
     aspect-ratio: 4 / 5;
     height: auto;
     overflow: hidden;
-    background: var(--sv-xuan-dark);
   }
   .team-profile__photo img {
     width: 100%;

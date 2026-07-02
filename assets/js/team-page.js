@@ -114,10 +114,7 @@
           }
         });
 
-        // ── Photo protection (deterrent layer) ──
-        // Block right-click "Save image" / "Open image in new tab", drag-to-save,
-        // and copy on team portraits. The <img> has pointer-events:none (CSS), so
-        // these events surface on the container — guard here.
+        // Keep placeholder slots interactive without browser drag/context-menu affordances.
         const blockEvent = (event) => event.preventDefault();
         photo.addEventListener('contextmenu', blockEvent);
         photo.addEventListener('dragstart', blockEvent);

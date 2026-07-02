@@ -236,7 +236,9 @@ html body.team-page-v2 .grid[data-team-grid] {
 html body.team-page-v2 .team-profile__photo {
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  background: var(--tr-parchment);
+  background:
+    linear-gradient(135deg, rgba(216, 206, 176, 0.45), rgba(250, 246, 238, 0.78)),
+    var(--tr-parchment);
   border: 1px solid var(--tr-border);
 }
 html body.team-page-v2 .team-profile__photo img {
