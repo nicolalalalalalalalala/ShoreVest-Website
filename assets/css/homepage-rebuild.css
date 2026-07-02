@@ -668,7 +668,7 @@ body.homepage .sv-cdd__head {
 body.homepage .sv-cdd__label { margin: 0 0 16px; font: 600 12px/1 var(--sv-font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--sv-cinnabar); }
 body.homepage .sv-cdd__title { margin: 0; font: 500 clamp(34px, 4vw, 56px)/1.0 var(--sv-serif); letter-spacing: -0.01em; color: var(--sv-ivory); }
 body.homepage .sv-cdd__cn { margin: 10px 0 0; font: 500 16px/1.4 var(--sv-cn); letter-spacing: 0.06em; color: var(--sv-meta-on-dark); }
-body.homepage .sv-cdd__desc { margin: 0; font: 400 16px/1.66 var(--sv-font); color: var(--sv-meta-on-dark); max-width: 52ch; }
+body.homepage .sv-cdd__desc { margin: 0; font: 400 16px/1.66 var(--sv-font); color: var(--sv-meta-on-dark); max-width: none; width: 100%; justify-self: stretch; }
 
 /* Featured report — prioritized with a cinnabar top ledge */
 body.homepage .sv-cdd__feature {
