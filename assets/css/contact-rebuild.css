@@ -94,10 +94,10 @@ body.contact-page .cp-route__num {
 }
 body.contact-page .cp-route__body { min-width: 0; }
 body.contact-page .cp-route__label {
-  margin: 0; font: 600 13px/1.3 var(--sv-font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--sv-ink);
+  display: block; margin: 0; font: 600 13px/1.3 var(--sv-font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--sv-ink);
 }
 body.contact-page .cp-route__copy {
-  margin: 7px 0 0; font: 400 14px/1.5 var(--sv-font); color: var(--sv-ink-2);
+  margin: 14px 0 0; font: 400 14px/1.5 var(--sv-font); color: var(--sv-ink-2);
 }
 body.contact-page .cp-route__copy a { color: var(--sv-cinnabar); text-decoration: none; border-bottom: 1px solid currentColor; }
 body.contact-page .cp-route__arrow { color: var(--sv-cinnabar); font-size: 18px; justify-self: end; transition: transform .15s ease; }
