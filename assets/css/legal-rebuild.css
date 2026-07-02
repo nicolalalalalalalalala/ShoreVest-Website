@@ -55,9 +55,9 @@ body.terms-page .legal-content,
 body.legal-page .legal-content,
 body.disclaimers-page .legal-content {
   width: 100%;
-  max-width: 880px;
+  max-width: var(--sv-content-max-legal, 960px);
   margin-inline: auto;
-  padding-inline: clamp(20px, 5vw, 32px);
+  padding-inline: 0;
 }
 
 /* ---- Intro block — cinnabar-ruled masthead ---- */
@@ -151,7 +151,7 @@ body.terms-page .legal-content p,
 body.legal-page .legal-content p,
 body.disclaimers-page .legal-content p {
   margin: 0 0 1.15em; font: 400 16px/1.72 var(--lg-font); color: var(--lg-ink-2);
-  max-width: 74ch;
+  max-width: none;
 }
 body.privacy-page .legal-content a,
 body.cookie-page .legal-content a,
@@ -173,7 +173,7 @@ body.cookie-page .legal-content ul,
 body.terms-page .legal-content ul,
 body.legal-page .legal-content ul,
 body.disclaimers-page .legal-content ul {
-  margin: 0 0 1.4em; padding: 0; list-style: none; max-width: 74ch;
+  margin: 0 0 1.4em; padding: 0; list-style: none; max-width: none;
 }
 body.privacy-page .legal-content ul li,
 body.cookie-page .legal-content ul li,
@@ -197,7 +197,7 @@ body.cookie-page .legal-content ol,
 body.terms-page .legal-content ol,
 body.legal-page .legal-content ol,
 body.disclaimers-page .legal-content ol {
-  margin: 0 0 1.4em; padding-left: 22px; max-width: 74ch;
+  margin: 0 0 1.4em; padding-left: 22px; max-width: none;
 }
 body.privacy-page .legal-content ol li,
 body.cookie-page .legal-content ol li,
