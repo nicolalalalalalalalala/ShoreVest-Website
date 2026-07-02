@@ -7,6 +7,10 @@
    Scoped to .team-page-v2.
    ========================================================================== */
 
+html:has(body.team-page-v2) {
+  background: #20211F;
+}
+
 body.team-page-v2 {
   --tr-ink: #1A1B17;
   --tr-ink-2: #202118;
@@ -336,7 +340,13 @@ html body.team-page-v2 .team-profile__linkedin:hover::after {
 /* ==========================================================================
    4 · FOOTER — dark ink, matching the homepage footer
    ========================================================================== */
-body.team-page-v2 .sv-footer { /* footer governed by homepage-rebuild.css (body.homepage) — no team override */ }
+body.team-page-v2 .sv-footer {
+  /* Footer governed by homepage-rebuild.css (body.homepage). Match the page
+     canvas to the footer ink so viewport rounding never exposes a white seam. */
+  background: var(--tr-dark-footer, #20211F) !important;
+  margin-bottom: -1px;
+  padding-bottom: 1px;
+}
 
 /* Active nav state — subtle cinnabar, matching the homepage hover treatment */
 body.homepage.team-page-v2 .sv-nav a[aria-current="page"] {
