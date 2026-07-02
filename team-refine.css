@@ -7,6 +7,10 @@
    Scoped to .team-page-v2.
    ========================================================================== */
 
+html:has(body.team-page-v2) {
+  background: #20211F;
+}
+
 body.team-page-v2 {
   --tr-ink: #1A1B17;
   --tr-ink-2: #202118;
@@ -234,9 +238,13 @@ html body.team-page-v2 .grid[data-team-grid] {
   gap: clamp(24px, 2.4vw, 36px) clamp(20px, 2vw, 30px) !important;
 }
 html body.team-page-v2 .team-profile__photo {
+  display: grid;
+  place-items: center;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  background: var(--tr-parchment);
+  background:
+    linear-gradient(135deg, rgba(216, 206, 176, 0.45), rgba(250, 246, 238, 0.78)),
+    var(--tr-parchment);
   border: 1px solid var(--tr-border);
 }
 html body.team-page-v2 .team-profile__photo img {
@@ -247,6 +255,16 @@ html body.team-page-v2 .team-profile__photo img {
   display: block;
   filter: grayscale(1) contrast(1.02);   /* consistent normalized set */
   transition: filter 0.3s ease;
+}
+html body.team-page-v2 .team-profile__photo::before {
+  content: "";
+  width: clamp(54px, 5vw, 72px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(61, 112, 112, 0.35);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(61, 112, 112, 0.18) 0 18%, transparent 19%),
+    radial-gradient(ellipse at 50% 82%, rgba(61, 112, 112, 0.18) 0 38%, transparent 39%);
 }
 html body.team-page-v2 .team-profile:hover .team-profile__photo img,
 html body.team-page-v2 .team-profile.is-active .team-profile__photo img {
@@ -322,7 +340,13 @@ html body.team-page-v2 .team-profile__linkedin:hover::after {
 /* ==========================================================================
    4 · FOOTER — dark ink, matching the homepage footer
    ========================================================================== */
-body.team-page-v2 .sv-footer { /* footer governed by homepage-rebuild.css (body.homepage) — no team override */ }
+body.team-page-v2 .sv-footer {
+  /* Footer governed by homepage-rebuild.css (body.homepage). Match the page
+     canvas to the footer ink so viewport rounding never exposes a white seam. */
+  background: var(--tr-dark-footer, #20211F) !important;
+  margin-bottom: -1px;
+  padding-bottom: 1px;
+}
 
 /* Active nav state — subtle cinnabar, matching the homepage hover treatment */
 body.homepage.team-page-v2 .sv-nav a[aria-current="page"] {
