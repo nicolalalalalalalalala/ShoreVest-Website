@@ -51,6 +51,7 @@ Run these before committing structural changes:
 git status --short
 find . -maxdepth 2 -type d | sort
 python3 -m compileall scripts
+python3 scripts/check-repository-hygiene.py
 node scripts/validate-recruitment-roles.js
 node tests/recruitment-roles.test.js
 ```
