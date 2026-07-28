@@ -1,0 +1,31 @@
+name: Repository hygiene
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check pull request changes
+        if: github.event_name == 'pull_request'
+        run: python3 scripts/check-repository-hygiene.py --base "${{ github.event.pull_request.base.sha }}"
+
+      - name: Check pushed changes
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        run: python3 scripts/check-repository-hygiene.py --base "${{ github.event.before }}"
+
+      - name: Check full repository
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000')
+        run: python3 scripts/check-repository-hygiene.py
