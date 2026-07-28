@@ -1,4 +1,4 @@
-/* ==========================================================================
+/* ========================================================================== 
    ShoreVest — Box System (2026-06-26)
    Shared color-block card components, token-aligned to the homepage shell
    (--sv-* vars). Curated to the treatments the team likes: a floating
@@ -84,7 +84,7 @@
 .svb--band .svb-band .svb-label { color: var(--sv-ivory); }
 .svb--band .svb-panel { background: var(--sv-ivory); color: var(--sv-ink); padding: clamp(26px, 3vw, 40px); }
 
-/* ==========================================================================
+/* ========================================================================== 
    Per-page integration — pair the page's block class with .svb so these win
    over the page's own grid styles (higher specificity, loads last).
    ========================================================================== */
@@ -164,4 +164,9 @@ body.firm-page .fm-close__inner .svb-statement {
 body.strategy-page .st-risk__panel.svb--split {
   display: block; padding: clamp(30px, 3.6vw, 52px) clamp(24px, 3.2vw, 44px);
   background: linear-gradient(152deg, #D65A4D 0%, #C93B2A 58%, #B73528 100%);
+}
+
+/* Strategy hero · replace the pale pink offset field with ShoreVest cinnabar. */
+body.strategy-page .sx-hero__media::before {
+  background: var(--sv-cinnabar, #C93B2A);
 }
