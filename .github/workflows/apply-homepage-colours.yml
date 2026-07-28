@@ -1,0 +1,59 @@
+name: Apply homepage cinnabar box colours
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-homepage-colours.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Update production homepage
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          firm_old = '<p>ShoreVest combines local market relationships with institutional investment-management capabilities across sourcing, underwriting, legal structuring, asset servicing and resolution.</p>'
+          firm_new = '<p style="background:var(--sv-cinnabar,#C93B2A)!important;color:var(--sv-on-cinnabar,#FCF9F1)!important;border-left:4px solid var(--sv-oxide,#9F2F24)!important;padding:clamp(15px,1.5vw,19px) clamp(18px,2vw,24px)!important;">ShoreVest combines local market relationships with institutional investment-management capabilities across sourcing, underwriting, legal structuring, asset servicing and resolution.</p>'
+
+          research_old = '<p class="sv-cdd__desc">Research on China’s private credit markets, policy developments, legal frameworks and creditor recoveries.</p>'
+          research_new = '<p class="sv-cdd__desc" style="background:var(--sv-cinnabar,#C93B2A)!important;color:var(--sv-on-cinnabar,#FCF9F1)!important;border-left:4px solid var(--sv-oxide,#9F2F24)!important;padding:clamp(15px,1.5vw,19px) clamp(18px,2vw,24px)!important;">Research on China’s private credit markets, policy developments, legal frameworks and creditor recoveries.</p>'
+
+          if firm_old in text:
+              text = text.replace(firm_old, firm_new, 1)
+          elif firm_new not in text:
+              raise SystemExit('Firm statement target not found')
+
+          if research_old in text:
+              text = text.replace(research_old, research_new, 1)
+          elif research_new not in text:
+              raise SystemExit('Research statement target not found')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Remove one-time workflow
+        run: rm -f .github/workflows/apply-homepage-colours.yml
+
+      - name: Commit production update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/apply-homepage-colours.yml
+          git commit -m "Flip production homepage boxes to cinnabar"
+          git push origin main
