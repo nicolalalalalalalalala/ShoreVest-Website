@@ -8,6 +8,7 @@ param location = 'eastasia'
 
 // Paid and externally visible capabilities remain disabled for the foundation deployment.
 param enableDefenderForStorage = false
+param enableCosmosServerless = true
 
 // Runtime safety and test cost controls.
 param botVerificationHostname = 'shorevest.com'

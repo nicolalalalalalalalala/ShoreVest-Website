@@ -49,6 +49,13 @@ param maximumInstanceCount int = 20
 @description('Flex Consumption instance memory in MB.')
 param instanceMemoryMB int = 2048
 
+@description('Use Cosmos DB serverless capacity. Recommended for dev/test. Capacity mode cannot be changed after account creation.')
+param enableCosmosServerless bool = false
+
+@minValue(400)
+@description('Shared database throughput when serverless capacity is disabled.')
+param cosmosSharedThroughput int = 400
+
 var tags = {
   workload: 'recruitment'
   phase: '2B.1'
@@ -182,7 +189,11 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
     ]
     disableLocalAuth: true
     publicNetworkAccess: 'Enabled'
-    capabilities: []
+    capabilities: enableCosmosServerless ? [
+      {
+        name: 'EnableServerless'
+      }
+    ] : []
   }
 }
 
@@ -192,6 +203,9 @@ resource db 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = {
   properties: {
     resource: {
       id: 'recruitment'
+    }
+    options: enableCosmosServerless ? {} : {
+      throughput: cosmosSharedThroughput
     }
   }
 }
@@ -213,6 +227,7 @@ resource submissions 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/contain
         automatic: true
       }
     }
+    options: {}
   }
 }
 
@@ -229,6 +244,7 @@ resource idempotency 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/contain
         kind: 'Hash'
       }
     }
+    options: {}
   }
 }
 
@@ -246,6 +262,7 @@ resource rateLimits 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containe
       }
       defaultTtl: 3600
     }
+    options: {}
   }
 }
 
