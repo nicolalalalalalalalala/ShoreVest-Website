@@ -62,7 +62,7 @@ if [[ ! "$tenant_id" =~ ^[0-9a-fA-F-]{36}$ ]]; then
   exit 2
 fi
 
-for command in az; do
+for command in az python3; do
   if ! command -v "$command" >/dev/null 2>&1; then
     echo "Required command not found: $command" >&2
     exit 1
@@ -133,6 +133,7 @@ scope="/subscriptions/${subscription_id}/resourceGroups/${resource_group}"
 ensure_federated_credential() {
   local name="$1"
   local subject="$2"
+  local existing_subject
 
   if az identity federated-credential show \
     --resource-group "$resource_group" \
