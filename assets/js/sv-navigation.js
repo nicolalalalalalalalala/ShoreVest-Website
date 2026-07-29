@@ -55,7 +55,7 @@
     scrollFix.textContent = [
       'html,',
       'body.homepage,',
-      'body.homepage * { overscroll-behavior: auto !important; }',
+      'body.homepage * { overscroll-behavior: none !important; }',
       'body.homepage { overflow-x: clip !important; }'
     ].join('\n');
     document.head.appendChild(scrollFix);
