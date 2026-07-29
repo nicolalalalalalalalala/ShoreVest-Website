@@ -17,3 +17,4 @@ param rateLimitWindowSeconds = 300
 param maxBodyBytes = 65536
 param maximumInstanceCount = 2
 param instanceMemoryMB = 2048
+param nodeRuntimeVersion = '22'
