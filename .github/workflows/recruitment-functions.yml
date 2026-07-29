@@ -5,6 +5,7 @@ on:
       - 'agent/**'
     paths:
       - '.github/workflows/recruitment-functions.yml'
+      - '.github/workflows/recruitment-test-foundation-deploy.yml'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/validate-recruitment-roles.js'
@@ -27,6 +28,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/recruitment-functions.yml'
+      - '.github/workflows/recruitment-test-foundation-deploy.yml'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/validate-recruitment-roles.js'
@@ -135,6 +137,8 @@ jobs:
           }
       - name: Compile recruitment Bicep
         run: npm run bicep:build:recruitment
+      - name: Compile ShoreVest test Bicep parameters
+        run: az bicep build-params --file infra/recruitment/test-eastasia.bicepparam --stdout >/dev/null
       - name: Lint recruitment Bicep
         run: npm run bicep:lint:recruitment
       - run: git diff --check
