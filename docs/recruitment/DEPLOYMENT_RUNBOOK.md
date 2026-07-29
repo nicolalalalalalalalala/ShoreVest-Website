@@ -21,6 +21,24 @@ The first deployment must keep every capability disabled:
 
 Do not change public website flags until non-production acceptance is complete.
 
+## ShoreVest test foundation
+
+The checked-in test target is intentionally isolated from ShoreVest One production:
+
+- resource group: `rg-shorevest-recruitment-test-eastasia`;
+- region: `eastasia`;
+- environment: `test`;
+- parameters: `infra/recruitment/test-eastasia.bicepparam`;
+- Cosmos DB capacity: serverless;
+- Defender for Storage: disabled;
+- Function maximum instance count: two.
+
+The first deployment must run from an authenticated Azure Cloud Shell using `infra/recruitment/deploy-test-foundation-cloudshell.sh`. That script validates the Azure tenant and subscription context, checks Flex Consumption availability, records a what-if result, deploys the disabled foundation and verifies every launch and destructive switch remains false.
+
+It also bootstraps a resource-group-scoped GitHub OIDC identity for later repeatable deployments. Once the protected `recruitment-test` GitHub environment has the emitted `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` variables, subsequent foundation deployments may use `.github/workflows/recruitment-test-foundation-deploy.yml` with the exact confirmation text `DEPLOY_TEST_FOUNDATION`.
+
+Do not commit subscription IDs, tenant IDs, client IDs, credentials, secret values or deployment output.
+
 ## Deployment sequence
 
 ### 1. Azure foundation
