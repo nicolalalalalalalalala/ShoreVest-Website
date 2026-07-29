@@ -142,7 +142,6 @@ resource appSettings 'Microsoft.Web/sites/config@2024-04-01' = {
   parent: fn
   name: 'appsettings'
   properties: {
-    FUNCTIONS_EXTENSION_VERSION: '~4'
     FUNCTIONS_WORKER_RUNTIME: 'node'
     FUNCTIONS_REQUEST_BODY_SIZE_LIMIT: string(maxBodyBytes)
     AzureWebJobsStorage__accountName: hostStorage.name
