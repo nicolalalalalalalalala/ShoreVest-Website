@@ -88,6 +88,15 @@ html body.homepage.strategy-page .sx-hero__media:hover .sx-hero__panel {
   background-repeat: no-repeat !important;
 }
 
+/* Homepage firm statement: invert the original light treatment so the statement
+   sits on a cinnabar field with light text, matching the approved treatment. */
+html body.homepage.home-page .home-firm-preview__statement > p:first-child {
+  background: var(--sv-cinnabar, #C93B2A) !important;
+  color: var(--sv-on-cinnabar, #FCF9F1) !important;
+  border-left: 4px solid var(--sv-oxide, #9F2F24) !important;
+  padding: clamp(15px, 1.5vw, 19px) clamp(18px, 2vw, 24px) !important;
+}
+
 /* Controlled mobile scale. */
 @media (max-width: 600px) {
   html body.homepage main p:not([class*="label"]):not([class*="meta"]):not([class*="caption"]):not([class*="eyebrow"]):not([class*="legal"]):not([class*="disclosure"]),
