@@ -22,7 +22,7 @@
     ["Three disciplines behind the platform", "平台背后的三大核心能力"],
     ["More than two decades of China credit experience inform ShoreVest’s underwriting, portfolio management and institutional governance.", "逾二十年的中国信贷经验，为新岸资本的承销、投资组合管理及机构化治理提供坚实支撑。"],
     ["ShoreVest works with borrowers and financial institutions to structure asset-backed credit for complex financing, restructuring and resolution situations.", "新岸资本与借款人及金融机构合作，针对复杂的融资、重组及处置情形，构建资产支持型信贷。"],
-    ["This website is provided by ShoreVest Partners, Ltd. and relevant affiliates for general informational purposes only. Content is summary in nature, may be incomplete, may change without notice and is not intended to provide the full basis for evaluating ShoreVest, any ShoreVest-managed vehicle or any investment opportunity. This website is not intended for retail investors.", "本网站由新岸资本及其相关关联方提供，仅供一般参考。内容为概括性质，可能不完整，可能随时变更且恕不另行通知，亦不旨在为评估新岸资本、任何新岸资本管理的载体或任何投资机会提供完整依据。本网站不面向散户投资者。"],
+    ["This website is provided by ShoreVest Partners, Ltd. and relevant affiliates for general informational purposes only. Content is summary in nature, may be incomplete, may change without notice and is not intended to provide the full basis for evaluating ShoreVest, any ShoreVest-managed vehicle or any investment opportunity. This website is not intended for retail investors.", "本网站由新岸资本及其相关关联方提供，仅供一般参考。内容为概括性质，可能不完整，可能随时变更且恕不另行通知，亦不旨在为评估新岸资本、任何 新岸资本管理的载体或任何投资机会提供完整依据。本网站不面向散户投资者。"],
     ["This Cookie Notice explains how ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our) use cookies and similar tracking technologies on this website (the Site).", "本 Cookie 通知说明新岸资本及其相关关联公司（统称「新岸资本」、「我们」或「我方」）如何在本网站（下称「网站」）上使用 Cookie 及类似追踪技术。"],
     ["These Terms of Use govern your access to and use of this website (the Site) operated by ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our).", "本使用条款规定您对新岸资本及其相关关联公司（统称「新岸资本」、「我们」或「我方」）运营的本网站（下称「网站」）的访问及使用。"],
     ["Themes covered", "覆盖主题"],
@@ -151,7 +151,7 @@
     ["Portfolio-level considerations", "投资组合层面考量"],
     ["Concentration, duration and execution risk are considered in portfolio construction.", "在投资组合构建中，考量集中度风险、久期风险及执行风险。"],
     ["Portfolio exposures are reviewed across borrowers, collateral, geography and investment vintage where relevant.", "在相关情况下，按借款人、抵押品、地域及投资年份对投资组合风险敞口进行审查。"],
-    ["These Investor Portal Terms (Portal Terms) govern access to and use of the investor-access portal, restricted materials, data room environments and any downloadable documents made available by ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our) through this website (the Portal).", "本投资者门户条款（下称“门户条款”）管辖通过本网站（下称“门户”）访问及使用由新岸资本（ShoreVest Partners, Ltd.）及其相关关联方（统称“ShoreVest”、“我们”或“我们的”）提供的投资者访问门户、受限材料、数据室环境及任何可下载文件的相关事宜。"],
+    ["These Investor Portal Terms (Portal Terms) govern access to and use of the investor-access portal, restricted materials, data room environments and any downloadable documents made available by ShoreVest Partners, Ltd. and its relevant affiliates (collectively, ShoreVest, we, us or our) through this website (the Portal).", "本投资者门户条款（下称“门户条款”）管辖通过本网站（下称“门户”）访问及使用由新岸资本（ShoreVest Partners, Ltd.） 及其相关关联方（统称“ShoreVest”、“我们”或“我们的”）提供的投资者访问门户、受限材料、数据室环境及任何可下载文件的相关事宜。"],
     ["You are solely responsible for ensuring your use complies with all applicable laws.", "您须自行负责确保您对本网站的使用符合所有适用法律。"],
     ["Where ShoreVest acts as a data controller in relation to this Site, ShoreVest Partners, Ltd. is the primary responsible entity.", "在新岸资本就本网站担任数据控制者时，新岸资本（ShoreVest Partners, Ltd. ）为主要责任实体。"],
     ["ShoreVest", "新岸资本"],
@@ -330,6 +330,16 @@
     return englishDocumentPromise;
   }
 
+  function applyApprovedAttributes() {
+    var path = location.pathname.toLowerCase();
+    if (/(?:^|\/)cn\/media(?:\/|$)|media_cn\.html$/.test(path)) {
+      var mediaHero = document.querySelector('img[src*="media-hero-fii-priority"]');
+      if (mediaHero) {
+        mediaHero.alt = "新岸资本在 FII Priority 亚洲峰会的专题讨论中发言，面向与会观众";
+      }
+    }
+  }
+
   function applyApprovedCopy() {
     getEnglishDocument().then(function (englishDocument) {
       var allEnglishElements = Array.prototype.slice.call(englishDocument.body.querySelectorAll("*"));
@@ -349,9 +359,11 @@
       }
 
       applyDirectReplacements(document.body);
+      applyApprovedAttributes();
       document.documentElement.setAttribute("data-sv-cn-copy-corrected", "true");
     }).catch(function () {
       applyDirectReplacements(document.body);
+      applyApprovedAttributes();
     });
   }
 
@@ -366,7 +378,10 @@
     for (var i = 0; i < mutations.length; i += 1) {
       for (var j = 0; j < mutations[i].addedNodes.length; j += 1) {
         var added = mutations[i].addedNodes[j];
-        if (added.nodeType === 1) applyDirectReplacements(added);
+        if (added.nodeType === 1) {
+          applyDirectReplacements(added);
+          applyApprovedAttributes();
+        }
       }
     }
   }).observe(document.documentElement, { childList: true, subtree: true });

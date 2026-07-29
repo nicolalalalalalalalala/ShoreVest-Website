@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const GUARD_VERSION = '20260724-sitewide-favicon';
+const GUARD_VERSION = '20260730-approved-cn-copy-1';
 const FAVICON_SVG = '/assets/favicon-shorevest-20260724.svg';
 const FAVICON_ICO = '/assets/favicon-shorevest-20260724.ico';
 const FAVICON_32 = '/assets/favicon-shorevest-20260724-32x32.png';
