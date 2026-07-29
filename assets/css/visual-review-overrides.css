@@ -4,6 +4,12 @@
    Requested changes: larger navigation and reading copy, a consistent heading
    hierarchy, full-colour imagery, and the former homepage image on Strategy. */
 
+/* Prevent the page from rubber-banding past the top or bottom edge. */
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
 /* Desktop header navigation and utilities. */
 @media (min-width: 901px) {
   html body.homepage .sv-nav a {
