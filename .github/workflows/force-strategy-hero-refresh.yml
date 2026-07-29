@@ -1,0 +1,82 @@
+name: Force strategy hero refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/force-strategy-hero-refresh.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Update strategy hero and cache keys
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          files = [
+              Path('strategy.html'),
+              Path('strategy/index.html'),
+              Path('strategy_cn.html'),
+              Path('cn/strategy/index.html'),
+          ]
+
+          old = 'visual-review-overrides.css?v=20260730-visual-review-1'
+          new = 'visual-review-overrides.css?v=20260730-strategy-hero-3'
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              if old not in text and new not in text:
+                  raise SystemExit(f'Cache key not found in {path}')
+              text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+
+          css = Path('assets/css/visual-review-overrides.css')
+          text = css.read_text(encoding='utf-8')
+          marker = '/* Strategy hero: use the former homepage hero photograph exactly, without a tint. */'
+          if marker not in text:
+              raise SystemExit('Strategy hero override marker not found')
+          start = text.index(marker)
+          end = text.index('/* Homepage statement boxes:', start)
+          replacement = '''/* Strategy hero: use the former homepage hero photograph exactly, without a tint. */
+html body.homepage.strategy-page .sx-hero__media {
+  min-height: clamp(360px, 42vw, 570px) !important;
+}
+html body.homepage.strategy-page .sx-hero__panel,
+html body.homepage.strategy-page .sx-hero__media:hover .sx-hero__panel {
+  width: 100% !important;
+  min-height: clamp(360px, 42vw, 570px) !important;
+  aspect-ratio: 1 / 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  background-image: url("/assets/img/trees/home-hero-max-zhang.jpg?v=20260730-strategy-hero-3") !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+'''
+          text = text[:start] + replacement + text[end:]
+          css.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Remove one-time workflow
+        run: rm -f .github/workflows/force-strategy-hero-refresh.yml
+
+      - name: Commit production update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add strategy.html strategy/index.html strategy_cn.html cn/strategy/index.html assets/css/visual-review-overrides.css .github/workflows/force-strategy-hero-refresh.yml
+          git commit -m "Force strategy hero image refresh"
+          git push origin main
