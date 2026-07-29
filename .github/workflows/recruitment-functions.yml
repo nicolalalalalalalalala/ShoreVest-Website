@@ -135,6 +135,8 @@ jobs:
           if ($actualHash -ne $recordedHash) {
             throw 'Archive digest sidecar does not match the generated ZIP.'
           }
+      - name: Check Azure bootstrap shell syntax
+        run: bash -n infra/recruitment/bootstrap-github-oidc.sh
       - name: Compile recruitment Bicep
         run: npm run bicep:build:recruitment
       - name: Compile ShoreVest test Bicep parameters
