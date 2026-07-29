@@ -49,6 +49,13 @@ param maximumInstanceCount int = 20
 @description('Flex Consumption instance memory in MB.')
 param instanceMemoryMB int = 2048
 
+@allowed([
+  '22'
+  '24'
+])
+@description('Supported Node.js runtime version for the Flex Consumption Function App.')
+param nodeRuntimeVersion string = '24'
+
 @description('Use Cosmos DB serverless capacity. Recommended for dev/test. Capacity mode cannot be changed after account creation.')
 param enableCosmosServerless bool = false
 
@@ -397,7 +404,7 @@ resource fn 'Microsoft.Web/sites@2024-04-01' = {
       }
       runtime: {
         name: 'node'
-        version: '20'
+        version: nodeRuntimeVersion
       }
       scaleAndConcurrency: {
         maximumInstanceCount: maximumInstanceCount
@@ -409,10 +416,6 @@ resource fn 'Microsoft.Web/sites@2024-04-01' = {
       ftpsState: 'Disabled'
       http20Enabled: true
       appSettings: [
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: 'node'
