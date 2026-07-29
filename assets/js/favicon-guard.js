@@ -1,5 +1,5 @@
 (function () {
-  var VERSION = "20260724-sitewide-favicon";
+  var VERSION = "20260730-approved-cn-copy-1";
 
   function removeEmptyLegacyToken() {
     try {
