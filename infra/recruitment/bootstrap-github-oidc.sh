@@ -21,6 +21,7 @@ tenant_id=''
 extra_oidc_subject=''
 resource_group='rg-shorevest-recruitment-test-eastasia'
 location='eastasia'
+node_runtime_version='22'
 identity_name='id-shorevest-recruitment-github-test'
 issuer='https://token.actions.githubusercontent.com'
 audience='api://AzureADTokenExchange'
@@ -85,6 +86,16 @@ fi
 supported_locations="$(az functionapp list-flexconsumption-locations --query '[].name' -o tsv | tr '[:upper:]' '[:lower:]')"
 if ! printf '%s\n' "$supported_locations" | grep -Eq '^(eastasia|east asia)$'; then
   echo 'Flex Consumption is not currently available in East Asia for this subscription.' >&2
+  exit 1
+fi
+
+supported_node_versions="$(az functionapp list-flexconsumption-runtimes \
+  --location "$location" \
+  --runtime node \
+  --query '[].version' \
+  --output tsv)"
+if ! printf '%s\n' "$supported_node_versions" | grep -qx "$node_runtime_version"; then
+  echo "Node.js ${node_runtime_version} is not currently available for Flex Consumption in East Asia." >&2
   exit 1
 fi
 
