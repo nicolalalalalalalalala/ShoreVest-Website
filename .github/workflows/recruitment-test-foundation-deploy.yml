@@ -21,6 +21,7 @@ env:
   AZURE_LOCATION: eastasia
   RECRUITMENT_ENVIRONMENT: test
   RECRUITMENT_NAME_PREFIX: svrc26hk
+  NODE_RUNTIME_VERSION: '22'
   FOUNDATION_PARAMETERS: infra/recruitment/test-eastasia.bicepparam
 
 jobs:
@@ -62,7 +63,7 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify Azure context and Flex Consumption region
+      - name: Verify Azure context and Flex Consumption runtime
         shell: bash
         run: |
           set -euo pipefail
@@ -81,6 +82,16 @@ jobs:
           supported_locations="$(az functionapp list-flexconsumption-locations --query '[].name' -o tsv | tr '[:upper:]' '[:lower:]')"
           if ! printf '%s\n' "$supported_locations" | grep -Eq '^(eastasia|east asia)$'; then
             echo "Flex Consumption is not currently available in ${AZURE_LOCATION} for this subscription." >&2
+            exit 1
+          fi
+
+          supported_node_versions="$(az functionapp list-flexconsumption-runtimes \
+            --location "$AZURE_LOCATION" \
+            --runtime node \
+            --query '[].version' \
+            --output tsv)"
+          if ! printf '%s\n' "$supported_node_versions" | grep -qx "$NODE_RUNTIME_VERSION"; then
+            echo "Node.js ${NODE_RUNTIME_VERSION} is not currently available for Flex Consumption in ${AZURE_LOCATION}." >&2
             exit 1
           fi
 
@@ -243,6 +254,7 @@ jobs:
           - Resource group: \`${AZURE_RESOURCE_GROUP}\`
           - Region: \`${AZURE_LOCATION}\`
           - Function App: \`${RECRUITMENT_NAME_PREFIX}-recruit-fn-${RECRUITMENT_ENVIRONMENT}\`
+          - Node.js runtime: \`${NODE_RUNTIME_VERSION}\`
           - Cosmos DB: serverless
           - Public API: disabled
           - SharePoint/email delivery: disabled
