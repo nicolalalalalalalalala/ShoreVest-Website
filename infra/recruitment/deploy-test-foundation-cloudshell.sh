@@ -167,6 +167,16 @@ for key in "${settings[@]}"; do
   fi
 done
 
+cosmos_capabilities="$(az cosmosdb show \
+  --resource-group "$resource_group" \
+  --name "$cosmos_name" \
+  --query 'capabilities[].name' \
+  --output tsv)"
+if ! printf '%s\n' "$cosmos_capabilities" | grep -qx 'EnableServerless'; then
+  echo 'Safety verification failed: test Cosmos DB is not explicitly serverless.' >&2
+  exit 1
+fi
+
 defender_count="$(az resource list \
   --resource-group "$resource_group" \
   --resource-type Microsoft.Security/defenderForStorageSettings \
@@ -189,6 +199,7 @@ Disabled recruitment test foundation deployed successfully.
 Resource group: ${resource_group}
 Region: ${location}
 Function App: ${function_app_name}
+Cosmos DB: serverless
 Evidence: ${evidence_directory}
 
 Confirmed disabled:
