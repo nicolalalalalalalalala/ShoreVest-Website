@@ -1,0 +1,112 @@
+@charset "utf-8";
+
+/* ShoreVest visual review — 2026-07-30
+   Requested changes: larger navigation and reading copy, a consistent heading
+   hierarchy, full-colour imagery, and the former homepage image on Strategy. */
+
+/* Desktop header navigation and utilities. */
+@media (min-width: 901px) {
+  html body.homepage .sv-nav a {
+    font-size: 14px !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.065em !important;
+  }
+
+  html body.homepage .sv-utils,
+  html body.homepage .sv-lang,
+  html body.homepage .sv-util-btn {
+    font-size: 13px !important;
+  }
+}
+
+/* Substantive reading copy. Labels, captions, metadata, legal/disclosure copy
+   and compact controls retain their intentionally smaller scale. */
+html body.homepage main p:not([class*="label"]):not([class*="meta"]):not([class*="caption"]):not([class*="eyebrow"]):not([class*="legal"]):not([class*="disclosure"]),
+html body.homepage main li,
+html body.homepage main dd,
+html body.homepage main [class$="__body"],
+html body.homepage main [class$="__lede"],
+html body.homepage main [class$="__intro"],
+html body.homepage main [class$="__summary"],
+html body.homepage main [class$="__description"] {
+  font-size: clamp(17px, 1.15vw, 18px) !important;
+  line-height: 1.66 !important;
+}
+
+/* Consistent same-level editorial headings, preserving the page's existing
+   DIN/Barlow or Chinese font authority. */
+html body.homepage main h2,
+html body.homepage main .sv-h2 {
+  font-family: var(--sv-font) !important;
+  font-size: clamp(32px, 3.4vw, 46px) !important;
+  font-weight: 500 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.018em !important;
+}
+
+html body.homepage main h3 {
+  font-family: var(--sv-font) !important;
+  font-size: clamp(22px, 2vw, 28px) !important;
+  font-weight: 500 !important;
+  line-height: 1.22 !important;
+  letter-spacing: -0.012em !important;
+}
+
+/* Photography remains in its original colour on load and hover. */
+html body.homepage img,
+html body.homepage picture,
+html body.homepage [class*="photo"],
+html body.homepage [class*="portrait"],
+html body.homepage [class*="image"],
+html body.homepage [class*="media"],
+html body.homepage .sx-hero__panel,
+html body.homepage [class*="photo"]:hover,
+html body.homepage [class*="portrait"]:hover,
+html body.homepage [class*="image"]:hover,
+html body.homepage [class*="media"]:hover,
+html body.homepage .team-profile:hover .team-profile__photo img,
+html body.homepage .team-profile.is-active .team-profile__photo img {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+html body.homepage img {
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Strategy hero: use the approved former homepage photograph. */
+html body.homepage.strategy-page .sx-hero__panel,
+html body.homepage.strategy-page .sx-hero__media:hover .sx-hero__panel {
+  filter: none !important;
+  -webkit-filter: none !important;
+  background-image:
+    linear-gradient(180deg, rgba(24, 37, 36, 0.04), rgba(24, 37, 36, 0.10)),
+    url("/assets/img/trees/home-hero-max-zhang.jpg") !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Controlled mobile scale. */
+@media (max-width: 600px) {
+  html body.homepage main p:not([class*="label"]):not([class*="meta"]):not([class*="caption"]):not([class*="eyebrow"]):not([class*="legal"]):not([class*="disclosure"]),
+  html body.homepage main li,
+  html body.homepage main dd,
+  html body.homepage main [class$="__body"],
+  html body.homepage main [class$="__lede"],
+  html body.homepage main [class$="__intro"],
+  html body.homepage main [class$="__summary"],
+  html body.homepage main [class$="__description"] {
+    font-size: 17px !important;
+  }
+
+  html body.homepage main h2,
+  html body.homepage main .sv-h2 {
+    font-size: clamp(30px, 9vw, 40px) !important;
+  }
+
+  html body.homepage main h3 {
+    font-size: clamp(21px, 6.4vw, 26px) !important;
+  }
+}
