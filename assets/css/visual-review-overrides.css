@@ -75,17 +75,12 @@ html body.homepage img {
   mix-blend-mode: normal !important;
 }
 
-/* Strategy hero: use the approved former homepage photograph. */
+/* Strategy hero: use the former homepage hero photograph exactly, without a tint. */
 html body.homepage.strategy-page .sx-hero__panel,
 html body.homepage.strategy-page .sx-hero__media:hover .sx-hero__panel {
   filter: none !important;
   -webkit-filter: none !important;
-  background-image:
-    linear-gradient(180deg, rgba(24, 37, 36, 0.04), rgba(24, 37, 36, 0.10)),
-    url("/assets/img/trees/home-hero-max-zhang.jpg") !important;
-  background-position: center !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
+  background: url("/assets/img/trees/home-hero-max-zhang.jpg?v=20260730-strategy-hero-2") center / cover no-repeat !important;
 }
 
 /* Homepage statement boxes: cinnabar field with light text. */
