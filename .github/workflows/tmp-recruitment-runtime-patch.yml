@@ -20,87 +20,98 @@ jobs:
           ref: agent/rebuild-recruitment-backend
           fetch-depth: 0
 
-      - name: Align test runtime with supported East Asia stack
-        shell: python
+      - name: Apply transactional supported-runtime patch
+        shell: bash
         run: |
+          set -euo pipefail
+          python3 - <<'PY'
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str, label: str) -> None:
-              file_path = Path(path)
-              text = file_path.read_text(encoding='utf-8')
-              count = text.count(old)
+          operations = [
+              (
+                  'infra/recruitment/main.bicep',
+                  "@description('Flex Consumption instance memory in MB.')\nparam instanceMemoryMB int = 2048\n",
+                  "@description('Flex Consumption instance memory in MB.')\nparam instanceMemoryMB int = 2048\n\n@allowed([\n  '22'\n  '24'\n])\n@description('Supported Node.js runtime version for the Flex Consumption Function App.')\nparam nodeRuntimeVersion string = '24'\n",
+                  'Node runtime parameter',
+              ),
+              (
+                  'infra/recruitment/main.bicep',
+                  "      runtime: {\n        name: 'node'\n        version: '20'\n      }\n",
+                  "      runtime: {\n        name: 'node'\n        version: nodeRuntimeVersion\n      }\n",
+                  'Function runtime version',
+              ),
+              (
+                  'infra/recruitment/main.bicep',
+                  "        {\n          name: 'FUNCTIONS_EXTENSION_VERSION'\n          value: '~4'\n        }\n",
+                  '',
+                  'Unsupported Flex runtime pin in main',
+              ),
+              (
+                  'infra/recruitment/runtime-settings.v2.bicep',
+                  "    FUNCTIONS_EXTENSION_VERSION: '~4'\n",
+                  '',
+                  'Unsupported Flex runtime pin in settings',
+              ),
+              (
+                  'services/recruitment-functions/test/runtimeSettingsV2.test.js',
+                  "  'FUNCTIONS_EXTENSION_VERSION',\n",
+                  '',
+                  'Runtime settings test list',
+              ),
+              (
+                  'services/recruitment-functions/test/runtimeSettingsV2.test.js',
+                  "  assert.ok(template.includes('AZURE_CLIENT_ID: identity.properties.clientId'));\n});\n",
+                  "  assert.ok(template.includes('AZURE_CLIENT_ID: identity.properties.clientId'));\n  assert.ok(!template.includes('FUNCTIONS_EXTENSION_VERSION'));\n});\n",
+                  'Unsupported-pin test assertion',
+              ),
+              (
+                  'infra/recruitment/test-eastasia.bicepparam',
+                  "param instanceMemoryMB = 2048\n",
+                  "param instanceMemoryMB = 2048\nparam nodeRuntimeVersion = '22'\n",
+                  'East Asia runtime parameter',
+              ),
+              (
+                  'services/recruitment-functions/package.json',
+                  '"node": "24.x"',
+                  '"node": ">=22 <25"',
+                  'Function package Node engine',
+              ),
+              (
+                  'services/recruitment-functions/package-lock.json',
+                  '"node": "24.x"',
+                  '"node": ">=22 <25"',
+                  'Function lock Node engine',
+              ),
+              (
+                  '.github/workflows/recruitment-functions.yml',
+                  "          node-version: '24'\n",
+                  "          node-version: '22'\n",
+                  'CI Node runtime',
+              ),
+              (
+                  'infra/recruitment/bootstrap-github-oidc.sh',
+                  "  Microsoft.Authorization\n",
+                  "  Microsoft.App\n  Microsoft.Authorization\n",
+                  'Microsoft.App provider registration',
+              ),
+          ]
+
+          originals = {}
+          updated = {}
+          for path, old, new, label in operations:
+              if path not in updated:
+                  originals[path] = Path(path).read_text(encoding='utf-8')
+                  updated[path] = originals[path]
+              count = updated[path].count(old)
               if count != 1:
                   raise SystemExit(f'{label}: expected one match, found {count}')
-              file_path.write_text(text.replace(old, new, 1), encoding='utf-8')
+              updated[path] = updated[path].replace(old, new, 1)
 
-          replace_once(
-              'infra/recruitment/main.bicep',
-              "@description('Flex Consumption instance memory in MB.')\nparam instanceMemoryMB int = 2048\n",
-              "@description('Flex Consumption instance memory in MB.')\nparam instanceMemoryMB int = 2048\n\n@allowed([\n  '22'\n  '24'\n])\n@description('Supported Node.js runtime version for the Flex Consumption Function App.')\nparam nodeRuntimeVersion string = '24'\n",
-              'Node runtime parameter',
-          )
-          replace_once(
-              'infra/recruitment/main.bicep',
-              "      runtime: {\n        name: 'node'\n        version: '20'\n      }\n",
-              "      runtime: {\n        name: 'node'\n        version: nodeRuntimeVersion\n      }\n",
-              'Function runtime version',
-          )
-          replace_once(
-              'infra/recruitment/main.bicep',
-              "        {\n          name: 'FUNCTIONS_EXTENSION_VERSION'\n          value: '~4'\n        }\n",
-              '',
-              'Unsupported Flex runtime pin in main',
-          )
-          replace_once(
-              'infra/recruitment/runtime-settings.v2.bicep',
-              "    FUNCTIONS_EXTENSION_VERSION: '~4'\n",
-              '',
-              'Unsupported Flex runtime pin in settings',
-          )
-          replace_once(
-              'services/recruitment-functions/test/runtimeSettingsV2.test.js',
-              "  'FUNCTIONS_EXTENSION_VERSION',\n",
-              '',
-              'Runtime settings test list',
-          )
-          replace_once(
-              'services/recruitment-functions/test/runtimeSettingsV2.test.js',
-              "  assert.ok(template.includes('AZURE_CLIENT_ID: identity.properties.clientId'));\n});\n",
-              "  assert.ok(template.includes('AZURE_CLIENT_ID: identity.properties.clientId'));\n  assert.ok(!template.includes('FUNCTIONS_EXTENSION_VERSION'));\n});\n",
-              'Runtime settings unsupported-pin assertion',
-          )
-          replace_once(
-              'infra/recruitment/test-eastasia.bicepparam',
-              "param instanceMemoryMB = 2048\n",
-              "param instanceMemoryMB = 2048\nparam nodeRuntimeVersion = '22'\n",
-              'East Asia Node runtime parameter',
-          )
-          replace_once(
-              'services/recruitment-functions/package.json',
-              '"node": "24.x"',
-              '"node": ">=22 <25"',
-              'Function package Node engine',
-          )
-          replace_once(
-              'services/recruitment-functions/package-lock.json',
-              '"node": "24.x"',
-              '"node": ">=22 <25"',
-              'Function lock Node engine',
-          )
-          replace_once(
-              '.github/workflows/recruitment-functions.yml',
-              "          node-version: '24'\n",
-              "          node-version: '22'\n",
-              'CI Node runtime',
-          )
-          replace_once(
-              'infra/recruitment/bootstrap-github-oidc.sh',
-              "  Microsoft.Authorization\n",
-              "  Microsoft.App\n  Microsoft.Authorization\n",
-              'Microsoft.App provider registration',
-          )
+          for path, text in updated.items():
+              Path(path).write_text(text, encoding='utf-8')
+          PY
 
-      - name: Verify patch
+      - name: Verify and commit patch
         shell: bash
         run: |
           set -euo pipefail
@@ -110,13 +121,8 @@ jobs:
           grep -q '"node": ">=22 <25"' services/recruitment-functions/package.json
           grep -q "node-version: '22'" .github/workflows/recruitment-functions.yml
           grep -q '^  Microsoft.App$' infra/recruitment/bootstrap-github-oidc.sh
-          ! git grep -n 'FUNCTIONS_EXTENSION_VERSION' -- infra/recruitment services/recruitment-functions/test
           git diff --check
 
-      - name: Commit patch
-        shell: bash
-        run: |
-          set -euo pipefail
           git config user.name 'shorevest-recruitment-bot'
           git config user.email 'actions@users.noreply.github.com'
           git add \
