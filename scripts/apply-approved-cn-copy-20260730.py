@@ -6,6 +6,7 @@ import re
 VERSION = "20260730-approved-cn-copy-1"
 COPY_PATH = Path("assets/js/chinese-copy-overrides.js")
 GUARD_PATH = Path("assets/js/favicon-guard.js")
+FAVICON_NORMALIZER_PATH = Path("scripts/normalize-favicons.cjs")
 
 
 def update_copy_overrides() -> None:
@@ -93,6 +94,19 @@ def update_loader_version() -> None:
     GUARD_PATH.write_text(updated, encoding="utf-8")
 
 
+def update_favicon_normalizer_version() -> None:
+    text = FAVICON_NORMALIZER_PATH.read_text(encoding="utf-8")
+    updated, count = re.subn(
+        r"const GUARD_VERSION = '[^']+';",
+        f"const GUARD_VERSION = '{VERSION}';",
+        text,
+        count=1,
+    )
+    if count != 1:
+        raise RuntimeError("Unable to update favicon normalizer guard version")
+    FAVICON_NORMALIZER_PATH.write_text(updated, encoding="utf-8")
+
+
 def update_chinese_page_cache_keys() -> int:
     changed = 0
     for path in sorted(Path(".").rglob("*.html")):
@@ -126,6 +140,7 @@ def update_chinese_page_cache_keys() -> int:
 def main() -> None:
     update_copy_overrides()
     update_loader_version()
+    update_favicon_normalizer_version()
     changed_pages = update_chinese_page_cache_keys()
     print(f"Approved Chinese copy finalized; cache-busted {changed_pages} Chinese pages.")
 
