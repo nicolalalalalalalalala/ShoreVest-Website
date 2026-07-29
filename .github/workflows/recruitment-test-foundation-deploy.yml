@@ -91,22 +91,19 @@ jobs:
           az bicep install
           az bicep build-params --file "$FOUNDATION_PARAMETERS" --stdout >/dev/null
 
-      - name: Create or verify isolated test resource group
+      - name: Verify isolated test resource group
         shell: bash
         run: |
           set -euo pipefail
-          if az group exists --name "$AZURE_RESOURCE_GROUP" | grep -qx true; then
-            existing_location="$(az group show --name "$AZURE_RESOURCE_GROUP" --query location -o tsv | tr '[:upper:]' '[:lower:]')"
-            if [[ "$existing_location" != "$AZURE_LOCATION" ]]; then
-              echo "Existing resource group is in ${existing_location}, not ${AZURE_LOCATION}." >&2
-              exit 1
-            fi
-          else
-            az group create \
-              --name "$AZURE_RESOURCE_GROUP" \
-              --location "$AZURE_LOCATION" \
-              --tags workload=recruitment environment=test managedBy=github-actions \
-              --output none
+          if ! az group exists --name "$AZURE_RESOURCE_GROUP" | grep -qx true; then
+            echo 'The isolated test resource group does not exist. Run the checked-in Azure OIDC bootstrap first.' >&2
+            exit 1
+          fi
+
+          existing_location="$(az group show --name "$AZURE_RESOURCE_GROUP" --query location -o tsv | tr '[:upper:]' '[:lower:]')"
+          if [[ "$existing_location" != "$AZURE_LOCATION" ]]; then
+            echo "Existing resource group is in ${existing_location}, not ${AZURE_LOCATION}." >&2
+            exit 1
           fi
 
       - name: Validate foundation deployment
@@ -189,6 +186,7 @@ jobs:
         run: |
           set -euo pipefail
           function_name="${RECRUITMENT_NAME_PREFIX}-recruit-fn-${RECRUITMENT_ENVIRONMENT}"
+          cosmos_name="${RECRUITMENT_NAME_PREFIX}-recruit-cosmos-${RECRUITMENT_ENVIRONMENT}"
           settings_json="$(az functionapp config appsettings list \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --name "$function_name" \
@@ -207,6 +205,16 @@ jobs:
               exit 1
             fi
           done
+
+          cosmos_capabilities="$(az cosmosdb show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$cosmos_name" \
+            --query 'capabilities[].name' \
+            --output tsv)"
+          if ! printf '%s\n' "$cosmos_capabilities" | grep -qx 'EnableServerless'; then
+            echo 'The test Cosmos DB account is not explicitly serverless.' >&2
+            exit 1
+          fi
 
           defender_count="$(az resource list \
             --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -235,6 +243,7 @@ jobs:
           - Resource group: \`${AZURE_RESOURCE_GROUP}\`
           - Region: \`${AZURE_LOCATION}\`
           - Function App: \`${RECRUITMENT_NAME_PREFIX}-recruit-fn-${RECRUITMENT_ENVIRONMENT}\`
+          - Cosmos DB: serverless
           - Public API: disabled
           - SharePoint/email delivery: disabled
           - HR document access: disabled
