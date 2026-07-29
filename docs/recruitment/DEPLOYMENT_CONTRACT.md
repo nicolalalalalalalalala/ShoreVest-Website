@@ -174,7 +174,7 @@ az deployment group create \
   --resource-group <resource-group> \
   --template-file infra/recruitment/event-grid-subscription.bicep \
   --parameters \
-    eventGridTopicName=<scan-topic> \
+    topicName=<scan-topic> \
     functionAppName=<function-app>
 ```
 
