@@ -11,8 +11,9 @@ Usage:
 
 Creates the isolated ShoreVest recruitment test resource group, a user-assigned
 managed identity for GitHub Actions, federated credentials for the repository's
-standard and immutable OIDC subject formats, and resource-group-scoped Azure
-roles. It does not deploy the recruitment backend or enable any application flow.
+standard and immutable OIDC subject formats, and resource-group-scoped
+Contributor access. It does not grant privileged role-assignment permissions,
+deploy the recruitment backend or enable any application flow.
 EOF
 }
 
@@ -202,7 +203,6 @@ ensure_role_assignment() {
 }
 
 ensure_role_assignment 'Contributor'
-ensure_role_assignment 'Role Based Access Control Administrator'
 
 cat <<EOF
 
@@ -218,6 +218,10 @@ AZURE_SUBSCRIPTION_ID=${subscription_id}
 Resource group: ${resource_group}
 Identity: ${identity_name}
 Scope: ${scope}
+
+The GitHub identity has Contributor access only. Privileged role-assignment
+permissions are intentionally not granted by this bootstrap and must be reviewed
+separately before repeatable GitHub infrastructure deployments are enabled.
 
 No recruitment backend was deployed and no public application control was enabled.
 EOF
