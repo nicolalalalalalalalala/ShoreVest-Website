@@ -16,7 +16,6 @@ const configSource = fs.readFileSync(
 );
 
 const requiredHostSettings = [
-  'FUNCTIONS_WORKER_RUNTIME',
   'AzureWebJobsStorage__accountName',
   'AzureWebJobsStorage__credential',
   'AzureWebJobsStorage__clientId',
@@ -76,13 +75,14 @@ const requiredRecruitmentSettings = [
   'RECRUITMENT_RETENTION_RETRY_SECONDS'
 ];
 
-test('runtime settings v2 preserves every Functions host identity setting', () => {
+test('runtime settings v2 preserves every supported Functions host identity setting', () => {
   for (const setting of requiredHostSettings) {
     assert.ok(template.includes(setting), `${setting} is missing from runtime settings v2`);
   }
   assert.ok(template.includes("AzureWebJobsStorage__credential: 'managedidentity'"));
   assert.ok(template.includes('AzureWebJobsStorage__clientId: identity.properties.clientId'));
   assert.ok(template.includes('AZURE_CLIENT_ID: identity.properties.clientId'));
+  assert.ok(!template.includes('FUNCTIONS_WORKER_RUNTIME'));
   assert.ok(!template.includes('FUNCTIONS_EXTENSION_VERSION'));
 });
 
