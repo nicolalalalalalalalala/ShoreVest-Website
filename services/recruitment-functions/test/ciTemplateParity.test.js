@@ -6,31 +6,42 @@ const test = require('node:test');
 const assert = require('node:assert');
 
 const root = path.resolve(__dirname, '../../..');
+const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const workflow = fs.readFileSync(
   path.join(root, '.github/workflows/recruitment-functions.yml'),
   'utf8'
 );
-const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 
-const rootBicepTemplates = [
+const authoritativeTemplates = [
   'infra/recruitment/main.bicep',
-  'infra/recruitment/candidate-upload-cors.bicep',
   'infra/recruitment/event-grid-subscription.bicep',
   'infra/recruitment/hr-auth.bicep',
-  'infra/recruitment/monitoring-rules.v4.bicep',
   'infra/recruitment/runtime-settings.v2.bicep',
-  'infra/recruitment/upload-cors.bicep'
+  'infra/recruitment/monitoring-rules.v4.bicep'
 ];
 
-test('root package exposes authoritative recruitment Bicep build and lint scripts', () => {
+const supersededTemplates = [
+  'infra/recruitment/runtime-settings.bicep',
+  'infra/recruitment/lifecycle.bicep'
+];
+
+test('root Bicep build and lint scripts cover every authoritative recruitment template', () => {
   const build = packageJson.scripts['bicep:build:recruitment'];
   const lint = packageJson.scripts['bicep:lint:recruitment'];
   assert.equal(typeof build, 'string');
   assert.equal(typeof lint, 'string');
-  for (const template of rootBicepTemplates) {
+
+  for (const template of authoritativeTemplates) {
     assert.ok(build.includes(`--file ${template}`), `build script omits ${template}`);
+    assert.ok(lint.includes(`--file ${template}`), `lint script omits ${template}`);
   }
-  for (const template of rootBicepTemplates) {
+});
+
+test('root scripts do not compile superseded recruitment templates', () => {
+  const build = packageJson.scripts['bicep:build:recruitment'];
+  const lint = packageJson.scripts['bicep:lint:recruitment'];
+  for (const template of supersededTemplates) {
+    assert.ok(!build.includes(`--file ${template}`), `build script still references ${template}`);
     assert.ok(!lint.includes(`--file ${template}`), `lint script still references ${template}`);
   }
 });
