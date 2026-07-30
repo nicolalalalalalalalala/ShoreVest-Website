@@ -1,0 +1,125 @@
+name: Temporary Deploy Recruitment Package Test
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-deploy-recruitment-package-test.yml
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-test-package
+  cancel-in-progress: false
+
+env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP_NAME: svrc26hk-recruit-fn-test
+
+jobs:
+  deploy:
+    name: Deploy disabled package
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: recruitment-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Function dependencies
+        working-directory: services/recruitment-functions
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Build immutable Function package
+        shell: pwsh
+        run: |
+          $artifact = 'artifacts/recruitment-functions.zip'
+          & ./services/recruitment-functions/scripts/package.ps1 `
+            -CommitSha '${{ github.sha }}' `
+            -OutputPath $artifact
+
+          if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
+            throw 'Recruitment Function archive was not created.'
+          }
+
+          $actualHash = (Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash.ToLowerInvariant()
+          $recordedHash = ((Get-Content -LiteralPath "$artifact.sha256" -Raw).Trim() -split '\s+')[0]
+          if ($actualHash -ne $recordedHash) {
+            throw 'Archive digest sidecar does not match the generated ZIP.'
+          }
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify target remains disabled
+        shell: bash
+        run: |
+          set -euo pipefail
+          value="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query "[?name=='RECRUITMENT_API_ENABLED'].value | [0]" \
+            --output tsv)"
+          if [[ "${value,,}" != 'false' ]]; then
+            echo "RECRUITMENT_API_ENABLED=${value}; refusing deployment." >&2
+            exit 1
+          fi
+
+      - name: Deploy package with Flex One Deploy
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.FUNCTION_APP_NAME }}
+          package: artifacts/recruitment-functions.zip
+          remote-build: false
+
+      - name: Verify package deployment and disabled API
+        shell: bash
+        run: |
+          set -euo pipefail
+          value="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query "[?name=='RECRUITMENT_API_ENABLED'].value | [0]" \
+            --output tsv)"
+          if [[ "${value,,}" != 'false' ]]; then
+            echo "RECRUITMENT_API_ENABLED changed unexpectedly: ${value}" >&2
+            exit 1
+          fi
+
+          functions="$(az functionapp function list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query '[].name' \
+            --output tsv)"
+          if [[ -z "$functions" ]]; then
+            echo 'No Functions were indexed after deployment.' >&2
+            exit 1
+          fi
+
+          printf 'Indexed Functions:\n%s\n' "$functions"
+
+      - name: Write deployment summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Recruitment test package
+
+          - Function App: \`${FUNCTION_APP_NAME}\`
+          - Deployment: Flex Consumption One Deploy
+          - Public recruitment API: disabled
+          - Public Careers form: unchanged
+          - Package source: \`${GITHUB_SHA}\`
+          EOF
