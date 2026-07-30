@@ -47,20 +47,6 @@
     document.head.appendChild(script);
   }
 
-  // Preserve native vertical scrolling while clipping accidental horizontal
-  // overflow from full-bleed page elements.
-  if (document.body && document.body.classList.contains('homepage') && !document.getElementById('sv-home-scroll-fix')) {
-    var scrollFix = document.createElement('style');
-    scrollFix.id = 'sv-home-scroll-fix';
-    scrollFix.textContent = [
-      'html,',
-      'body.homepage,',
-      'body.homepage * { overscroll-behavior: none !important; }',
-      'body.homepage { overflow-x: clip !important; }'
-    ].join('\n');
-    document.head.appendChild(scrollFix);
-  }
-
   // Keep the current desktop navigation item visibly selected after page load.
   if (document.body && document.body.classList.contains('homepage') && !document.getElementById('sv-active-nav-indicator')) {
     var activeNavStyle = document.createElement('style');

@@ -17,7 +17,7 @@ html {
 html,
 body,
 * {
-  overscroll-behavior: none;
+  overscroll-behavior: auto;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -106,6 +106,9 @@ html {
      navigation grid does not shift horizontally when moving between pages
      with different document heights. */
   scrollbar-gutter: stable;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body.homepage {
@@ -121,8 +124,8 @@ body.homepage {
   line-height: 1.62;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
-  overscroll-behavior-y: none;
+  overflow: visible;
+  overscroll-behavior-y: auto;
 }
 body.homepage img { max-width: 100%; display: block; }
 body.homepage a { color: inherit; }
