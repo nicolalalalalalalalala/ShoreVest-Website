@@ -1,9 +1,9 @@
 name: Temporary Verify Recruitment Package Test
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/rebuild-recruitment-backend
+      - main
     paths:
       - .github/workflows/tmp-verify-recruitment-package-test.yml
 
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: recruitment-test-package
+  group: recruitment-test-package-verification-visible
   cancel-in-progress: false
 
 env:
