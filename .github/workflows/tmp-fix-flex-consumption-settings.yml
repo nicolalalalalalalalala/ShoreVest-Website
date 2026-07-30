@@ -1,0 +1,74 @@
+name: Temporary Fix Flex Consumption Settings
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-fix-flex-consumption-settings.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/rebuild-recruitment-backend
+          fetch-depth: 0
+
+      - name: Fix Flex Consumption templates and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          main = Path('infra/recruitment/main.bicep')
+          text = main.read_text()
+          worker_block = """        {
+            name: 'FUNCTIONS_WORKER_RUNTIME'
+            value: 'node'
+          }
+          """
+          if text.count(worker_block) != 1:
+              raise SystemExit(f'Expected one main worker-runtime block, found {text.count(worker_block)}')
+          if text.count("      ftpsState: 'Disabled'\n") != 1:
+              raise SystemExit('Expected one ftpsState setting in main.bicep')
+          text = text.replace(worker_block, '')
+          text = text.replace("      ftpsState: 'Disabled'\n", '')
+          main.write_text(text)
+
+          runtime = Path('infra/recruitment/runtime-settings.v2.bicep')
+          text = runtime.read_text()
+          text = text.replace("    FUNCTIONS_WORKER_RUNTIME: 'node'\n", '')
+          runtime.write_text(text)
+
+          test = Path('services/recruitment-functions/test/runtimeSettingsV2.test.js')
+          text = test.read_text()
+          required = "  'FUNCTIONS_WORKER_RUNTIME',\n"
+          if text.count(required) != 1:
+              raise SystemExit(f'Expected one obsolete test requirement, found {text.count(required)}')
+          text = text.replace(required, '')
+          anchor = "  assert.ok(!template.includes('FUNCTIONS_EXTENSION_VERSION'));\n"
+          replacement = "  assert.ok(!template.includes('FUNCTIONS_WORKER_RUNTIME'));\n" + anchor
+          if text.count(anchor) != 1:
+              raise SystemExit('Expected runtime test assertion anchor')
+          text = text.replace(anchor, replacement)
+          test.write_text(text)
+          PY
+
+          git diff --check
+          git diff --exit-code -- infra/recruitment/main.bicep infra/recruitment/runtime-settings.v2.bicep services/recruitment-functions/test/runtimeSettingsV2.test.js && {
+            echo 'Patch produced no change.' >&2
+            exit 1
+          }
+
+          git config user.name 'shorevest-recruitment-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add infra/recruitment/main.bicep infra/recruitment/runtime-settings.v2.bicep services/recruitment-functions/test/runtimeSettingsV2.test.js
+          git commit -m 'Fix Flex Consumption runtime settings'
+          git push origin HEAD:agent/rebuild-recruitment-backend
