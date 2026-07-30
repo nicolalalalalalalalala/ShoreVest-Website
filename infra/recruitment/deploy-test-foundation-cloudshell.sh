@@ -161,7 +161,7 @@ for key in "${settings[@]}"; do
     --name "$function_app_name" \
     --query "[?name=='${key}'].value | [0]" \
     --output tsv)"
-  if [[ "$value" != 'false' ]]; then
+  if [[ "${value,,}" != 'false' ]]; then
     echo "Safety verification failed: ${key}=${value}" >&2
     exit 1
   fi
