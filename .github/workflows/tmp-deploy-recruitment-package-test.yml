@@ -10,6 +10,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  issues: write
 
 concurrency:
   group: recruitment-test-package
@@ -123,3 +124,19 @@ jobs:
           - Public Careers form: unchanged
           - Package source: \`${GITHUB_SHA}\`
           EOF
+
+  report:
+    name: Report deployment result
+    if: always()
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post result to PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ needs.deploy.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/issues/785/comments" \
+            -f body="Recruitment test package deployment result: **${RESULT}** for commit \`${GITHUB_SHA}\`."
