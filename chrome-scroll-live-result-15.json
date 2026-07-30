@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-07-30T11:48:00.325Z",
+  "url": "https://shorevest.com/?live-scroll-check=15",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+  "before": {
+    "y": 0,
+    "max": 2574,
+    "rootOverflowY": "auto",
+    "bodyOverflowY": "visible",
+    "bodyPosition": "static",
+    "guardLoaded": true
+  },
+  "afterWheel": 700,
+  "recovered": {
+    "rootOverflowY": "auto",
+    "rootPosition": "static",
+    "bodyOverflowY": "visible",
+    "bodyPosition": "static"
+  },
+  "afterRelockWheel": 1100,
+  "afterPageDown": 689,
+  "assets": {
+    "scripts": [
+      "https://shorevest.com/assets/js/chrome-scroll-guard.js?v=20260730-live-scroll-15",
+      "https://shorevest.com/assets/js/favicon-guard.js?v=20260730-live-scroll-15",
+      "https://shorevest.com/assets/js/site-config.js?v=20260722-public-hotfix",
+      "https://shorevest.com/assets/js/insights-new-edition.js?v=20260722-linkedin-direct-navigation",
+      "https://shorevest.com/assets/js/sv-navigation.js?v=20260730-live-scroll-15"
+    ],
+    "styles": [
+      "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap",
+      "https://shorevest.com/assets/css/homepage-rebuild.css?v=20260730-live-scroll-15",
+      "https://shorevest.com/assets/css/visual-review-overrides.css?v=20260730-live-scroll-15"
+    ]
+  },
+  "consoleErrors": [],
+  "passed": true
+}
