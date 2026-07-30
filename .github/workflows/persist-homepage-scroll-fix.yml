@@ -1,0 +1,57 @@
+name: Persist homepage Chrome scroll fix
+on:
+  push:
+    paths:
+      - '.github/workflows/persist-homepage-scroll-fix.yml'
+permissions:
+  contents: write
+jobs:
+  persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wait for automatic route generation
+        run: sleep 25
+      - name: Update to latest main
+        run: git pull --rebase origin main
+      - name: Fix canonical homepage sources and regenerate routes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          version = '20260730-live-scroll-15'
+          for name in ('home.html', 'home_cn.html'):
+              p = Path(name)
+              s = p.read_text()
+              s = re.sub(
+                  r'<script>document\.write\(\'<link rel="stylesheet" href="assets/css/homepage-rebuild\.css\?v=[^"]+">\'\);</script>',
+                  f'<link rel="stylesheet" href="/assets/css/homepage-rebuild.css?v={version}">',
+                  s
+              )
+              s = re.sub(
+                  r'<link rel="stylesheet" href="/?assets/css/homepage-rebuild\.css\?v=[^"]+">',
+                  f'<link rel="stylesheet" href="/assets/css/homepage-rebuild.css?v={version}">',
+                  s
+              )
+              guard = f'<script src="/assets/js/chrome-scroll-guard.js?v={version}" defer></script>'
+              s = re.sub(r'\n?<script src="/?assets/js/chrome-scroll-guard\.js\?v=[^"]+" defer></script>', '', s)
+              marker = re.search(r'<script src="assets/js/favicon-guard\.js\?v=[^"]+" defer></script>', s)
+              if marker:
+                  s = s[:marker.start()] + guard + '\n' + s[marker.start():]
+              else:
+                  s = s.replace('</head>', guard + '\n</head>')
+              s = re.sub(r'favicon-guard\.js\?v=[^"]+', f'favicon-guard.js?v={version}', s)
+              s = re.sub(r'visual-review-overrides\.css\?v=[^"]+', f'visual-review-overrides.css?v={version}', s)
+              s = re.sub(r'sv-navigation\.js\?v=[^"]+', f'sv-navigation.js?v={version}', s)
+              p.write_text(s)
+          PY
+          node scripts/generate-clean-public-urls.js
+          rm -f .github/workflows/persist-homepage-scroll-fix.yml
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A
+          git commit -m "Persist Chrome scroll fix in homepage sources"
+          git push
