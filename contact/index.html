@@ -107,14 +107,14 @@ window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
       <div class="cp-hero__routes">
         <p class="cp-routes__label">Inquiry routes</p>
         <div class="cp-routes">
-          <a class="cp-route" href="#cp-form">
+          <a class="cp-route" href="/contact/#cp-form">
             <span class="cp-route__body">
               <span class="cp-route__label">New opportunities</span>
               <span class="cp-route__copy">Origination, deal referrals, and asset introductions across China credit and distressed debt.</span>
             </span>
             <span class="cp-route__arrow" aria-hidden="true">→</span>
           </a>
-          <a class="cp-route" href="#cp-form">
+          <a class="cp-route" href="/contact/#cp-form">
             <span class="cp-route__body">
               <span class="cp-route__label">Investor inquiries</span>
               <span class="cp-route__copy">For existing and prospective institutional investors. Submit the form and we will route your inquiry to investor relations.</span>
@@ -128,7 +128,7 @@ window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
             </span>
             <span class="cp-route__arrow" aria-hidden="true">→</span>
           </a>
-          <a class="cp-route" href="#cp-form">
+          <a class="cp-route" href="/contact/#cp-form">
             <span class="cp-route__body">
               <span class="cp-route__label">General inquiries</span>
               <span class="cp-route__copy">For all other questions, use the form below and we will direct your message appropriately.</span>
@@ -149,7 +149,7 @@ window.__SVT=(new URLSearchParams(location.search)).get('t')||'';
           <h2 id="cp-form-title">Submit an inquiry</h2>
           <p>Provide a brief description of your inquiry. Please do not include confidential deal materials.</p>
         </div>
-        <form class="cp-form" id="cp-form" action="#" method="post" novalidate>
+        <form class="cp-form" id="cp-form" action="mailto:inquiries@shorevest.com" method="post" novalidate enctype="text/plain">
           <div class="cp-field">
             <label for="cp-type">Inquiry type</label>
             <select id="cp-type" name="inquiry_type" required>
