@@ -277,7 +277,7 @@ resource vault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: '${namePrefix}-recruit-kv-${environmentName}'
   location: location
   tags: tags
-  properties: {
+  properties: union({
     tenantId: tenant().tenantId
     sku: {
       family: 'A'
@@ -287,9 +287,10 @@ resource vault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enabledForTemplateDeployment: false
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
-    enablePurgeProtection: environmentName == 'prod'
     publicNetworkAccess: 'Enabled'
-  }
+  }, environmentName == 'prod' ? {
+    enablePurgeProtection: true
+  } : {})
 }
 
 resource topic 'Microsoft.EventGrid/topics@2023-12-15-preview' = {
