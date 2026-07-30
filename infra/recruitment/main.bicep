@@ -372,7 +372,7 @@ resource kvSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   properties: {
     principalId: mi.properties.principalId
     principalType: 'ServicePrincipal'
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
+    roleDefinitionId: tenantResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
   }
 }
 
