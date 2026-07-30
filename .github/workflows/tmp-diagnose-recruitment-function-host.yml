@@ -1,0 +1,138 @@
+name: Temporary Diagnose Recruitment Function Host
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/tmp-diagnose-recruitment-function-host.yml
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-test-host-diagnostics
+  cancel-in-progress: false
+
+env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP_NAME: svrc26hk-recruit-fn-test
+  MANAGED_IDENTITY_NAME: svrc26hk-recruit-mi-test
+  HOST_STORAGE_NAME: svrc26hkfnpkgtest
+  APP_INSIGHTS_NAME: svrc26hk-recruit-ai-test
+
+jobs:
+  diagnose:
+    name: Diagnose disabled Function host
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: recruitment-test
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Confirm API remains disabled
+        shell: bash
+        run: |
+          set -euo pipefail
+          value="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query "[?name=='RECRUITMENT_API_ENABLED'].value | [0]" \
+            --output tsv)"
+          [[ "${value,,}" == 'false' ]] || { echo "API is not disabled: ${value}" >&2; exit 1; }
+
+      - name: Enable Node entry-point error reporting and restart
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --settings FUNCTIONS_NODE_BLOCK_ON_ENTRY_POINT_ERROR=true \
+            --output none
+          az functionapp restart \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME"
+          sleep 90
+
+      - name: Capture live Function app configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          app_id="$(az functionapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP_NAME" --query id -o tsv)"
+          az rest --method get \
+            --url "https://management.azure.com${app_id}?api-version=2024-04-01" \
+            --query '{state:properties.state,kind:kind,serverFarmId:properties.serverFarmId,functionAppConfig:properties.functionAppConfig,identity:identity}' \
+            --output json
+
+          echo 'Safe app settings:'
+          az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query "[?name=='AzureWebJobsStorage__accountName' || name=='AzureWebJobsStorage__credential' || name=='AzureWebJobsStorage__clientId' || name=='FUNCTIONS_NODE_BLOCK_ON_ENTRY_POINT_ERROR' || name=='RECRUITMENT_API_ENABLED'].{name:name,value:value}" \
+            --output table
+
+      - name: Inspect host-storage RBAC
+        shell: bash
+        run: |
+          set -euo pipefail
+          principal_id="$(az identity show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$MANAGED_IDENTITY_NAME" \
+            --query principalId -o tsv)"
+          storage_id="$(az storage account show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$HOST_STORAGE_NAME" \
+            --query id -o tsv)"
+          az role assignment list \
+            --assignee-object-id "$principal_id" \
+            --scope "$storage_id" \
+            --include-inherited \
+            --query '[].{role:roleDefinitionName,scope:scope}' \
+            --output table
+
+      - name: Check indexed functions and HTTP host response
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'Indexed functions:'
+          az functionapp function list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query '[].name' \
+            --output tsv || true
+
+          echo 'Health endpoint response:'
+          curl --silent --show-error --max-time 30 \
+            --write-out '\nHTTP_STATUS=%{http_code}\n' \
+            "https://${FUNCTION_APP_NAME}.azurewebsites.net/api/recruitment/health" || true
+
+      - name: Query Application Insights startup errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          query="union traces,exceptions,requests | where timestamp > ago(1h) | where cloud_RoleName =~ '${FUNCTION_APP_NAME}' or message contains '${FUNCTION_APP_NAME}' | where severityLevel >= 2 or message has_any ('entry point','Worker','host','storage','exception','error','fail') | project timestamp,itemType,severityLevel,message,outerMessage,type,operation_Name | order by timestamp desc | take 100"
+          az monitor app-insights query \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --app "$APP_INSIGHTS_NAME" \
+            --analytics-query "$query" \
+            --output table || true
+
+      - name: Final safety check
+        shell: bash
+        run: |
+          set -euo pipefail
+          value="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --query "[?name=='RECRUITMENT_API_ENABLED'].value | [0]" \
+            --output tsv)"
+          [[ "${value,,}" == 'false' ]] || { echo "API changed unexpectedly: ${value}" >&2; exit 1; }
