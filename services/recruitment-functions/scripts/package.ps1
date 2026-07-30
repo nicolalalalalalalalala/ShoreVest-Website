@@ -21,6 +21,7 @@ $outputFullPath = if ([System.IO.Path]::IsPathRooted($OutputPath)) {
 }
 $outputDirectory = Split-Path -Parent $outputFullPath
 $stagingRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("shorevest-recruitment-" + [guid]::NewGuid().ToString('N'))
+$serviceStagingRoot = Join-Path $stagingRoot 'services/recruitment-functions'
 
 function Invoke-CheckedCommand {
   param(
@@ -74,8 +75,18 @@ function Get-PayloadDigest {
 }
 
 try {
-  if (-not (Test-Path -LiteralPath (Join-Path $serviceRoot 'package-lock.json') -PathType Leaf)) {
+  $servicePackagePath = Join-Path $serviceRoot 'package.json'
+  $serviceLockPath = Join-Path $serviceRoot 'package-lock.json'
+  $hostPath = Join-Path $serviceRoot 'host.json'
+
+  if (-not (Test-Path -LiteralPath $serviceLockPath -PathType Leaf)) {
     throw 'The recruitment Functions package lock is required for an immutable build.'
+  }
+  if (-not (Test-Path -LiteralPath $servicePackagePath -PathType Leaf)) {
+    throw 'The recruitment Functions package manifest is required.'
+  }
+  if (-not (Test-Path -LiteralPath $hostPath -PathType Leaf)) {
+    throw 'The recruitment Functions host.json is required.'
   }
 
   Push-Location $serviceRoot
@@ -86,17 +97,22 @@ try {
   }
 
   New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
+  New-Item -ItemType Directory -Path $serviceStagingRoot -Force | Out-Null
 
-  foreach ($fileName in @('host.json', 'package.json')) {
-    $sourceFile = Join-Path $serviceRoot $fileName
-    if (-not (Test-Path -LiteralPath $sourceFile -PathType Leaf)) {
-      throw "Required Function package file is missing: $sourceFile"
-    }
-    Copy-Item -LiteralPath $sourceFile -Destination (Join-Path $stagingRoot $fileName) -Force
-  }
+  Copy-Item -LiteralPath $hostPath -Destination (Join-Path $stagingRoot 'host.json') -Force
+  Copy-Item -LiteralPath $servicePackagePath -Destination (Join-Path $serviceStagingRoot 'package.json') -Force
+  Copy-Item -LiteralPath $serviceLockPath -Destination (Join-Path $serviceStagingRoot 'package-lock.json') -Force
 
-  Copy-DirectoryContents -Source (Join-Path $serviceRoot 'src') -Destination (Join-Path $stagingRoot 'src')
-  Copy-DirectoryContents -Source (Join-Path $serviceRoot 'node_modules') -Destination (Join-Path $stagingRoot 'node_modules')
+  $deploymentPackage = Get-Content -LiteralPath $servicePackagePath -Raw | ConvertFrom-Json
+  $deploymentPackage.main = 'services/recruitment-functions/src/functions/index.js'
+  [System.IO.File]::WriteAllText(
+    (Join-Path $stagingRoot 'package.json'),
+    (($deploymentPackage | ConvertTo-Json -Depth 20) + "`n"),
+    [System.Text.UTF8Encoding]::new($false)
+  )
+
+  Copy-DirectoryContents -Source (Join-Path $serviceRoot 'src') -Destination (Join-Path $serviceStagingRoot 'src')
+  Copy-DirectoryContents -Source (Join-Path $serviceRoot 'node_modules') -Destination (Join-Path $serviceStagingRoot 'node_modules')
   Copy-DirectoryContents -Source (Join-Path $repoRoot 'api/recruitment/core') -Destination (Join-Path $stagingRoot 'api/recruitment/core')
   Copy-DirectoryContents -Source (Join-Path $repoRoot 'assets/data/recruitment') -Destination (Join-Path $stagingRoot 'assets/data/recruitment')
 
@@ -113,12 +129,22 @@ try {
   }
 
   foreach ($ownedRuntimeRoot in @(
-    (Join-Path $stagingRoot 'src'),
+    (Join-Path $serviceStagingRoot 'src'),
     (Join-Path $stagingRoot 'api/recruitment/core')
   )) {
     Get-ChildItem -LiteralPath $ownedRuntimeRoot -Recurse -Filter '*.js' -File | ForEach-Object {
       Invoke-CheckedCommand -Command 'node' -Arguments @('--check', $_.FullName)
     }
+  }
+
+  Push-Location $stagingRoot
+  try {
+    Invoke-CheckedCommand -Command 'node' -Arguments @(
+      '-e',
+      "require('./services/recruitment-functions/src/appFactory.js'); require('./services/recruitment-functions/src/lib/eventGrid.js');"
+    )
+  } finally {
+    Pop-Location
   }
 
   $metadata = [ordered]@{
