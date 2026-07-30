@@ -94,10 +94,11 @@ jobs:
               'host.json',
               'package.json',
               'deployment-metadata.json',
-              'src/functions/index.js',
+              'services/recruitment-functions/package.json',
+              'services/recruitment-functions/src/functions/index.js',
               'api/recruitment/core/flows.js',
               'assets/data/recruitment/roles.v1.json',
-              'node_modules/@azure/functions/package.json'
+              'services/recruitment-functions/node_modules/@azure/functions/package.json'
             )) {
               if ($entries -notcontains $required) {
                 throw "Package is missing required entry: $required"
@@ -108,6 +109,17 @@ jobs:
             }
             if ($entries | Where-Object { $_ -match '(^|/)(local\.settings|\.env)' }) {
               throw 'Package contains forbidden local configuration.'
+            }
+
+            $packageEntry = $archive.GetEntry('package.json')
+            $packageReader = [System.IO.StreamReader]::new($packageEntry.Open())
+            try {
+              $deploymentPackage = ($packageReader.ReadToEnd() | ConvertFrom-Json)
+            } finally {
+              $packageReader.Dispose()
+            }
+            if ($deploymentPackage.main -ne 'services/recruitment-functions/src/functions/index.js') {
+              throw 'Deployment package main entry does not preserve the Function service layout.'
             }
 
             $metadataEntry = $archive.GetEntry('deployment-metadata.json')
