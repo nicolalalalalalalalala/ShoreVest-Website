@@ -1,9 +1,9 @@
 name: Temporary Deploy Recruitment Package Test
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/rebuild-recruitment-backend
+      - main
     paths:
       - .github/workflows/tmp-deploy-recruitment-package-test.yml
 
