@@ -1,0 +1,94 @@
+name: Verify live Chrome scrolling
+on:
+  push:
+    paths:
+      - '.github/workflows/verify-live-chrome-scroll-14.yml'
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install playwright-core
+      - name: Test public site in Chrome
+        run: |
+          CHROME=$(which google-chrome || which google-chrome-stable || which chromium || which chromium-browser)
+          export CHROME
+          node <<'JS'
+          const { chromium } = require('playwright-core');
+          const fs = require('fs');
+          (async () => {
+            const browser = await chromium.launch({ executablePath: process.env.CHROME, headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+            const errors = [];
+            page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
+            await page.goto('https://shorevest.com/?live-scroll-check=14', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.evaluate(() => window.scrollTo(0, 0));
+            const assets = await page.evaluate(() => ({
+              scripts: Array.from(document.scripts).map(s => s.src).filter(Boolean),
+              styles: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.href)
+            }));
+            const before = await page.evaluate(() => ({
+              y: window.scrollY,
+              max: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) - window.innerHeight,
+              rootOverflowY: getComputedStyle(document.documentElement).overflowY,
+              bodyOverflowY: getComputedStyle(document.body).overflowY,
+              bodyPosition: getComputedStyle(document.body).position,
+              guardLoaded: !!document.querySelector('script[src*="chrome-scroll-guard.js"]')
+            }));
+            await page.mouse.move(600, 400);
+            await page.mouse.wheel(0, 700);
+            await page.waitForTimeout(700);
+            const afterWheel = await page.evaluate(() => window.scrollY);
+            await page.evaluate(() => {
+              document.documentElement.style.cssText = 'height:100%!important;overflow:hidden!important;position:fixed!important;inset:0!important';
+              document.body.style.cssText = 'height:100%!important;overflow:hidden!important;position:fixed!important;inset:0!important';
+            });
+            await page.waitForTimeout(300);
+            const recovered = await page.evaluate(() => ({
+              rootOverflowY: getComputedStyle(document.documentElement).overflowY,
+              rootPosition: getComputedStyle(document.documentElement).position,
+              bodyOverflowY: getComputedStyle(document.body).overflowY,
+              bodyPosition: getComputedStyle(document.body).position
+            }));
+            await page.mouse.wheel(0, 400);
+            await page.waitForTimeout(700);
+            const afterRelockWheel = await page.evaluate(() => window.scrollY);
+            await page.evaluate(() => window.scrollTo(0, 0));
+            await page.keyboard.press('PageDown');
+            await page.waitForTimeout(700);
+            const afterPageDown = await page.evaluate(() => window.scrollY);
+            const result = {
+              checkedAt: new Date().toISOString(),
+              url: page.url(),
+              userAgent: await page.evaluate(() => navigator.userAgent),
+              before,
+              afterWheel,
+              recovered,
+              afterRelockWheel,
+              afterPageDown,
+              assets,
+              consoleErrors: errors,
+              passed: before.guardLoaded && before.max > 0 && afterWheel > 0 && afterRelockWheel > afterWheel && afterPageDown > 0 && recovered.rootOverflowY !== 'hidden' && recovered.rootPosition !== 'fixed' && recovered.bodyOverflowY !== 'hidden' && recovered.bodyPosition !== 'fixed'
+            };
+            fs.writeFileSync('chrome-scroll-live-result-14.json', JSON.stringify(result, null, 2) + '\n');
+            await browser.close();
+            if (!result.passed) process.exitCode = 1;
+          })().catch(error => {
+            fs.writeFileSync('chrome-scroll-live-result-14.json', JSON.stringify({ passed: false, error: String(error && error.stack || error) }, null, 2) + '\n');
+            process.exitCode = 1;
+          });
+          JS
+      - name: Publish measured result
+        if: always()
+        run: |
+          rm -f .github/workflows/verify-live-chrome-scroll-14.yml
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -A
+          git commit -m "Record verified public Chrome scroll result"
+          git push
