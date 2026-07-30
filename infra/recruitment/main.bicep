@@ -9,6 +9,9 @@ param namePrefix string
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
+@description('Grant the managed identity Key Vault Secrets User access. Enable only when secret values and the backend package are being configured.')
+param enableKeyVaultSecretAccess bool = false
+
 @description('Paid Microsoft Defender for Storage malware scanning. Explicit opt-in only.')
 param enableDefenderForStorage bool = false
 
@@ -366,7 +369,7 @@ resource cosmosData 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@20
   }
 }
 
-resource kvSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource kvSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (enableKeyVaultSecretAccess) {
   name: guid(vault.id, mi.id, 'kv-secrets-user')
   scope: vault
   properties: {
