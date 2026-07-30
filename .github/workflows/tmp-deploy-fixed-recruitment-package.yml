@@ -1,0 +1,87 @@
+name: Temporary Deploy Corrected Recruitment Package
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/tmp-deploy-fixed-recruitment-package.yml
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-test-corrected-package
+  cancel-in-progress: false
+
+env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP_NAME: svrc26hk-recruit-fn-test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: recruitment-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build corrected immutable package
+        shell: pwsh
+        run: |
+          & ./services/recruitment-functions/scripts/package.ps1 `
+            -CommitSha '${{ github.sha }}' `
+            -OutputPath 'artifacts/recruitment-functions.zip'
+
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Confirm all launch controls remain disabled
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP_NAME" --output json)"
+          for key in RECRUITMENT_API_ENABLED RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            value="$(jq -r --arg key "$key" '.[] | select(.name == $key) | .value' <<<"$settings")"
+            [[ "${value,,}" == 'false' ]] || { echo "${key}=${value}; refusing deployment" >&2; exit 1; }
+          done
+
+      - name: Deploy corrected package
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.FUNCTION_APP_NAME }}
+          package: artifacts/recruitment-functions.zip
+          remote-build: false
+
+      - name: Wait for Function indexing and verify disabled API
+        shell: bash
+        run: |
+          set -euo pipefail
+          functions=''
+          for attempt in $(seq 1 24); do
+            functions="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP_NAME" --query '[].name' --output tsv 2>/dev/null || true)"
+            count="$(printf '%s\n' "$functions" | sed '/^$/d' | wc -l | tr -d ' ')"
+            echo "Indexing check ${attempt}/24: ${count} functions"
+            if [[ "$count" -ge 12 ]]; then break; fi
+            sleep 15
+          done
+          count="$(printf '%s\n' "$functions" | sed '/^$/d' | wc -l | tr -d ' ')"
+          [[ "$count" -ge 12 ]] || { echo "Only ${count} functions indexed" >&2; exit 1; }
+          for expected in initiateApplication completeUpload finalizeApplication defenderScanResult quarantineCleanup retentionPolicyAssignment retentionPurge retentionIdempotencyCleanup outboxWorker hrCleanDocumentAccess hrRetentionControl health; do
+            printf '%s\n' "$functions" | grep -q "$expected" || { echo "Missing ${expected}" >&2; exit 1; }
+          done
+          value="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP_NAME" --query "[?name=='RECRUITMENT_API_ENABLED'].value | [0]" --output tsv)"
+          [[ "${value,,}" == 'false' ]] || { echo "API changed unexpectedly: ${value}" >&2; exit 1; }
+          printf 'Verified indexed functions:\n%s\n' "$functions"
