@@ -19,12 +19,14 @@ test('immutable recruitment packaging script exists and uses the lockfile', () =
   assert.ok(source.includes("@('ci', '--omit=dev', '--no-audit', '--no-fund')"));
 });
 
-test('package stages only the required Function and recruitment runtime trees', () => {
+test('package preserves repository-relative Function and shared-core paths', () => {
   for (const required of [
-    "@('host.json', 'package.json')",
-    "Join-Path $serviceRoot 'src'",
-    "Join-Path $serviceRoot 'node_modules'",
+    "$serviceStagingRoot = Join-Path $stagingRoot 'services/recruitment-functions'",
+    "'services/recruitment-functions/src/functions/index.js'",
+    "Join-Path $serviceStagingRoot 'src'",
+    "Join-Path $serviceStagingRoot 'node_modules'",
     "Join-Path $repoRoot 'api/recruitment/core'",
+    "Join-Path $stagingRoot 'api/recruitment/core'",
     "Join-Path $repoRoot 'assets/data/recruitment'"
   ]) {
     assert.ok(source.includes(required), `packaging script omits ${required}`);
@@ -33,10 +35,15 @@ test('package stages only the required Function and recruitment runtime trees', 
   assert.ok(!source.includes("Copy-Item -LiteralPath (Join-Path $Source '*')"));
 });
 
+test('package smoke-loads modules that depend on repository-relative imports', () => {
+  assert.ok(source.includes("require('./services/recruitment-functions/src/appFactory.js')"));
+  assert.ok(source.includes("require('./services/recruitment-functions/src/lib/eventGrid.js')"));
+});
+
 test('package rejects secrets and writes verifiable deployment metadata', () => {
   for (const required of [
-    "local.settings*",
-    ".env*",
+    'local.settings*',
+    '.env*',
     "'.pem'",
     "'.key'",
     "'.pfx'",
