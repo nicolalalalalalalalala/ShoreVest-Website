@@ -106,21 +106,21 @@ Power Automate is limited to two HR notification flows. They must use separate s
 
 Use only:
 
-- `ApplicationReceivedNotificationState`
-- `ApplicationReceivedNotificationEventKey`
-- `ApplicationReceivedNotificationSentAtUtc`
-- `ApplicationReceivedNotificationAttemptCount`
-- `ApplicationReceivedNotificationLastErrorCode`
+- `AppRecvNotificationState`
+- `AppRecvNotificationEventKey`
+- `AppRecvNotificationSentAtUtc`
+- `AppRecvNotificationAttemptCount`
+- `AppRecvNotificationLastErrorCode`
 
 ### Documents clean and ready
 
 Use only:
 
-- `DocumentsReadyNotificationState`
-- `DocumentsReadyNotificationEventKey`
-- `DocumentsReadyNotificationSentAtUtc`
-- `DocumentsReadyNotificationAttemptCount`
-- `DocumentsReadyNotificationLastErrorCode`
+- `DocsReadyNotificationState`
+- `DocsReadyNotificationEventKey`
+- `DocsReadyNotificationSentAtUtc`
+- `DocsReadyNotificationAttemptCount`
+- `DocsReadyNotificationLastErrorCode`
 
 Each flow must:
 

@@ -84,18 +84,18 @@ test('list creation retains pending notification fields', async () => {
     keyValue: 'APP-1',
     fields: {
       ApplicationReference: 'APP-1',
-      ApplicationReceivedNotificationState: 'Pending',
-      ApplicationReceivedNotificationEventKey: 'event-1',
-      ApplicationReceivedNotificationSentAtUtc: null,
-      ApplicationReceivedNotificationAttemptCount: 0,
-      ApplicationReceivedNotificationLastErrorCode: null
+      AppRecvNotificationState: 'Pending',
+      AppRecvNotificationEventKey: 'event-1',
+      AppRecvNotificationSentAtUtc: null,
+      AppRecvNotificationAttemptCount: 0,
+      AppRecvNotificationLastErrorCode: null
     }
   });
 
   const payload = JSON.parse(calls[1].options.body).fields;
-  assert.equal(payload.ApplicationReceivedNotificationState, 'Pending');
-  assert.equal(payload.ApplicationReceivedNotificationEventKey, 'event-1');
-  assert.equal(payload.ApplicationReceivedNotificationAttemptCount, 0);
+  assert.equal(payload.AppRecvNotificationState, 'Pending');
+  assert.equal(payload.AppRecvNotificationEventKey, 'event-1');
+  assert.equal(payload.AppRecvNotificationAttemptCount, 0);
 });
 
 test('list upsert patches an existing item', async () => {
@@ -124,21 +124,21 @@ test('list upsert patches an existing item', async () => {
 
 test('notification field discovery requests only recognized state machines', () => {
   assert.deepEqual(notificationFieldsRequested({
-    ApplicationReceivedNotificationEventKey: 'event-1',
-    DocumentsReadyNotificationEventKey: 'event-2',
+    AppRecvNotificationEventKey: 'event-1',
+    DocsReadyNotificationEventKey: 'event-2',
     CandidateName: 'Candidate',
     FakeNotificationEventKey: 'unsafe'
   }), [
-    'ApplicationReceivedNotificationState',
-    'ApplicationReceivedNotificationEventKey',
-    'ApplicationReceivedNotificationSentAtUtc',
-    'ApplicationReceivedNotificationAttemptCount',
-    'ApplicationReceivedNotificationLastErrorCode',
-    'DocumentsReadyNotificationState',
-    'DocumentsReadyNotificationEventKey',
-    'DocumentsReadyNotificationSentAtUtc',
-    'DocumentsReadyNotificationAttemptCount',
-    'DocumentsReadyNotificationLastErrorCode'
+    'AppRecvNotificationState',
+    'AppRecvNotificationEventKey',
+    'AppRecvNotificationSentAtUtc',
+    'AppRecvNotificationAttemptCount',
+    'AppRecvNotificationLastErrorCode',
+    'DocsReadyNotificationState',
+    'DocsReadyNotificationEventKey',
+    'DocsReadyNotificationSentAtUtc',
+    'DocsReadyNotificationAttemptCount',
+    'DocsReadyNotificationLastErrorCode'
   ]);
 });
 
@@ -159,11 +159,11 @@ test('notification replay preserves Sent state for the same event key', async ()
               NotificationSentAtUtc: '2026-07-23T00:10:00.000Z',
               NotificationAttemptCount: 1,
               NotificationLastErrorCode: null,
-              ApplicationReceivedNotificationState: 'Sent',
-              ApplicationReceivedNotificationEventKey: 'event-1',
-              ApplicationReceivedNotificationSentAtUtc: '2026-07-23T00:10:00.000Z',
-              ApplicationReceivedNotificationAttemptCount: 1,
-              ApplicationReceivedNotificationLastErrorCode: null
+              AppRecvNotificationState: 'Sent',
+              AppRecvNotificationEventKey: 'event-1',
+              AppRecvNotificationSentAtUtc: '2026-07-23T00:10:00.000Z',
+              AppRecvNotificationAttemptCount: 1,
+              AppRecvNotificationLastErrorCode: null
             }
           }]
         });
@@ -184,15 +184,15 @@ test('notification replay preserves Sent state for the same event key', async ()
       NotificationSentAtUtc: null,
       NotificationAttemptCount: 0,
       NotificationLastErrorCode: null,
-      ApplicationReceivedNotificationState: 'Pending',
-      ApplicationReceivedNotificationEventKey: 'event-1',
-      ApplicationReceivedNotificationSentAtUtc: null,
-      ApplicationReceivedNotificationAttemptCount: 0,
-      ApplicationReceivedNotificationLastErrorCode: null
+      AppRecvNotificationState: 'Pending',
+      AppRecvNotificationEventKey: 'event-1',
+      AppRecvNotificationSentAtUtc: null,
+      AppRecvNotificationAttemptCount: 0,
+      AppRecvNotificationLastErrorCode: null
     }
   });
 
-  assert.ok(calls[0].url.includes('ApplicationReceivedNotificationEventKey'));
+  assert.ok(calls[0].url.includes('AppRecvNotificationEventKey'));
   assert.ok(calls[0].url.includes('NotificationEventKey'));
   const patch = JSON.parse(calls[1].options.body);
   assert.deepEqual(patch, { TechnicalStatus: 'Ready' });
@@ -210,11 +210,11 @@ test('a different notification event key creates a new Pending state', async () 
             id: '7',
             fields: {
               ApplicationReference: 'APP-1',
-              DocumentsReadyNotificationState: 'Sent',
-              DocumentsReadyNotificationEventKey: 'old-event',
-              DocumentsReadyNotificationSentAtUtc: '2026-07-23T00:10:00.000Z',
-              DocumentsReadyNotificationAttemptCount: 1,
-              DocumentsReadyNotificationLastErrorCode: null
+              DocsReadyNotificationState: 'Sent',
+              DocsReadyNotificationEventKey: 'old-event',
+              DocsReadyNotificationSentAtUtc: '2026-07-23T00:10:00.000Z',
+              DocsReadyNotificationAttemptCount: 1,
+              DocsReadyNotificationLastErrorCode: null
             }
           }]
         });
@@ -230,19 +230,19 @@ test('a different notification event key creates a new Pending state', async () 
     keyValue: 'APP-1',
     fields: {
       TechnicalStatus: 'Ready',
-      DocumentsReadyNotificationState: 'Pending',
-      DocumentsReadyNotificationEventKey: 'new-event',
-      DocumentsReadyNotificationSentAtUtc: null,
-      DocumentsReadyNotificationAttemptCount: 0,
-      DocumentsReadyNotificationLastErrorCode: null
+      DocsReadyNotificationState: 'Pending',
+      DocsReadyNotificationEventKey: 'new-event',
+      DocsReadyNotificationSentAtUtc: null,
+      DocsReadyNotificationAttemptCount: 0,
+      DocsReadyNotificationLastErrorCode: null
     }
   });
 
   const patch = JSON.parse(calls[1].options.body);
   assert.equal(patch.TechnicalStatus, 'Ready');
-  assert.equal(patch.DocumentsReadyNotificationState, 'Pending');
-  assert.equal(patch.DocumentsReadyNotificationEventKey, 'new-event');
-  assert.equal(patch.DocumentsReadyNotificationAttemptCount, 0);
+  assert.equal(patch.DocsReadyNotificationState, 'Pending');
+  assert.equal(patch.DocsReadyNotificationEventKey, 'new-event');
+  assert.equal(patch.DocsReadyNotificationAttemptCount, 0);
 });
 
 test('notification preservation helper leaves purge clears and new events intact', () => {

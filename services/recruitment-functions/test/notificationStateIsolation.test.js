@@ -21,13 +21,13 @@ test('application-received and documents-ready states use different columns', ()
     idempotencyKey: 'documents-key'
   });
 
-  assert.equal(received.ApplicationReceivedNotificationState, 'Pending');
-  assert.equal(received.ApplicationReceivedNotificationEventKey, 'received-key');
-  assert.equal(received.DocumentsReadyNotificationState, undefined);
+  assert.equal(received.AppRecvNotificationState, 'Pending');
+  assert.equal(received.AppRecvNotificationEventKey, 'received-key');
+  assert.equal(received.DocsReadyNotificationState, undefined);
 
-  assert.equal(documents.DocumentsReadyNotificationState, 'Pending');
-  assert.equal(documents.DocumentsReadyNotificationEventKey, 'documents-key');
-  assert.equal(documents.ApplicationReceivedNotificationState, undefined);
+  assert.equal(documents.DocsReadyNotificationState, 'Pending');
+  assert.equal(documents.DocsReadyNotificationEventKey, 'documents-key');
+  assert.equal(documents.AppRecvNotificationState, undefined);
   assert.equal(documents.NotificationState, undefined);
 });
 
@@ -42,8 +42,8 @@ test('purge clears both notification state machines', () => {
   });
 
   assert.equal(purged.NotificationState, null);
-  assert.equal(purged.ApplicationReceivedNotificationState, null);
-  assert.equal(purged.DocumentsReadyNotificationState, null);
-  assert.equal(purged.ApplicationReceivedNotificationEventKey, null);
-  assert.equal(purged.DocumentsReadyNotificationEventKey, null);
+  assert.equal(purged.AppRecvNotificationState, null);
+  assert.equal(purged.DocsReadyNotificationState, null);
+  assert.equal(purged.AppRecvNotificationEventKey, null);
+  assert.equal(purged.DocsReadyNotificationEventKey, null);
 });

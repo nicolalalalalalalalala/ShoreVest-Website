@@ -5,8 +5,8 @@ const DEFAULT_ENDPOINT = 'https://graph.microsoft.com/v1.0';
 const IMMUTABLE_ID_PREFERENCE = 'IdType="ImmutableId"';
 const NOTIFICATION_PREFIXES = Object.freeze([
   '',
-  'ApplicationReceived',
-  'DocumentsReady'
+  'AppRecv',
+  'DocsReady'
 ]);
 const NOTIFICATION_SUFFIXES = Object.freeze([
   'State',

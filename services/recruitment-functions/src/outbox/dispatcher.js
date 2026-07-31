@@ -97,10 +97,10 @@ function applicationFields(application, event = {}) {
     fields.NotificationSentAtUtc = null;
     fields.NotificationAttemptCount = 0;
     fields.NotificationLastErrorCode = null;
-    setNotificationState(fields, 'ApplicationReceived', event);
+    setNotificationState(fields, 'AppRecv', event);
   }
   if (event.type === EVENTS.DocumentsReady) {
-    setNotificationState(fields, 'DocumentsReady', event);
+    setNotificationState(fields, 'DocsReady', event);
   }
   if (purged) {
     fields.NotificationState = null;
@@ -108,8 +108,8 @@ function applicationFields(application, event = {}) {
     fields.NotificationSentAtUtc = null;
     fields.NotificationAttemptCount = null;
     fields.NotificationLastErrorCode = null;
-    clearNotificationState(fields, 'ApplicationReceived');
-    clearNotificationState(fields, 'DocumentsReady');
+    clearNotificationState(fields, 'AppRecv');
+    clearNotificationState(fields, 'DocsReady');
   }
   return fields;
 }

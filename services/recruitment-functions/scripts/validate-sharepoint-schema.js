@@ -107,6 +107,7 @@ for (const list of schema.lists) {
 
   for (const column of list.columns) {
     if (!column.name || !column.type) fail(`${list.name} contains a column without name/type`);
+    if (column.name.length > 32) fail(`${list.name}.${column.name} exceeds the SharePoint list internal-name limit`);
     if (/attachment|documentcontent|filebytes|sasurl|publicurl/i.test(column.name)) {
       fail(`${list.name}.${column.name} would violate metadata-only storage`);
     }
@@ -130,10 +131,10 @@ if (!choices(applicationList, 'TechnicalStatus').has('Deleted')) fail('technical
 if (!choices(applicationList, 'HiringStage').has('Archived')) fail('hiring stage must support Archived');
 if (!choices(applicationList, 'RetentionState').has('Purged')) fail('application retention state must support Purged');
 if (!choices(fileList, 'RetentionState').has('Purged')) fail('file retention state must support Purged');
-if (!choices(applicationList, 'ApplicationReceivedNotificationState').has('Pending')) {
+if (!choices(applicationList, 'AppRecvNotificationState').has('Pending')) {
   fail('application-received notification state must support Pending');
 }
-if (!choices(applicationList, 'DocumentsReadyNotificationState').has('Pending')) {
+if (!choices(applicationList, 'DocsReadyNotificationState').has('Pending')) {
   fail('documents-ready notification state must support Pending');
 }
 
