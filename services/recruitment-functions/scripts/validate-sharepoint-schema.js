@@ -6,6 +6,7 @@ const path = require('path');
 const schemaPath = path.resolve(__dirname, '../../../infra/recruitment/sharepoint-lists.v1.json');
 const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
 
+// SharePoint list internal column names must remain at or below 32 characters.
 function fail(message) {
   throw new Error(`Recruitment SharePoint schema invalid: ${message}`);
 }
