@@ -63,8 +63,8 @@ const requiredColumns = {
     'NotificationState',
     'NotificationEventKey',
     'NotificationAttemptCount',
-    ...notificationColumns('ApplicationReceived'),
-    ...notificationColumns('DocumentsReady'),
+    ...notificationColumns('AppRecv'),
+    ...notificationColumns('DocsReady'),
     ...sharedRetentionColumns,
     'LastUpdatedAtUtc'
   ],
