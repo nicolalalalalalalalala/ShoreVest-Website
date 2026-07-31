@@ -1,0 +1,166 @@
+name: Temporary Redeploy Recruitment Test Package
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-redeploy-recruitment-test-package.yml'
+      - 'services/recruitment-functions/**'
+      - 'api/recruitment/core/**'
+      - 'assets/data/recruitment/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-test-package-redeploy-sharepoint-schema
+  cancel-in-progress: true
+
+env:
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP_NAME: svrc26hk-recruit-fn-test
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  deploy:
+    if: github.event.pull_request.number == 785
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: recruitment-test
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build immutable Function package
+        shell: pwsh
+        run: |
+          ./services/recruitment-functions/scripts/package.ps1 `
+            -CommitSha $env:SOURCE_SHA `
+            -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify target remains disabled before deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --output json)"
+          for key in \
+            RECRUITMENT_API_ENABLED \
+            RECRUITMENT_OUTBOX_DELIVERY_ENABLED \
+            RECRUITMENT_CANDIDATE_ACK_ENABLED \
+            RECRUITMENT_HR_ACCESS_ENABLED \
+            RECRUITMENT_RETENTION_ENABLED \
+            RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            value="$(jq -r --arg key "$key" '.[] | select(.name == $key) | .value' <<<"$settings")"
+            if [[ "${value,,}" != 'false' ]]; then
+              echo "$key must remain false before deployment." >&2
+              exit 1
+            fi
+          done
+
+      - name: Deploy corrected package to Flex Consumption
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp deployment source config-zip \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --src "$RUNNER_TEMP/recruitment-functions.zip" \
+            --build-remote false \
+            --timeout 600 \
+            --output none
+
+      - name: Wait for all Functions to index
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            initiateApplication
+            completeUpload
+            finalizeApplication
+            hrCleanDocumentAccess
+            hrRetentionControl
+            defenderScanResult
+            quarantineCleanup
+            retentionPolicyAssignment
+            retentionPurge
+            retentionIdempotencyCleanup
+            outboxWorker
+            health
+          )
+
+          for attempt in $(seq 1 20); do
+            names="$(az functionapp function list \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$FUNCTION_APP_NAME" \
+              --query '[].name' \
+              --output tsv 2>/dev/null | sed 's#^.*/##' || true)"
+
+            missing=0
+            for expected_name in "${expected[@]}"; do
+              if ! grep -qx "$expected_name" <<<"$names"; then
+                missing=$((missing + 1))
+              fi
+            done
+
+            echo "Index attempt $attempt: $(wc -w <<<"$names") Functions visible; $missing expected names missing."
+            if [[ "$missing" == '0' ]]; then
+              printf '%s\n' "$names" | sort
+              exit 0
+            fi
+            sleep 30
+          done
+
+          echo 'The corrected package deployed, but not all expected Functions indexed within ten minutes.' >&2
+          exit 1
+
+      - name: Verify disabled controls and SharePoint identifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP_NAME" \
+            --output json)"
+
+          for key in \
+            RECRUITMENT_API_ENABLED \
+            RECRUITMENT_OUTBOX_DELIVERY_ENABLED \
+            RECRUITMENT_CANDIDATE_ACK_ENABLED \
+            RECRUITMENT_HR_ACCESS_ENABLED \
+            RECRUITMENT_RETENTION_ENABLED \
+            RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            value="$(jq -r --arg key "$key" '.[] | select(.name == $key) | .value' <<<"$settings")"
+            if [[ "${value,,}" != 'false' ]]; then
+              echo "$key was unexpectedly enabled." >&2
+              exit 1
+            fi
+          done
+
+          site_id="$(jq -r '.[] | select(.name == "RECRUITMENT_SHAREPOINT_SITE_ID") | .value' <<<"$settings")"
+          applications_id="$(jq -r '.[] | select(.name == "RECRUITMENT_APPLICATIONS_LIST_ID") | .value' <<<"$settings")"
+          files_id="$(jq -r '.[] | select(.name == "RECRUITMENT_FILES_LIST_ID") | .value' <<<"$settings")"
+
+          [[ "$site_id" == 'netorgft1774351.sharepoint.com,6957d2cb-ce22-481f-9f71-1b988b0889e6,96a005ee-1795-4ec2-8833-4f84ccd3804f' ]]
+          [[ "$applications_id" == 'dcbb29ba-e283-4e54-93b2-a700d836acd6' ]]
+          [[ "$files_id" == '02937f83-bc3b-4386-ad12-85aafa4d266d' ]]
+
+          echo 'Corrected package indexed. SharePoint IDs retained. All public and delivery controls remain disabled.'
