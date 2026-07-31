@@ -63,11 +63,11 @@
         { "name": "AppRecvNotificationSentAtUtc", "type": "dateTime", "required": false, "format": "dateTime" },
         { "name": "AppRecvNotificationAttemptCount", "type": "number", "required": false, "decimalPlaces": 0 },
         { "name": "AppRecvNotificationLastErrorCode", "type": "text", "required": false },
-        { "name": "DocsReadyNotificationState", "type": "choice", "required": false, "choices": ["Pending", "Sending", "Sent", "Failed"] },
-        { "name": "DocsReadyNotificationEventKey", "type": "text", "required": false },
-        { "name": "DocsReadyNotificationSentAtUtc", "type": "dateTime", "required": false, "format": "dateTime" },
-        { "name": "DocsReadyNotificationAttemptCount", "type": "number", "required": false, "decimalPlaces": 0 },
-        { "name": "DocsReadyNotificationLastErrorCode", "type": "text", "required": false },
+        { "name": "DocsRdyNotificationState", "type": "choice", "required": false, "choices": ["Pending", "Sending", "Sent", "Failed"] },
+        { "name": "DocsRdyNotificationEventKey", "type": "text", "required": false },
+        { "name": "DocsRdyNotificationSentAtUtc", "type": "dateTime", "required": false, "format": "dateTime" },
+        { "name": "DocsRdyNotificationAttemptCount", "type": "number", "required": false, "decimalPlaces": 0 },
+        { "name": "DocsRdyNotificationLastErrorCode", "type": "text", "required": false },
         { "name": "LastUpdatedAtUtc", "type": "dateTime", "required": true, "format": "dateTime" }
       ]
     },

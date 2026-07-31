@@ -116,11 +116,11 @@ Use only:
 
 Use only:
 
-- `DocsReadyNotificationState`
-- `DocsReadyNotificationEventKey`
-- `DocsReadyNotificationSentAtUtc`
-- `DocsReadyNotificationAttemptCount`
-- `DocsReadyNotificationLastErrorCode`
+- `DocsRdyNotificationState`
+- `DocsRdyNotificationEventKey`
+- `DocsRdyNotificationSentAtUtc`
+- `DocsRdyNotificationAttemptCount`
+- `DocsRdyNotificationLastErrorCode`
 
 Each flow must:
 

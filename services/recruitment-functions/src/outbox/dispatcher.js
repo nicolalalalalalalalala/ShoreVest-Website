@@ -100,7 +100,7 @@ function applicationFields(application, event = {}) {
     setNotificationState(fields, 'AppRecv', event);
   }
   if (event.type === EVENTS.DocumentsReady) {
-    setNotificationState(fields, 'DocsReady', event);
+    setNotificationState(fields, 'DocsRdy', event);
   }
   if (purged) {
     fields.NotificationState = null;
@@ -109,7 +109,7 @@ function applicationFields(application, event = {}) {
     fields.NotificationAttemptCount = null;
     fields.NotificationLastErrorCode = null;
     clearNotificationState(fields, 'AppRecv');
-    clearNotificationState(fields, 'DocsReady');
+    clearNotificationState(fields, 'DocsRdy');
   }
   return fields;
 }

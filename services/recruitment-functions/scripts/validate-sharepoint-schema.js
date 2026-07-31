@@ -64,7 +64,7 @@ const requiredColumns = {
     'NotificationEventKey',
     'NotificationAttemptCount',
     ...notificationColumns('AppRecv'),
-    ...notificationColumns('DocsReady'),
+    ...notificationColumns('DocsRdy'),
     ...sharedRetentionColumns,
     'LastUpdatedAtUtc'
   ],
@@ -134,7 +134,7 @@ if (!choices(fileList, 'RetentionState').has('Purged')) fail('file retention sta
 if (!choices(applicationList, 'AppRecvNotificationState').has('Pending')) {
   fail('application-received notification state must support Pending');
 }
-if (!choices(applicationList, 'DocsReadyNotificationState').has('Pending')) {
+if (!choices(applicationList, 'DocsRdyNotificationState').has('Pending')) {
   fail('documents-ready notification state must support Pending');
 }
 

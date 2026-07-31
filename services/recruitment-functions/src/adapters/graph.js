@@ -6,7 +6,7 @@ const IMMUTABLE_ID_PREFERENCE = 'IdType="ImmutableId"';
 const NOTIFICATION_PREFIXES = Object.freeze([
   '',
   'AppRecv',
-  'DocsReady'
+  'DocsRdy'
 ]);
 const NOTIFICATION_SUFFIXES = Object.freeze([
   'State',
