@@ -1,5 +1,51 @@
 (function () {
-  var VERSION = "20260730-approved-cn-copy-1";
+  var VERSION = "20260801-ga4-restored-1";
+
+  var GOOGLE_ANALYTICS_ID = "G-CLVYF17N9H";
+
+  function isPublicAnalyticsPage() {
+    var hostname = (window.location.hostname || "").toLowerCase();
+    var pathname = window.location.pathname || "/";
+
+    if (hostname !== "shorevest.com" && hostname !== "www.shorevest.com") return false;
+    if (/^\/(?:employee-portal|shorevest-one|api)(?:\/|$)/i.test(pathname)) return false;
+
+    try {
+      return !(new URL(window.location.href)).searchParams.has("t");
+    } catch (_) {
+      return true;
+    }
+  }
+
+  function ensureGoogleAnalytics() {
+    if (!document.head || !isPublicAnalyticsPage() || window.__SV_GA4_INSTALLED) return;
+    window.__SV_GA4_INSTALLED = true;
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () {
+      window.dataLayer.push(arguments);
+    };
+
+    window.gtag("consent", "default", {
+      analytics_storage: "granted",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied"
+    });
+    window.gtag("js", new Date());
+    window.gtag("config", GOOGLE_ANALYTICS_ID, {
+      send_page_view: true,
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false
+    });
+
+    var analyticsScript = document.createElement("script");
+    analyticsScript.async = true;
+    analyticsScript.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GOOGLE_ANALYTICS_ID);
+    analyticsScript.setAttribute("data-sv-google-analytics", "true");
+    document.head.appendChild(analyticsScript);
+  }
+
 
   function removeEmptyLegacyToken() {
     try {
@@ -14,6 +60,7 @@
   }
 
   removeEmptyLegacyToken();
+  ensureGoogleAnalytics();
 
   // Resolve the site base from this script's own URL so shared assets work
   // whether the site is served from the domain root or a GitHub Pages subpath.
