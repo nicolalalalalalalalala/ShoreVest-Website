@@ -5,6 +5,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const GA_ID = 'G-CLVYF17N9H';
+const INSTALLER_VERSION = '20260801-1';
 
 const GA_BLOCK = [
   '<!-- Google tag (gtag.js) -->',
@@ -100,10 +101,10 @@ function main() {
   }
 
   if (!validate) {
-    console.log(`Installed ${GA_ID} across ${changed.length} of ${publicHtml.length} public HTML file(s).`);
+    console.log(`Installer ${INSTALLER_VERSION}: installed ${GA_ID} across ${changed.length} of ${publicHtml.length} public HTML file(s).`);
     if (headersChanged) console.log('Updated the static-host Content Security Policy for Google Analytics.');
   } else {
-    console.log(`Validated ${GA_ID} across ${publicHtml.length} public HTML file(s).`);
+    console.log(`Installer ${INSTALLER_VERSION}: validated ${GA_ID} across ${publicHtml.length} public HTML file(s).`);
   }
 }
 
