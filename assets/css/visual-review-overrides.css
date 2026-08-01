@@ -1,6 +1,8 @@
 @charset "utf-8";
 
-/* ShoreVest visual review — 2026-07-30 */
+/* ShoreVest visual review — corrected 2026-08-01.
+   Keep overrides tightly scoped. Page-specific styles retain control of their
+   own typography so large display copy is not flattened to body-text sizes. */
 
 html,
 body {
@@ -21,33 +23,22 @@ body {
   }
 }
 
-html body.homepage main p:not([class*="label"]):not([class*="meta"]):not([class*="caption"]):not([class*="eyebrow"]):not([class*="legal"]):not([class*="disclosure"]),
-html body.homepage main li,
-html body.homepage main dd,
-html body.homepage main [class$="__body"],
-html body.homepage main [class$="__lede"],
-html body.homepage main [class$="__intro"],
-html body.homepage main [class$="__summary"],
-html body.homepage main [class$="__description"] {
-  font-size: clamp(17px, 1.15vw, 18px) !important;
-  line-height: 1.66 !important;
+/* Protect the intentional 404 display scale from generic paragraph rules. */
+html body.homepage.error-page .sv-error__code {
+  font-size: clamp(92px, 14vw, 190px) !important;
+  line-height: 0.78 !important;
+  letter-spacing: -0.055em !important;
 }
 
-html body.homepage main h2,
-html body.homepage main .sv-h2 {
-  font-family: var(--sv-font) !important;
-  font-size: clamp(32px, 3.4vw, 46px) !important;
-  font-weight: 500 !important;
-  line-height: 1.12 !important;
-  letter-spacing: -0.018em !important;
+html body.homepage.error-page .sv-error__title {
+  font-size: clamp(40px, 5vw, 72px) !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.035em !important;
 }
 
-html body.homepage main h3 {
-  font-family: var(--sv-font) !important;
-  font-size: clamp(22px, 2vw, 28px) !important;
-  font-weight: 500 !important;
-  line-height: 1.22 !important;
-  letter-spacing: -0.012em !important;
+html body.homepage.error-page .sv-error__body {
+  font-size: clamp(17px, 1.7vw, 21px) !important;
+  line-height: 1.55 !important;
 }
 
 html body.homepage img,
@@ -163,27 +154,17 @@ html body.homepage.firm-page .fm-glance__k {
   }
 }
 
+@media (max-width: 780px) {
+  html body.homepage.error-page .sv-error__code {
+    font-size: clamp(90px, 30vw, 132px) !important;
+  }
+
+  html body.homepage.error-page .sv-error__title {
+    font-size: clamp(38px, 12vw, 56px) !important;
+  }
+}
+
 @media (max-width: 600px) {
-  html body.homepage main p:not([class*="label"]):not([class*="meta"]):not([class*="caption"]):not([class*="eyebrow"]):not([class*="legal"]):not([class*="disclosure"]),
-  html body.homepage main li,
-  html body.homepage main dd,
-  html body.homepage main [class$="__body"],
-  html body.homepage main [class$="__lede"],
-  html body.homepage main [class$="__intro"],
-  html body.homepage main [class$="__summary"],
-  html body.homepage main [class$="__description"] {
-    font-size: 17px !important;
-  }
-
-  html body.homepage main h2,
-  html body.homepage main .sv-h2 {
-    font-size: clamp(30px, 9vw, 40px) !important;
-  }
-
-  html body.homepage main h3 {
-    font-size: clamp(21px, 6.4vw, 26px) !important;
-  }
-
   html body.homepage.insights-page .cdd-hero__panel-title {
     font-size: clamp(21px, 6vw, 26px) !important;
   }
