@@ -1,0 +1,107 @@
+name: Apply site typography fix
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/apply-typography-fix-20260801.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Refresh corrected stylesheet across every public page
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          version = '20260801-typography-fix-1'
+          link = f'<link rel="stylesheet" href="/assets/css/visual-review-overrides.css?v={version}" data-sv-visual-review="direct">'
+          changed = []
+          checked = []
+
+          for path in sorted(Path('.').rglob('*.html')):
+              if any(part in {'.git', 'node_modules', 'coverage', 'playwright-report', 'test-results'} for part in path.parts):
+                  continue
+
+              text = path.read_text(encoding='utf-8')
+              if not re.search(r'<body\b[^>]*class=["\'][^"\']*\bhomepage\b', text, re.I):
+                  continue
+
+              checked.append(path)
+              new = re.sub(
+                  r'<link\s+rel=["\']stylesheet["\']\s+href=["\']/assets/css/visual-review-overrides\.css\?v=[^"\']+["\']\s+data-sv-visual-review=["\']direct["\']>',
+                  link,
+                  text,
+                  flags=re.I,
+              )
+
+              if 'data-sv-visual-review="direct"' not in new:
+                  if '</head>' not in new:
+                      raise SystemExit(f'Missing </head>: {path}')
+                  new = new.replace('</head>', link + '\n</head>', 1)
+
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.append(path)
+
+          if not checked:
+              raise SystemExit('No public homepage-shell pages found')
+
+          failures = []
+          for path in checked:
+              text = path.read_text(encoding='utf-8')
+              if link not in text:
+                  failures.append(str(path))
+
+          if failures:
+              raise SystemExit('Corrected stylesheet version missing from:\n' + '\n'.join(failures))
+
+          print(f'Validated {len(checked)} public pages; updated {len(changed)}.')
+          for path in changed:
+              print(path)
+          PY
+
+      - name: Audit typography override scope
+        run: |
+          set -euo pipefail
+          test -s assets/css/visual-review-overrides.css
+          grep -q 'html body.homepage.error-page .sv-error__code' assets/css/visual-review-overrides.css
+          grep -q 'font-size: clamp(92px, 14vw, 190px)' assets/css/visual-review-overrides.css
+          grep -q 'html body.homepage.error-page .sv-error__title' assets/css/visual-review-overrides.css
+          grep -q 'font-size: clamp(40px, 5vw, 72px)' assets/css/visual-review-overrides.css
+          if grep -Fq 'html body.homepage main p:not(' assets/css/visual-review-overrides.css; then
+            echo 'Found the retired blanket paragraph override.' >&2
+            exit 1
+          fi
+          if grep -Fq 'html body.homepage main h2,' assets/css/visual-review-overrides.css; then
+            echo 'Found the retired blanket heading override.' >&2
+            exit 1
+          fi
+          if grep -Fq 'html body.homepage main h3 {' assets/css/visual-review-overrides.css; then
+            echo 'Found the retired blanket h3 override.' >&2
+            exit 1
+          fi
+
+      - name: Commit cache-busted page references
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- '*.html'
+          if git diff --cached --quiet; then
+            echo 'All public pages already use the corrected stylesheet version.'
+            exit 0
+          fi
+          git commit -m 'Refresh corrected typography across public pages'
+          git push
