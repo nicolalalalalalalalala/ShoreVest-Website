@@ -1,0 +1,45 @@
+name: One-time verify Team live v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-team-live-v2.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: github.event.head_commit.message == 'Verify corrected Team page is live'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for publish and verify live HTML
+        shell: bash
+        run: |
+          set -u
+          ok=no
+          en_new=no; en_old=yes; cn_new=no; cn_old=yes
+          for i in $(seq 1 24); do
+            ts=$(date +%s)-$i
+            curl -fsSL -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/team/?_verify2=${ts}" -o /tmp/team.html || true
+            curl -fsSL -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/cn/team/?_verify2=${ts}" -o /tmp/cn-team.html || true
+            en_new=no; en_old=no; cn_new=no; cn_old=no
+            grep -Fq 'Guangzhou, Shanghai, Beijing and Shenzhen' /tmp/team.html 2>/dev/null && en_new=yes || true
+            { grep -Fq 'Investment Committee members' /tmp/team.html 2>/dev/null || grep -Fq 'Offices across Greater China' /tmp/team.html 2>/dev/null; } && en_old=yes || true
+            grep -Fq '广州、上海、北京及深圳' /tmp/cn-team.html 2>/dev/null && cn_new=yes || true
+            { grep -Fq '投资委员会成员' /tmp/cn-team.html 2>/dev/null || grep -Fq '大中华区办公室' /tmp/cn-team.html 2>/dev/null; } && cn_old=yes || true
+            if [ "$en_new" = yes ] && [ "$en_old" = no ] && [ "$cn_new" = yes ] && [ "$cn_old" = no ]; then
+              ok=yes
+              break
+            fi
+            sleep 5
+          done
+          printf 'checked_at=%s\nlive_ok=%s\nen_new=%s\nen_old=%s\ncn_new=%s\ncn_old=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$ok" "$en_new" "$en_old" "$cn_new" "$cn_old" > live-team-verification-v2.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --rebase origin main || true
+          git add live-team-verification-v2.txt
+          git commit -m 'Record corrected Team live verification' || exit 0
+          git push
