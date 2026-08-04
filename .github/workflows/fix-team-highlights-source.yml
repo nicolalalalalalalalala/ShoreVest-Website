@@ -1,0 +1,53 @@
+name: One-time fix Team highlight source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fix-team-highlights-source.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event.head_commit.message == 'Fix canonical Team highlights source'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update canonical and generated Team pages
+        shell: python
+        run: |
+          from pathlib import Path
+
+          english_old = '''              <article>\n                <p>Offices across Greater China</p>\n                <span>4</span>\n              </article>\n              <article>\n                <p>Investment Committee members</p>\n                <span>4</span>\n              </article>'''
+          english_new = '''              <article>\n                <p>Located in</p>\n                <span>Guangzhou, Shanghai, Beijing and Shenzhen</span>\n              </article>'''
+          chinese_old = '''              <article>\n                <p>大中华区办公室</p>\n                <span>4</span>\n              </article>\n              <article>\n                <p>投资委员会成员</p>\n                <span>4</span>\n              </article>'''
+          chinese_new = '''              <article>\n                <p>位于</p>\n                <span>广州、上海、北京及深圳</span>\n              </article>'''
+
+          targets = [
+              (Path('team.html'), english_old, english_new),
+              (Path('team/index.html'), english_old, english_new),
+              (Path('team_cn.html'), chinese_old, chinese_new),
+              (Path('cn/team/index.html'), chinese_old, chinese_new),
+          ]
+
+          changed = []
+          for path, old, new in targets:
+              text = path.read_text(encoding='utf-8')
+              if new in text:
+                  continue
+              if old not in text:
+                  raise SystemExit(f'Expected Team highlight block not found in {path}')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+              changed.append(str(path))
+          print('changed:', ', '.join(changed))
+      - name: Commit source-of-truth fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add team.html team/index.html team_cn.html cn/team/index.html
+          git commit -m 'Update canonical Team highlights and generated pages' || exit 0
+          git push
