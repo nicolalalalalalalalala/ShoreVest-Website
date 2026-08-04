@@ -1,0 +1,49 @@
+name: One-time verify Team live v3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-team-live-v3.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: github.event.head_commit.message == 'Verify Team stats live precisely'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and verify precise live stat blocks
+        shell: python
+        run: |
+          import re, time, urllib.request
+          ts = str(int(time.time()))
+          headers = {'Cache-Control':'no-cache','Pragma':'no-cache','User-Agent':'Mozilla/5.0'}
+          def get(url):
+              req=urllib.request.Request(url+('?_v3='+ts if '?' not in url else '&_v3='+ts), headers=headers)
+              return urllib.request.urlopen(req, timeout=30).read().decode('utf-8','replace')
+          en=get('https://shorevest.com/team/')
+          cn=get('https://shorevest.com/cn/team/')
+          checks={
+            'en_new': 'Guangzhou, Shanghai, Beijing and Shenzhen' in en,
+            'en_old_office': 'Offices across Greater China' in en,
+            'en_old_ic_stat': bool(re.search(r'Investment Committee members\s*</p>\s*<span>\s*4\s*</span>', en)),
+            'cn_new': '广州、上海、北京及深圳' in cn,
+            'cn_old_office': '大中华区办公室' in cn,
+            'cn_old_ic_stat': bool(re.search(r'投资委员会成员\s*</p>\s*<span>\s*4\s*</span>', cn)),
+          }
+          with open('live-team-verification-v3.txt','w',encoding='utf-8') as f:
+              f.write('checked_at='+time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())+'\n')
+              for k,v in checks.items(): f.write(f'{k}={"yes" if v else "no"}\n')
+      - name: Commit verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull --rebase origin main || true
+          git add live-team-verification-v3.txt
+          git commit -m 'Record precise Team live verification' || exit 0
+          git push
