@@ -1,0 +1,47 @@
+name: One-time fix Team highlights
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fix-team-highlights.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.event.head_commit.message == 'Add one-time live Team highlights fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update English and Chinese Team page highlights
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              Path('team/index.html'): (
+                  '''              <article>\n                <p>Offices across Greater China</p>\n                <span>4</span>\n              </article>\n              <article>\n                <p>Investment Committee members</p>\n                <span>4</span>\n              </article>''',
+                  '''              <article>\n                <p>Located in</p>\n                <span>Guangzhou, Shanghai, Beijing and Shenzhen</span>\n              </article>'''
+              ),
+              Path('cn/team/index.html'): (
+                  '''              <article>\n                <p>大中华区办公室</p>\n                <span>4</span>\n              </article>\n              <article>\n                <p>投资委员会成员</p>\n                <span>4</span>\n              </article>''',
+                  '''              <article>\n                <p>位于</p>\n                <span>广州、上海、北京及深圳</span>\n              </article>'''
+              ),
+          }
+
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Expected old highlight block not found in {path}')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+      - name: Commit live-site fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add team/index.html cn/team/index.html
+          git commit -m 'Fix live Team page platform highlights'
+          git push
