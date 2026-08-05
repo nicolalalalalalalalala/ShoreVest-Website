@@ -1,0 +1,42 @@
+name: Verify current Strategy stylesheet URL
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-strategy-old-query.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: github.event.head_commit.message == 'Verify current live Strategy stylesheet URL'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check exact live CSS URL used by Strategy
+        shell: bash
+        run: |
+          set -u
+          ts=$(date +%s)
+          page_code=$(curl -L -sS -o /tmp/strategy.html -w '%{http_code}' -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/strategy/?_verify=${ts}")
+          css_code=$(curl -L -sS -o /tmp/strategy-old.css -w '%{http_code}' -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/assets/css/visual-review-overrides.css?v=20260801-typography-fix-1")
+          image_code=$(curl -L -sS -o /dev/null -w '%{http_code}' "https://shorevest.com/yang-miao-YUJNtZS8n5o-unsplash.jpg?v=20260805-strategy-hero-yang-miao-1")
+          css_yang=no
+          grep -Fq 'yang-miao-YUJNtZS8n5o-unsplash.jpg?v=20260805-strategy-hero-yang-miao-1' /tmp/strategy-old.css && css_yang=yes || true
+          git reset --hard HEAD
+          git pull --rebase origin main
+          printf 'checked_at=%s\npage_http=%s\ncss_http=%s\nimage_http=%s\nold_query_css_yang=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$page_code" "$css_code" "$image_code" "$css_yang" > strategy-old-query-live.txt
+          git rm .github/workflows/verify-strategy-old-query.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add strategy-old-query-live.txt
+          git commit -m 'Record current Strategy stylesheet verification'
+          for i in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
