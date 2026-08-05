@@ -63,7 +63,7 @@ html body.homepage img {
   mix-blend-mode: normal !important;
 }
 
-/* Strategy hero uses the former homepage hero photograph. */
+/* Strategy hero uses the requested Yang Miao photograph. */
 html body.homepage.strategy-page .sx-hero__media {
   display: block !important;
   min-height: clamp(360px, 42vw, 570px) !important;
@@ -78,7 +78,7 @@ html body.homepage.strategy-page .sx-hero__media:hover .sx-hero__panel {
   aspect-ratio: 1 / 1 !important;
   filter: none !important;
   -webkit-filter: none !important;
-  background: url("/assets/img/trees/home-hero-max-zhang.jpg?v=20260730-strategy-hero-final") center / cover no-repeat !important;
+  background: url("/yang-miao-YUJNtZS8n5o-unsplash.jpg?v=20260805-strategy-hero-yang-miao-1") center / cover no-repeat !important;
 }
 
 /* Homepage statement boxes. */
