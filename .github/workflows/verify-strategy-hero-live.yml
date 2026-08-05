@@ -1,0 +1,43 @@
+name: Verify Strategy hero live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-strategy-hero-live.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: github.event.head_commit.message == 'Add one-time live Strategy hero verifier'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify production Strategy hero
+        shell: bash
+        run: |
+          set -u
+          page_code=''; css_code=''; image_code=''; page_version=no; css_yang=no
+          for i in $(seq 1 24); do
+            ts=$(date +%s)
+            page_code=$(curl -L -sS -o /tmp/strategy.html -w '%{http_code}' -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/strategy/?_verify=${ts}")
+            css_code=$(curl -L -sS -o /tmp/strategy.css -w '%{http_code}' -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/assets/css/visual-review-overrides.css?v=20260805-strategy-hero-yang-miao-1&_verify=${ts}")
+            image_code=$(curl -L -sS -o /dev/null -w '%{http_code}' -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "https://shorevest.com/yang-miao-YUJNtZS8n5o-unsplash.jpg?v=20260805-strategy-hero-yang-miao-1&_verify=${ts}")
+            page_version=no; css_yang=no
+            grep -Fq 'visual-review-overrides.css?v=20260805-strategy-hero-yang-miao-1' /tmp/strategy.html && page_version=yes || true
+            grep -Fq 'yang-miao-YUJNtZS8n5o-unsplash.jpg?v=20260805-strategy-hero-yang-miao-1' /tmp/strategy.css && css_yang=yes || true
+            if [ "$page_code" = 200 ] && [ "$css_code" = 200 ] && [ "$image_code" = 200 ] && [ "$page_version" = yes ] && [ "$css_yang" = yes ]; then
+              break
+            fi
+            sleep 5
+          done
+          printf 'checked_at=%s\npage_http=%s\ncss_http=%s\nimage_http=%s\npage_version=%s\ncss_yang=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$page_code" "$css_code" "$image_code" "$page_version" "$css_yang" > strategy-hero-live.txt
+          cat strategy-hero-live.txt
+          git rm .github/workflows/verify-strategy-hero-live.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add strategy-hero-live.txt
+          git commit -m 'Record live Strategy hero verification'
+          git push origin HEAD:main
