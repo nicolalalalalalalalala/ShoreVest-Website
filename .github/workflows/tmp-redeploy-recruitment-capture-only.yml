@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
   AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
   FUNCTION_APP: svrc26hk-recruit-fn-test
 
@@ -35,28 +38,21 @@ jobs:
           cache: npm
           cache-dependency-path: services/recruitment-functions/package-lock.json
 
-      - id: oidcvars
-        name: Check Azure OIDC configuration
-        shell: bash
-        run: |
-          set -euo pipefail
-          for value in '${{ vars.AZURE_CLIENT_ID }}' '${{ vars.AZURE_TENANT_ID }}' '${{ vars.AZURE_SUBSCRIPTION_ID }}'; do
-            [[ -n "$value" ]] || { echo 'Missing recruitment-test Azure OIDC variable.' >&2; exit 1; }
-          done
-
       - id: login
         name: Sign in to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - id: safety
         name: Verify capture-only safety state
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$(az account show --query id -o tsv)" == "$AZURE_SUBSCRIPTION_ID" ]]
+          [[ "$(az account show --query tenantId -o tsv)" == "$AZURE_TENANT_ID" ]]
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
           [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]] || { echo 'Public capture API is not currently enabled.' >&2; exit 1; }
@@ -140,7 +136,6 @@ jobs:
           DEPLOYMENT_STATUS: ${{ job.status }}
           OUT_CHECKOUT: ${{ steps.checkout.outcome }}
           OUT_NODE: ${{ steps.node.outcome }}
-          OUT_OIDC_VARS: ${{ steps.oidcvars.outcome }}
           OUT_LOGIN: ${{ steps.login.outcome }}
           OUT_SAFETY: ${{ steps.safety.outcome }}
           OUT_MANIFEST: ${{ steps.manifest.outcome }}
@@ -159,7 +154,6 @@ jobs:
             "steps": {
               "checkout": "${OUT_CHECKOUT}",
               "node": "${OUT_NODE}",
-              "oidcVariables": "${OUT_OIDC_VARS}",
               "azureLogin": "${OUT_LOGIN}",
               "safety": "${OUT_SAFETY}",
               "manifest": "${OUT_MANIFEST}",
