@@ -75,7 +75,7 @@ function validateTokenPayload(payload, request, file, now) {
   if (expires < now.getTime() - CLOCK_SKEW_MS || issued > now.getTime() + CLOCK_SKEW_MS) return false;
   if (payload.applicationReference !== request.applicationReference || payload.fileReference !== request.fileReference) return false;
   if (payload.quarantineBlobPath !== file.quarantineBlobPath) return false;
-  if (payload.credentialGeneration > file.credentialGeneration) return false;
+  if (payload.credentialGeneration !== file.credentialGeneration) return false;
   if (payload.expectedSizeBytes !== file.sizeBytes || payload.expectedDeclaredMimeType !== file.declaredMimeType) return false;
   return true;
 }
