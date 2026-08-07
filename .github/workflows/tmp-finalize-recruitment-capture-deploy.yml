@@ -31,17 +31,22 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Overlay current-main recruitment contracts
+      - name: Overlay current-main role manifest
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin main
-          git checkout origin/main -- \
-            api/recruitment/core/flows.js \
-            api/recruitment/core/inMemoryAdapters.js \
-            assets/data/recruitment/roles.v1.json
+          git checkout origin/main -- assets/data/recruitment/roles.v1.json
 
           node <<'NODE'
+          const fs = require('fs');
+          const flows = fs.readFileSync('./api/recruitment/core/flows.js', 'utf8');
+          if (!flows.includes('payload.credentialGeneration !== file.credentialGeneration')) {
+            throw new Error('Hardened credential-generation equality check is missing');
+          }
+          if (!flows.includes('deps.scanEvents.complete(eventKey, { success: true, reconciled: true })')) {
+            throw new Error('Hardened scan reconciliation key fix is missing');
+          }
           const m = require('./assets/data/recruitment/roles.v1.json');
           const enabled = m.roles.filter((r) => r.application?.enabled === true);
           if (enabled.length !== 1 || enabled[0].id !== 'legal-assistant' || enabled[0].application.privacyNoticeVersion !== '2026-08-08-v1') {
@@ -139,7 +144,7 @@ jobs:
               'sourceCommit': os.environ['SOURCE_SHA'],
               'packagedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
               'payloadSha256': hashlib.sha256('\n'.join(files).encode()).hexdigest(),
-              'contractOverlay': 'current-main api core + role manifest'
+              'contractOverlay': 'current-main role manifest only'
           }
           (stage/'deployment-metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
           with zipfile.ZipFile(package, 'w', zipfile.ZIP_DEFLATED) as z:
