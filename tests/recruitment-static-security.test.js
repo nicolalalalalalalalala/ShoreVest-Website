@@ -2,6 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
+// Controlled launch: one online application role is allowed while the public Open Roles listing stays hidden.
 function read(f){return fs.readFileSync(path.join(root,f),'utf8');}
 
 const rolePages = [
