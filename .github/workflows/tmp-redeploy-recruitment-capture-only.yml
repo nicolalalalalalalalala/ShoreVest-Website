@@ -1,0 +1,136 @@
+name: Temporary Recruitment Capture-Only Redeploy
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-redeploy-recruitment-capture-only.yml
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-capture-only-redeploy
+  cancel-in-progress: false
+
+env:
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP: svrc26hk-recruit-fn-test
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: recruitment-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/recruitment-functions/package-lock.json
+
+      - name: Check Azure OIDC configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for value in '${{ vars.AZURE_CLIENT_ID }}' '${{ vars.AZURE_TENANT_ID }}' '${{ vars.AZURE_SUBSCRIPTION_ID }}'; do
+            [[ -n "$value" ]] || { echo 'Missing recruitment-test Azure OIDC variable.' >&2; exit 1; }
+          done
+
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify capture-only safety state
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]] || { echo 'Public capture API is not currently enabled.' >&2; exit 1; }
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]] || { echo 'Capture-only mode is not currently enabled.' >&2; exit 1; }
+          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false." >&2; exit 1; }
+          done
+
+      - name: Verify single controlled role
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const m = require('./assets/data/recruitment/roles.v1.json');
+          const enabled = m.roles.filter(r => r.application && r.application.enabled === true);
+          if (enabled.length !== 1 || enabled[0].id !== 'legal-assistant' || enabled[0].application.privacyNoticeVersion !== '2026-08-08-v1') {
+            throw new Error('Controlled role manifest is not in the expected state');
+          }
+          console.log('Controlled role manifest verified.');
+          NODE
+
+      - name: Build immutable Function package
+        shell: pwsh
+        run: |
+          ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
+
+      - name: Deploy Function package
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp deployment source config-zip \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP" \
+            --src "$RUNNER_TEMP/recruitment-functions.zip" \
+            --build-remote false \
+            --timeout 600 \
+            --output none
+
+      - name: Verify Functions indexed
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(initiateApplication completeUpload finalizeApplication health)
+          for attempt in $(seq 1 20); do
+            names="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query '[].name' -o tsv 2>/dev/null | sed 's#^.*/##' || true)"
+            missing=0
+            for name in "${expected[@]}"; do grep -qx "$name" <<<"$names" || missing=$((missing+1)); done
+            if [[ "$missing" == 0 ]]; then exit 0; fi
+            echo "Index check $attempt: $missing required Functions missing."
+            sleep 15
+          done
+          exit 1
+
+      - name: Verify health and safety after deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          healthy=false
+          for attempt in $(seq 1 24); do
+            code="$(curl -sS -o "$RUNNER_TEMP/health.json" -w '%{http_code}' "https://${FUNCTION_APP}.azurewebsites.net/api/recruitment/health" || true)"
+            if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' "$RUNNER_TEMP/health.json" >/dev/null 2>&1; then
+              healthy=true
+              break
+            fi
+            echo "Health check $attempt: HTTP $code"
+            sleep 10
+          done
+          if [[ "$healthy" != 'true' ]]; then
+            echo 'Health failed; disabling the public recruitment API as a fail-safe.' >&2
+            cat "$RUNNER_TEMP/health.json" >&2 || true
+            az functionapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false --output none || true
+            exit 1
+          fi
+
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
+          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            [[ "$(value "$key")" == 'false' ]] || exit 1
+          done
+          echo 'Capture-only Function package redeployed and healthy.'
