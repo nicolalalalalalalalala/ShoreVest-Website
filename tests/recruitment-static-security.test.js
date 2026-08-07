@@ -20,18 +20,26 @@ const applicationPages = ['careers/apply.html','careers/apply_cn.html'];
 const manifest = JSON.parse(read('assets/data/recruitment/roles.v1.json'));
 const publicConfig = JSON.parse(read('assets/data/recruitment/public-config.json'));
 
-assert.strictEqual(publicConfig.openRolesEnabled, false, 'open roles remain off until final activation');
-assert.strictEqual(publicConfig.applicationsEnabled, false, 'online applications remain off until final activation');
-assert.strictEqual(publicConfig.turnstileSiteKey, '', 'no placeholder Turnstile site key is published');
+assert.strictEqual(publicConfig.openRolesEnabled, false, 'open roles remain off until controlled frontend launch');
+assert.strictEqual(publicConfig.applicationsEnabled, false, 'backend source branch does not publish the application frontend');
+assert.strictEqual(publicConfig.turnstileSiteKey, '0x4AAAAAAEJh3KNuIlG3ZdgM', 'only the public Turnstile site key is present');
 assert.strictEqual(publicConfig.apiBase, 'https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment');
 assert.strictEqual(publicConfig.turnstileAction, 'recruitment-application');
+assert.ok(!Object.keys(publicConfig).some(k => /secret/i.test(k)), 'public config contains no secret field');
 
 for (const role of manifest.roles) {
   assert.strictEqual(role.status, 'published', `${role.id} source content remains approved`);
   assert.strictEqual(role.contentReviewRequired, false, `${role.id} content review is cleared`);
-  assert.strictEqual(role.application.enabled, false, `${role.id} backend role gate remains disabled until final activation`);
-  assert.strictEqual(role.application.privacyNoticeVersion, null, `${role.id} privacy version is not activated prematurely`);
+  assert.strictEqual(role.contentReviewNote, '', `${role.id} note is cleared`);
+  if (role.id === 'legal-assistant') {
+    assert.strictEqual(role.application.enabled, true, 'backend accepts the single controlled Legal Assistant test role');
+    assert.strictEqual(role.application.privacyNoticeVersion, '2026-08-08-v1');
+  } else {
+    assert.strictEqual(role.application.enabled, false, `${role.id} remains closed for online applications`);
+    assert.strictEqual(role.application.privacyNoticeVersion, null);
+  }
 }
+assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 1, 'exactly one controlled test role is enabled in the shared manifest');
 
 for (const f of rolePages) {
   const s = read(f);
@@ -47,7 +55,7 @@ for (const f of disabledCleanRolePages) {
 
 for (const f of applicationPages) {
   const s = read(f);
-  assert.match(s, /noindex, nofollow, noarchive/, `${f} is not indexed before activation`);
+  assert.match(s, /noindex, nofollow, noarchive/, `${f} is not indexed before frontend activation`);
   assert.match(s, /data-application-form/, `${f} contains the staged application form`);
   assert.match(s, /type="file"/, `${f} contains one CV file input`);
   assert.match(s, /data-turnstile/, `${f} contains the Turnstile mount`);
