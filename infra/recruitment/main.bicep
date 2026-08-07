@@ -22,36 +22,6 @@ var tags = {
 }
 var functionName = '${namePrefix}-recruit-fn-${environmentName}'
 var identityName = '${namePrefix}-recruit-mi-${environmentName}'
-var appSettings = [
-  { name: 'FUNCTIONS_EXTENSION_VERSION', value: '~4' }
-  { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'node' }
-  { name: 'RECRUITMENT_ENVIRONMENT', value: environmentName }
-  { name: 'RECRUITMENT_API_ENABLED', value: 'false' }
-  { name: 'RECRUITMENT_ALLOWED_ORIGINS', value: 'https://shorevest.com,https://www.shorevest.com' }
-  { name: 'RECRUITMENT_COSMOS_ENDPOINT', value: cosmos.properties.documentEndpoint }
-  { name: 'RECRUITMENT_COSMOS_DATABASE', value: db.name }
-  { name: 'RECRUITMENT_COSMOS_SUBMISSIONS_CONTAINER', value: submissions.name }
-  { name: 'RECRUITMENT_COSMOS_IDEMPOTENCY_CONTAINER', value: idempotency.name }
-  { name: 'RECRUITMENT_COSMOS_RATE_LIMIT_CONTAINER', value: rateLimits.name }
-  { name: 'RECRUITMENT_STORAGE_ACCOUNT_URL', value: 'https://${cvStorage.name}.blob.core.windows.net' }
-  { name: 'RECRUITMENT_UPLOAD_STORAGE_ACCOUNT_NAME', value: cvStorage.name }
-  { name: 'RECRUITMENT_QUARANTINE_CONTAINER', value: quarantine.name }
-  { name: 'RECRUITMENT_CLEAN_CONTAINER', value: clean.name }
-  { name: 'RECRUITMENT_KEYVAULT_URL', value: vault.properties.vaultUri }
-  { name: 'RECRUITMENT_COMPLETION_TOKEN_SECRET_NAME', value: 'recruitment-completion-token' }
-  { name: 'RECRUITMENT_FINGERPRINT_SECRET_NAME', value: 'recruitment-fingerprint' }
-  { name: 'RECRUITMENT_RATE_LIMIT_SECRET_NAME', value: 'recruitment-rate-limit-hmac' }
-  { name: 'RECRUITMENT_RATE_LIMIT_ENABLED', value: 'true' }
-  { name: 'RECRUITMENT_RATE_LIMIT_COUNT', value: '5' }
-  { name: 'RECRUITMENT_RATE_LIMIT_WINDOW_SECONDS', value: '300' }
-  { name: 'RECRUITMENT_BOT_VERIFICATION_MODE', value: 'provider-required' }
-  { name: 'RECRUITMENT_MANAGED_IDENTITY_CLIENT_ID', value: mi.properties.clientId }
-  { name: 'AZURE_CLIENT_ID', value: mi.properties.clientId }
-  { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: ai.properties.ConnectionString }
-  { name: 'AzureWebJobsStorage__accountName', value: hostStorage.name }
-  { name: 'AzureWebJobsStorage__credential', value: 'managedidentity' }
-  { name: 'AzureWebJobsStorage__clientId', value: mi.properties.clientId }
-]
 
 resource log 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: '${namePrefix}-recruit-law-${environmentName}'
