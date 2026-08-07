@@ -1,0 +1,34 @@
+name: Recruitment Monitoring V4
+
+on:
+  push:
+    branches:
+      - 'agent/**'
+    paths:
+      - '.github/workflows/recruitment-monitoring-v4.yml'
+      - 'infra/recruitment/monitoring-rules.v4.bicep'
+      - 'services/recruitment-functions/src/**'
+      - 'services/recruitment-functions/test/monitoringRulesV4.test.js'
+  pull_request:
+    paths:
+      - '.github/workflows/recruitment-monitoring-v4.yml'
+      - 'infra/recruitment/monitoring-rules.v4.bicep'
+      - 'services/recruitment-functions/src/**'
+      - 'services/recruitment-functions/test/monitoringRulesV4.test.js'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate monitoring v4 contract tests
+        run: node --test services/recruitment-functions/test/monitoringRulesV4.test.js
+      - name: Compile monitoring Bicep v4
+        run: az bicep build --file infra/recruitment/monitoring-rules.v4.bicep
+      - name: Lint monitoring Bicep v4
+        run: az bicep build --file infra/recruitment/monitoring-rules.v4.bicep --stdout >/dev/null
+      - run: git diff --check

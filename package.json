@@ -15,10 +15,10 @@
     "one:start": "node server/index.js",
     "one:test": "node --test tests/shorevest-one/*.test.js",
     "one:build": "node server/db/migrate.js && node --test tests/shorevest-one/*.test.js",
-    "check:functions": "cd services/recruitment-functions && npm run check && npm run validate:manifest",
+    "check:functions": "cd services/recruitment-functions && npm run check && npm run validate:manifest && npm run validate:sharepoint",
     "test:functions": "cd services/recruitment-functions && npm test",
-    "bicep:build:recruitment": "az bicep build --file infra/recruitment/main.bicep",
-    "bicep:lint:recruitment": "az bicep build --file infra/recruitment/main.bicep --stdout >/dev/null"
+    "bicep:build:recruitment": "az bicep build --file infra/recruitment/main.bicep && az bicep build --file infra/recruitment/event-grid-subscription.bicep && az bicep build --file infra/recruitment/hr-auth.bicep && az bicep build --file infra/recruitment/runtime-settings.v2.bicep && az bicep build --file infra/recruitment/monitoring-rules.v4.bicep",
+    "bicep:lint:recruitment": "az bicep build --file infra/recruitment/main.bicep --stdout >/dev/null && az bicep build --file infra/recruitment/event-grid-subscription.bicep --stdout >/dev/null && az bicep build --file infra/recruitment/hr-auth.bicep --stdout >/dev/null && az bicep build --file infra/recruitment/runtime-settings.v2.bicep --stdout >/dev/null && az bicep build --file infra/recruitment/monitoring-rules.v4.bicep --stdout >/dev/null"
   },
   "devDependencies": {
     "ajv": "8.17.1",

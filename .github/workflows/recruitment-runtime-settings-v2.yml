@@ -1,0 +1,34 @@
+name: Recruitment Runtime Settings V2
+
+on:
+  push:
+    branches:
+      - 'agent/**'
+    paths:
+      - '.github/workflows/recruitment-runtime-settings-v2.yml'
+      - 'infra/recruitment/runtime-settings.v2.bicep'
+      - 'services/recruitment-functions/src/lib/config.js'
+      - 'services/recruitment-functions/test/runtimeSettingsV2.test.js'
+  pull_request:
+    paths:
+      - '.github/workflows/recruitment-runtime-settings-v2.yml'
+      - 'infra/recruitment/runtime-settings.v2.bicep'
+      - 'services/recruitment-functions/src/lib/config.js'
+      - 'services/recruitment-functions/test/runtimeSettingsV2.test.js'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate runtime settings contract tests
+        run: node --test services/recruitment-functions/test/runtimeSettingsV2.test.js
+      - name: Compile runtime settings Bicep v2
+        run: az bicep build --file infra/recruitment/runtime-settings.v2.bicep
+      - name: Lint runtime settings Bicep v2
+        run: az bicep build --file infra/recruitment/runtime-settings.v2.bicep --stdout >/dev/null
+      - run: git diff --check

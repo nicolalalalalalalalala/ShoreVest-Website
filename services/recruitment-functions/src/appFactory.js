@@ -1,89 +1,154 @@
 'use strict';
 
-const crypto = require('node:crypto');
-const { DefaultAzureCredential, ManagedIdentityCredential } = require('@azure/identity');
+const crypto = require('crypto');
+const { DefaultAzureCredential } = require('@azure/identity');
 const {
-  initiateApplication,
+  initiateApplication: coreInitiateApplication,
   completeUpload,
-  processScanResult,
+  finalizeApplication: coreFinalizeApplication,
+  processScanResult: coreProcessScanResult,
   retryQuarantineCleanup
 } = require('../../../api/recruitment/core/flows');
+const { createInitiateApplication } = require('./flows/initiateApplication');
+const { createFinalizeApplication } = require('./flows/finalizeApplication');
+const { createProcessScanResult } = require('./flows/processScanResult');
 const { loadConfig } = require('./lib/config');
 const { loadManifest } = require('./lib/manifest');
+const { createStructuredLogger } = require('./lib/logger');
 const { createCosmosAdapters } = require('./adapters/cosmos');
+const { createProjectionReader } = require('./adapters/projectionReader');
+const { createOutboxCheckpointStore } = require('./adapters/outboxCheckpoint');
+const { createOutboxReader } = require('./adapters/outboxReader');
+const { secureIdempotencyAdapter } = require('./adapters/idempotencySecurity');
+const { createRetentionAdapter } = require('./adapters/retention');
 const { createBlobAdapter } = require('./adapters/blob');
-const { createSecretProvider, createTokenAdapter, createFingerprintAdapter } = require('./adapters/secrets');
+const {
+  createSecretProvider,
+  createTokenAdapter,
+  createFingerprintAdapter
+} = require('./adapters/secrets');
+const { createBotVerifier } = require('./adapters/bot');
+const { createRateLimiter } = require('./adapters/rateLimit');
+const { createGraphAdapter } = require('./adapters/graph');
+const { createOutboxDispatcher } = require('./outbox/dispatcher');
+const { createFinalizationGatedDispatcher } = require('./outbox/finalizationGate');
 
-function randomHex(bytes) {
-  return crypto.randomBytes(bytes).toString('hex').toUpperCase();
+const initiateApplication = createInitiateApplication(coreInitiateApplication);
+const finalizeApplication = createFinalizeApplication(coreFinalizeApplication);
+const processScanResult = createProcessScanResult(coreProcessScanResult);
+
+function randomHex(length) {
+  return crypto.randomUUID().replace(/-/g, '').slice(0, length).toUpperCase();
 }
 
-function createCredential(cfg) {
-  if (cfg.managedIdentityClientId) {
-    return new ManagedIdentityCredential(cfg.managedIdentityClientId);
-  }
-  return new DefaultAzureCredential({ managedIdentityClientId: cfg.managedIdentityClientId });
-}
-
-function createLogger(context) {
-  return {
-    async log(operation, fields = {}) {
-      const safeFields = {
-        operation,
-        correlationId: fields.correlationId,
-        applicationReference: fields.applicationReference,
-        fileReference: fields.fileReference,
-        roleId: fields.roleId,
-        errorCode: fields.errorCode,
-        durationMs: fields.durationMs,
-        classification: fields.classification
-      };
-      Object.keys(safeFields).forEach((key) => safeFields[key] === undefined && delete safeFields[key]);
-      (context?.log || console.log)('recruitment_operation', safeFields);
-    }
-  };
-}
-
-function createBotVerifier(cfg) {
-  const bypass = cfg.botVerificationMode === 'test-bypass';
-  if (bypass && cfg.environment !== 'production') {
-    return { async verify() { return { ok: true }; } };
-  }
-  if (cfg.apiEnabled && (!cfg.botVerificationMode || cfg.botVerificationMode === 'test-bypass')) {
-    return { async verify() { return { ok: false, errorCode: 'INTERNAL_CONFIGURATION_ERROR' }; } };
-  }
-  return { async verify() { return { ok: false, errorCode: 'INTERNAL_CONFIGURATION_ERROR' }; } };
-}
-
-function createDeps(cfg = loadConfig(), context) {
-  const credential = createCredential(cfg);
-  const cosmos = createCosmosAdapters({ endpoint: cfg.cosmosEndpoint, databaseId: cfg.cosmosDatabase, credential });
-  const secrets = createSecretProvider({ vaultUrl: cfg.keyVaultUrl, credential });
-  const storage = createBlobAdapter({
-    accountUrl: cfg.storageAccountUrl,
-    credential,
-    containers: { quarantine: cfg.quarantineContainer, clean: cfg.cleanContainer }
+function createDeps(config = loadConfig(), requestContext = {}) {
+  const credentialOptions = config.managedIdentityClientId
+    ? { managedIdentityClientId: config.managedIdentityClientId }
+    : {};
+  const credential = new DefaultAzureCredential(credentialOptions);
+  const secretProvider = createSecretProvider({ vaultUrl: config.keyVaultUrl, credential });
+  const fingerprints = createFingerprintAdapter(secretProvider, config.fingerprintSecretName);
+  const cosmos = createCosmosAdapters({
+    endpoint: config.cosmosEndpoint,
+    databaseId: config.cosmosDatabase,
+    credential
   });
+  const projectionReader = createProjectionReader({
+    endpoint: config.cosmosEndpoint,
+    databaseId: config.cosmosDatabase,
+    credential
+  });
+  const outboxCheckpoint = createOutboxCheckpointStore({
+    endpoint: config.cosmosEndpoint,
+    databaseId: config.cosmosDatabase,
+    credential
+  });
+  const outboxReader = createOutboxReader({
+    endpoint: config.cosmosEndpoint,
+    databaseId: config.cosmosDatabase,
+    credential
+  });
+  const retention = createRetentionAdapter({
+    endpoint: config.cosmosEndpoint,
+    databaseId: config.cosmosDatabase,
+    credential
+  });
+  const storage = createBlobAdapter({
+    accountUrl: config.storageAccountUrl,
+    credential,
+    containers: {
+      quarantine: config.quarantineContainer,
+      clean: config.cleanContainer
+    }
+  });
+  const graph = config.outboxDelivery.enabled === true
+    ? createGraphAdapter({ credential, endpoint: config.graph.endpoint })
+    : null;
+  const baseOutboxDispatcher = graph
+    ? createOutboxDispatcher({ graph, config })
+    : null;
+  const outboxDispatcher = baseOutboxDispatcher
+    ? createFinalizationGatedDispatcher(baseOutboxDispatcher)
+    : null;
 
   return {
     ...cosmos,
+    idempotency: secureIdempotencyAdapter(cosmos.idempotency),
+    projectionReader,
+    outboxCheckpoint,
+    outboxReader,
+    retention,
     storage,
     sas: storage,
-    tokens: createTokenAdapter(secrets, cfg.completionTokenSecretName),
-    fingerprints: createFingerprintAdapter(secrets, cfg.fingerprintSecretName),
+    secretProvider,
+    tokens: createTokenAdapter(secretProvider, config.completionTokenSecretName),
+    fingerprints,
+    rateLimiter: createRateLimiter({
+      endpoint: config.cosmosEndpoint,
+      databaseId: config.cosmosDatabase,
+      credential,
+      enabled: config.rateLimit.enabled,
+      limit: config.rateLimit.limit,
+      windowSeconds: config.rateLimit.windowSeconds,
+      fingerprint: fingerprints,
+      requestContext
+    }),
+    botVerifier: createBotVerifier({
+      mode: config.botVerification.mode,
+      environment: config.environment,
+      secretProvider,
+      secretName: config.botVerification.secretName,
+      endpoint: config.botVerification.endpoint,
+      expectedHostnames: config.botVerification.expectedHostnames,
+      expectedAction: config.botVerification.expectedAction
+    }),
+    graph,
+    outboxDispatcher,
     now: async () => new Date(),
     loadManifest: async () => loadManifest(),
-    botVerifier: createBotVerifier(cfg),
     references: {
-      async application() { return `SV-APP-${new Date().getUTCFullYear()}-${randomHex(8)}`; },
-      async file() { return `SV-FILE-${randomHex(8)}`; },
-      async tokenId() { return crypto.randomUUID(); }
+      async application() {
+        return `SV-APP-${new Date().getUTCFullYear()}-${randomHex(16)}`;
+      },
+      async file() {
+        return `SV-FILE-${randomHex(16)}`;
+      },
+      async tokenId() {
+        return crypto.randomUUID();
+      }
     },
-    logger: createLogger(context)
+    logger: createStructuredLogger()
   };
 }
 
 module.exports = {
+  randomHex,
   createDeps,
-  flows: { initiateApplication, completeUpload, processScanResult, retryQuarantineCleanup }
+  flows: {
+    initiateApplication,
+    completeUpload,
+    finalizeApplication,
+    processScanResult,
+    retryQuarantineCleanup
+  }
 };

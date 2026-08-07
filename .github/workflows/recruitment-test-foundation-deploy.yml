@@ -1,0 +1,265 @@
+name: Recruitment Test Foundation Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type DEPLOY_TEST_FOUNDATION to continue'
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-test-foundation
+  cancel-in-progress: false
+
+env:
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  AZURE_LOCATION: eastasia
+  RECRUITMENT_ENVIRONMENT: test
+  RECRUITMENT_NAME_PREFIX: svrc26hk
+  NODE_RUNTIME_VERSION: '22'
+  FOUNDATION_PARAMETERS: infra/recruitment/test-eastasia.bicepparam
+
+jobs:
+  deploy:
+    name: Deploy disabled test foundation
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: recruitment-test
+    steps:
+      - name: Require explicit confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ inputs.confirmation }}' != 'DEPLOY_TEST_FOUNDATION' ]]; then
+            echo 'Confirmation text did not match. No Azure changes were made.' >&2
+            exit 1
+          fi
+
+      - name: Check Azure OIDC configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for value in \
+            '${{ vars.AZURE_CLIENT_ID }}' \
+            '${{ vars.AZURE_TENANT_ID }}' \
+            '${{ vars.AZURE_SUBSCRIPTION_ID }}'; do
+            if [[ -z "$value" ]]; then
+              echo 'The recruitment-test GitHub environment is missing an Azure OIDC variable.' >&2
+              exit 1
+            fi
+          done
+
+      - uses: actions/checkout@v4
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify Azure context and Flex Consumption runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_subscription="$(az account show --query id -o tsv)"
+          actual_tenant="$(az account show --query tenantId -o tsv)"
+
+          if [[ "$actual_subscription" != '${{ vars.AZURE_SUBSCRIPTION_ID }}' ]]; then
+            echo 'Azure login resolved to the wrong subscription.' >&2
+            exit 1
+          fi
+          if [[ "$actual_tenant" != '${{ vars.AZURE_TENANT_ID }}' ]]; then
+            echo 'Azure login resolved to the wrong tenant.' >&2
+            exit 1
+          fi
+
+          supported_locations="$(az functionapp list-flexconsumption-locations --query '[].name' -o tsv | tr '[:upper:]' '[:lower:]')"
+          if ! printf '%s\n' "$supported_locations" | grep -Eq '^(eastasia|east asia)$'; then
+            echo "Flex Consumption is not currently available in ${AZURE_LOCATION} for this subscription." >&2
+            exit 1
+          fi
+
+          supported_node_versions="$(az functionapp list-flexconsumption-runtimes \
+            --location "$AZURE_LOCATION" \
+            --runtime node \
+            --query '[].version' \
+            --output tsv)"
+          if ! printf '%s\n' "$supported_node_versions" | grep -qx "$NODE_RUNTIME_VERSION"; then
+            echo "Node.js ${NODE_RUNTIME_VERSION} is not currently available for Flex Consumption in ${AZURE_LOCATION}." >&2
+            exit 1
+          fi
+
+      - name: Validate Bicep parameter contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          az bicep install
+          az bicep build-params --file "$FOUNDATION_PARAMETERS" --stdout >/dev/null
+
+      - name: Verify isolated test resource group
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! az group exists --name "$AZURE_RESOURCE_GROUP" | grep -qx true; then
+            echo 'The isolated test resource group does not exist. Run the checked-in Azure OIDC bootstrap first.' >&2
+            exit 1
+          fi
+
+          existing_location="$(az group show --name "$AZURE_RESOURCE_GROUP" --query location -o tsv | tr '[:upper:]' '[:lower:]')"
+          if [[ "$existing_location" != "$AZURE_LOCATION" ]]; then
+            echo "Existing resource group is in ${existing_location}, not ${AZURE_LOCATION}." >&2
+            exit 1
+          fi
+
+      - name: Validate foundation deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group validate \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --parameters "$FOUNDATION_PARAMETERS" \
+            --output none
+
+      - name: Capture foundation what-if
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group what-if \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --parameters "$FOUNDATION_PARAMETERS" \
+            --no-pretty-print \
+            --output json > recruitment-test-foundation-what-if.json
+
+      - name: Upload what-if evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: recruitment-test-foundation-what-if-${{ github.run_id }}
+          path: recruitment-test-foundation-what-if.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Deploy disabled Azure foundation
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group create \
+            --name "recruitment-test-foundation-${GITHUB_RUN_ID}" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --parameters "$FOUNDATION_PARAMETERS" \
+            --output json > recruitment-test-foundation-deployment.json
+
+      - name: Apply candidate-upload CORS
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group create \
+            --name "recruitment-test-cors-${GITHUB_RUN_ID}" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --template-file infra/recruitment/candidate-upload-cors.bicep \
+            --parameters storageAccountName="${RECRUITMENT_NAME_PREFIX}cv${RECRUITMENT_ENVIRONMENT}" \
+            --output none
+
+      - name: Apply complete disabled runtime settings
+        shell: bash
+        run: |
+          set -euo pipefail
+          az deployment group create \
+            --name "recruitment-test-settings-${GITHUB_RUN_ID}" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --template-file infra/recruitment/runtime-settings.v2.bicep \
+            --parameters \
+              functionAppName="${RECRUITMENT_NAME_PREFIX}-recruit-fn-${RECRUITMENT_ENVIRONMENT}" \
+              managedIdentityName="${RECRUITMENT_NAME_PREFIX}-recruit-mi-${RECRUITMENT_ENVIRONMENT}" \
+              hostStorageAccountName="${RECRUITMENT_NAME_PREFIX}fnpkg${RECRUITMENT_ENVIRONMENT}" \
+              cosmosAccountName="${RECRUITMENT_NAME_PREFIX}-recruit-cosmos-${RECRUITMENT_ENVIRONMENT}" \
+              cvStorageAccountName="${RECRUITMENT_NAME_PREFIX}cv${RECRUITMENT_ENVIRONMENT}" \
+              keyVaultName="${RECRUITMENT_NAME_PREFIX}-recruit-kv-${RECRUITMENT_ENVIRONMENT}" \
+              applicationInsightsName="${RECRUITMENT_NAME_PREFIX}-recruit-ai-${RECRUITMENT_ENVIRONMENT}" \
+              environmentName="$RECRUITMENT_ENVIRONMENT" \
+              enableApi=false \
+              enableOutboxDelivery=false \
+              enableCandidateAcknowledgement=false \
+              candidateAcknowledgementTemplateApproved=false \
+              enableHrAccess=false \
+              platformAuthenticationEnabled=false \
+              enableRetention=false \
+              enableRetentionDeletion=false \
+            --output none
+
+      - name: Verify all launch and destructive controls remain disabled
+        shell: bash
+        run: |
+          set -euo pipefail
+          function_name="${RECRUITMENT_NAME_PREFIX}-recruit-fn-${RECRUITMENT_ENVIRONMENT}"
+          cosmos_name="${RECRUITMENT_NAME_PREFIX}-recruit-cosmos-${RECRUITMENT_ENVIRONMENT}"
+          settings_json="$(az functionapp config appsettings list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$function_name" \
+            --output json)"
+
+          for key in \
+            RECRUITMENT_API_ENABLED \
+            RECRUITMENT_OUTBOX_DELIVERY_ENABLED \
+            RECRUITMENT_CANDIDATE_ACK_ENABLED \
+            RECRUITMENT_HR_ACCESS_ENABLED \
+            RECRUITMENT_RETENTION_ENABLED \
+            RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            value="$(jq -r --arg key "$key" '.[] | select(.name == $key) | .value' <<<"$settings_json")"
+            if [[ "$value" != 'false' ]]; then
+              echo "${key} is not explicitly disabled." >&2
+              exit 1
+            fi
+          done
+
+          cosmos_capabilities="$(az cosmosdb show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$cosmos_name" \
+            --query 'capabilities[].name' \
+            --output tsv)"
+          if ! printf '%s\n' "$cosmos_capabilities" | grep -qx 'EnableServerless'; then
+            echo 'The test Cosmos DB account is not explicitly serverless.' >&2
+            exit 1
+          fi
+
+          defender_count="$(az resource list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --resource-type Microsoft.Security/defenderForStorageSettings \
+            --query 'length(@)' \
+            --output tsv)"
+          if [[ "$defender_count" != '0' ]]; then
+            echo 'Defender for Storage was unexpectedly enabled.' >&2
+            exit 1
+          fi
+
+      - name: Record deployment evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: recruitment-test-foundation-deployment-${{ github.run_id }}
+          path: recruitment-test-foundation-deployment.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Write deployment summary
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Recruitment test foundation
+
+          - Resource group: \`${AZURE_RESOURCE_GROUP}\`
+          - Region: \`${AZURE_LOCATION}\`
+          - Function App: \`${RECRUITMENT_NAME_PREFIX}-recruit-fn-${RECRUITMENT_ENVIRONMENT}\`
+          - Node.js runtime: \`${NODE_RUNTIME_VERSION}\`
+          - Cosmos DB: serverless
+          - Public API: disabled
+          - SharePoint/email delivery: disabled
+          - HR document access: disabled
+          - Retention and deletion: disabled
+          - Defender for Storage: disabled
+          - Public Careers form: unchanged
+          EOF

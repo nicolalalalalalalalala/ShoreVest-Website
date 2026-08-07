@@ -1,0 +1,81 @@
+name: Temporary Fix Flex Runtime Templates and Tests
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-fix-flex-runtime-and-tests.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/rebuild-recruitment-backend
+          fetch-depth: 0
+
+      - name: Fix Flex Consumption runtime configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          main = Path('infra/recruitment/main.bicep')
+          runtime = Path('infra/recruitment/runtime-settings.v2.bicep')
+          test = Path('services/recruitment-functions/test/runtimeSettingsV2.test.js')
+
+          main_text = main.read_text()
+          worker_block = """        {
+            name: 'FUNCTIONS_WORKER_RUNTIME'
+            value: 'node'
+          }
+          """
+          if main_text.count(worker_block) != 1:
+              raise SystemExit(f'Expected one main worker-runtime block, found {main_text.count(worker_block)}')
+          if main_text.count("      ftpsState: 'Disabled'\n") != 1:
+              raise SystemExit('Expected one unsupported ftpsState setting')
+          main_text = main_text.replace(worker_block, '')
+          main_text = main_text.replace("      ftpsState: 'Disabled'\n", '')
+          main.write_text(main_text)
+
+          runtime_text = runtime.read_text()
+          runtime_setting = "    FUNCTIONS_WORKER_RUNTIME: 'node'\n"
+          if runtime_text.count(runtime_setting) != 1:
+              raise SystemExit(f'Expected one runtime-settings worker setting, found {runtime_text.count(runtime_setting)}')
+          runtime.write_text(runtime_text.replace(runtime_setting, ''))
+
+          test_text = test.read_text()
+          required_entry = "  'FUNCTIONS_WORKER_RUNTIME',\n"
+          if test_text.count(required_entry) != 1:
+              raise SystemExit(f'Expected one worker-runtime test entry, found {test_text.count(required_entry)}')
+          test_text = test_text.replace(required_entry, '')
+          old_assertion = "  assert.ok(!template.includes('FUNCTIONS_EXTENSION_VERSION'));\n"
+          new_assertions = (
+              "  assert.ok(!template.includes('FUNCTIONS_WORKER_RUNTIME'));\n"
+              "  assert.ok(!template.includes('FUNCTIONS_EXTENSION_VERSION'));\n"
+          )
+          if test_text.count(old_assertion) != 1:
+              raise SystemExit('Expected the Functions extension assertion anchor')
+          test_text = test_text.replace(old_assertion, new_assertions)
+          test.write_text(test_text)
+          PY
+
+          git rm .github/workflows/tmp-fix-flex-runtime-and-tests.yml
+          git diff --check
+          git grep -n "FUNCTIONS_WORKER_RUNTIME\|ftpsState" -- infra/recruitment/main.bicep infra/recruitment/runtime-settings.v2.bicep && {
+            echo 'Unsupported Flex settings remain in deployment templates.' >&2
+            exit 1
+          } || true
+
+          git config user.name 'shorevest-recruitment-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add infra/recruitment/main.bicep infra/recruitment/runtime-settings.v2.bicep services/recruitment-functions/test/runtimeSettingsV2.test.js
+          git commit -m 'Fix Flex Consumption runtime configuration'
+          git push origin HEAD:agent/rebuild-recruitment-backend
