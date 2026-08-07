@@ -23,10 +23,10 @@ function createReadinessProbe({ ttlMs = 30000, now = () => Date.now() } = {}) {
 
     const checks = [];
     if (typeof dependencies?.health === 'function') {
-      checks.push(() => dependencies.health());
+      checks.push({ name: 'cosmos', run: () => dependencies.health() });
     }
     if (typeof dependencies?.storage?.health === 'function') {
-      checks.push(() => dependencies.storage.health());
+      checks.push({ name: 'storage', run: () => dependencies.storage.health() });
     }
     if (config.apiEnabled === true && typeof dependencies?.secretProvider?.health === 'function') {
       const secretNames = [
@@ -34,24 +34,33 @@ function createReadinessProbe({ ttlMs = 30000, now = () => Date.now() } = {}) {
         config.fingerprintSecretName,
         config.botVerification?.secretName
       ].filter(Boolean);
-      checks.push(() => dependencies.secretProvider.health(secretNames));
+      checks.push({ name: 'secrets', run: () => dependencies.secretProvider.health(secretNames) });
     }
     if (config.outboxDelivery?.enabled === true && typeof dependencies?.graph?.health === 'function') {
-      checks.push(() => dependencies.graph.health({
-        siteId: config.sharePoint.siteId,
-        applicationsListId: config.sharePoint.applicationsListId,
-        filesListId: config.sharePoint.filesListId,
-        mailbox: config.candidateAcknowledgement.mailbox
-      }));
+      checks.push({
+        name: 'graph',
+        run: () => dependencies.graph.health({
+          siteId: config.sharePoint.siteId,
+          applicationsListId: config.sharePoint.applicationsListId,
+          filesListId: config.sharePoint.filesListId,
+          mailbox: config.candidateAcknowledgement.mailbox
+        })
+      });
     }
 
+    const componentResults = {};
     let ready = checks.length > 0;
-    try {
-      const results = await Promise.all(checks.map((check) => check()));
-      ready = ready && results.every((result) => result?.ok === true);
-    } catch (_) {
-      ready = false;
-    }
+    await Promise.all(checks.map(async (check) => {
+      try {
+        const value = await check.run();
+        const ok = value?.ok === true;
+        componentResults[check.name] = ok ? 'ready' : 'unavailable';
+        if (!ok) ready = false;
+      } catch (_) {
+        componentResults[check.name] = 'unavailable';
+        ready = false;
+      }
+    }));
 
     const result = {
       ok: ready,
@@ -59,6 +68,9 @@ function createReadinessProbe({ ttlMs = 30000, now = () => Date.now() } = {}) {
       configuration: 'valid',
       dependencies: ready ? 'ready' : 'unavailable'
     };
+    if (config.environment !== 'production' && config.environment !== 'prod') {
+      result.components = componentResults;
+    }
     cached = { expiresAt: timestamp + ttlMs, result };
     return result;
   }
