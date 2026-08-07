@@ -1,0 +1,8 @@
+{
+  "roleAssignmentCount": 0,
+  "roleCreate": "permission-denied",
+  "completionSecretExists": true,
+  "fingerprintSecretExists": true,
+  "turnstileSecretExists": true,
+  "checkedAtUtc": "2026-08-07T21:38:04Z"
+}
