@@ -222,17 +222,19 @@
       function tryRender() {
         attempts += 1;
         if (win.turnstile && typeof win.turnstile.render === 'function') {
-          state.turnstileId = win.turnstile.render(target, {
-            sitekey: publicConfig.turnstileSiteKey,
-            action: publicConfig.turnstileAction || 'recruitment-application',
-            callback: function (token) { state.botToken = token; },
-            'expired-callback': function () { state.botToken = ''; },
-            'error-callback': function () { state.botToken = ''; }
-          });
-          resolve(true);
-          return;
+          try {
+            state.turnstileId = win.turnstile.render(target, {
+              sitekey: publicConfig.turnstileSiteKey,
+              action: publicConfig.turnstileAction || 'recruitment-application',
+              callback: function (token) { state.botToken = token; },
+              'expired-callback': function () { state.botToken = ''; },
+              'error-callback': function () { state.botToken = ''; }
+            });
+            resolve(true);
+            return;
+          } catch (_) {}
         }
-        if (attempts >= 50) { resolve(false); return; }
+        if (attempts >= 300) { resolve(false); return; }
         win.setTimeout(tryRender, 100);
       }
       tryRender();
@@ -280,8 +282,8 @@
 
       return renderTurnstile(win, doc, publicConfig, state).then(function (turnstileReady) {
         if (!turnstileReady) {
-          showState(doc, strings.unavailable);
-          return 'disabled';
+          var turnstileError = doc.querySelector('[data-field-error="turnstile"]');
+          if (turnstileError) turnstileError.textContent = strings.bot;
         }
         if (!form) return 'ready';
         form.addEventListener('submit', function (event) {
