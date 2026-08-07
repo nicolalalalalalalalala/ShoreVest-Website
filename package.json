@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "validate:recruitment": "node scripts/validate-recruitment-roles.js",
-    "check:recruitment": "node --check assets/js/recruitment-role-list.js && node --check assets/js/recruitment-role-detail.js && node --check scripts/validate-recruitment-roles.js && node --check api/recruitment/core/constants.js && node --check api/recruitment/core/stateMachines.js && node --check api/recruitment/core/fileTypes.js && node --check api/recruitment/core/validation.js && node --check api/recruitment/core/flows.js && node --check api/recruitment/core/inMemoryAdapters.js",
-    "test:recruitment": "node tests/recruitment-roles.test.js && node tests/recruitment-role-list.test.js && node tests/recruitment-role-detail.test.js && node tests/recruitment-static-security.test.js && node tests/recruitment-application-core.test.js && node tests/recruitment-phase2a2.test.js && node tests/recruitment-phase2a3.test.js",
+    "check:recruitment": "node --check assets/js/recruitment-role-list.js && node --check assets/js/recruitment-role-detail.js && node --check assets/js/recruitment-application.js && node --check scripts/validate-recruitment-roles.js && node --check api/recruitment/core/constants.js && node --check api/recruitment/core/stateMachines.js && node --check api/recruitment/core/fileTypes.js && node --check api/recruitment/core/validation.js && node --check api/recruitment/core/flows.js && node --check api/recruitment/core/inMemoryAdapters.js",
+    "test:recruitment": "node tests/recruitment-roles.test.js && node tests/recruitment-role-list.test.js && node tests/recruitment-role-detail.test.js && node tests/recruitment-application-client.test.js && node tests/recruitment-static-security.test.js && node tests/recruitment-application-core.test.js && node tests/recruitment-phase2a2.test.js && node tests/recruitment-phase2a3.test.js",
     "check:security": "node tests/security-headers.test.js",
     "one:migrate": "node server/db/migrate.js",
     "one:seed": "node server/seed/run.js",
