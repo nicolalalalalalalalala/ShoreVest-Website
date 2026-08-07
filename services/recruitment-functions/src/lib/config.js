@@ -69,6 +69,7 @@ function loadConfig(env = process.env) {
 
   return {
     apiEnabled: bool(env.RECRUITMENT_API_ENABLED),
+    captureOnly: bool(env.RECRUITMENT_CAPTURE_ONLY_MODE),
     environment,
     allowedOrigins: origins,
     requireOrigin: env.RECRUITMENT_REQUIRE_ORIGIN == null ? production : bool(env.RECRUITMENT_REQUIRE_ORIGIN),
@@ -165,6 +166,14 @@ function validateConfig(config) {
     invalid.push('botVerification.mode');
   }
 
+  if (config.captureOnly === true) {
+    if (config.outboxDelivery?.enabled === true) invalid.push('outboxDelivery.enabled');
+    if (config.candidateAcknowledgement?.enabled === true) invalid.push('candidateAcknowledgement.enabled');
+    if (config.hrAccess?.enabled === true) invalid.push('hrAccess.enabled');
+    if (config.retention?.enabled === true) invalid.push('retention.enabled');
+    if (config.retention?.deletionEnabled === true) invalid.push('retention.deletionEnabled');
+  }
+
   if (config.outboxDelivery?.enabled === true) {
     if (!config.managedIdentityClientId) missing.push('managedIdentityClientId');
     if (!config.sharePoint?.siteId) missing.push('sharePoint.siteId');
@@ -217,10 +226,12 @@ function validateConfig(config) {
     if (!/^[a-z0-9_-]{1,64}$/i.test(config.botVerification?.expectedAction || '')) {
       invalid.push('botVerification.expectedAction');
     }
-    if (config.outboxDelivery?.enabled !== true) invalid.push('outboxDelivery.enabled');
-    if (config.hrAccess?.enabled !== true) invalid.push('hrAccess.enabled');
-    if (config.retention?.enabled !== true) invalid.push('retention.enabled');
-    if (config.retention?.deletionEnabled !== true) invalid.push('retention.deletionEnabled');
+    if (config.captureOnly !== true) {
+      if (config.outboxDelivery?.enabled !== true) invalid.push('outboxDelivery.enabled');
+      if (config.hrAccess?.enabled !== true) invalid.push('hrAccess.enabled');
+      if (config.retention?.enabled !== true) invalid.push('retention.enabled');
+      if (config.retention?.deletionEnabled !== true) invalid.push('retention.deletionEnabled');
+    }
   }
 
   return {
