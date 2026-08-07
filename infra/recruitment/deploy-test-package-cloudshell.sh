@@ -6,7 +6,7 @@ tenant_id='768bd74c-6be4-4c55-b52d-33673e3b8700'
 resource_group='rg-shorevest-recruitment-test-eastasia'
 function_app='svrc26hk-recruit-fn-test'
 repository_url='https://github.com/shorevest/website.git'
-source_sha='8341bd69037cc9e722ce3b53f5d105f91d1b640e'
+source_sha='c5f7b21a93218c9e0d9d2e77413129c89b923186'
 
 for command in az git node npm python3; do
   command -v "$command" >/dev/null 2>&1 || {
@@ -219,5 +219,5 @@ files_id="$(jq -r '.[] | select(.name == "RECRUITMENT_FILES_LIST_ID") | .value' 
 echo
 printf '%s\n' "$names" | sort
 echo
-echo 'Corrected recruitment package deployed successfully.'
-echo 'SharePoint IDs retained. Public API, delivery, HR access and retention remain disabled.'
+echo 'Capture-only capable recruitment package deployed successfully.'
+echo 'SharePoint IDs retained. Public API, delivery, HR access and retention remain disabled until explicitly enabled.'
