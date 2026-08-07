@@ -1,0 +1,131 @@
+name: Temporary Fix Recruitment Apply Route
+
+on:
+  push:
+    branches:
+      - agent/fix-recruitment-apply-route
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-recruitment-apply-route
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Patch recruitment clean-route gating
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('scripts/generate-clean-public-urls.js')
+          s = p.read_text()
+
+          old = "const SITE_CONFIG = require(path.join(ROOT, 'assets', 'js', 'site-config.js'));\n"
+          new = old + "const RECRUITMENT_PUBLIC_CONFIG = require(path.join(ROOT, 'assets', 'data', 'recruitment', 'public-config.json'));\n"
+          if old not in s:
+              raise SystemExit('SITE_CONFIG anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = """function isCareerRoleRoute(route) {
+            return /^\\/(?:cn\\/)?careers\\/[^/]+\\/$/i.test(route);
+          }
+          """
+          new = old + """
+          function isCareersApplicationRoute(route) {
+            return /^\\/(?:cn\\/)?careers\\/apply\\/$/i.test(route);
+          }
+          """
+          if old not in s:
+              raise SystemExit('career route anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = """function disabledRouteState(route) {
+            if (SITE_CONFIG.careersOpenRolesEnabled !== true && isCareerRoleRoute(route)) {
+              return {
+                reason: 'careers-disabled',
+                redirectTarget: route.startsWith('/cn/') ? '/cn/careers/#open-roles' : '/careers/#open-roles'
+              };
+            }
+            if (SITE_CONFIG.mediaArchiveEnabled !== true && isMediaArticleRoute(route)) {
+              return { reason: 'media-archive-disabled', redirectTarget: '/media/' };
+            }
+            return null;
+          }
+          """
+          new = """function disabledRouteState(route) {
+            if (isCareersApplicationRoute(route)) {
+              if (RECRUITMENT_PUBLIC_CONFIG.applicationsEnabled !== true) {
+                return {
+                  reason: 'careers-disabled',
+                  redirectTarget: route.startsWith('/cn/') ? '/cn/careers/#open-roles' : '/careers/#open-roles'
+                };
+              }
+              return null;
+            }
+            if (SITE_CONFIG.careersOpenRolesEnabled !== true && isCareerRoleRoute(route)) {
+              return {
+                reason: 'careers-disabled',
+                redirectTarget: route.startsWith('/cn/') ? '/cn/careers/#open-roles' : '/careers/#open-roles'
+              };
+            }
+            if (SITE_CONFIG.mediaArchiveEnabled !== true && isMediaArticleRoute(route)) {
+              return { reason: 'media-archive-disabled', redirectTarget: '/media/' };
+            }
+            return null;
+          }
+          """
+          if old not in s:
+              raise SystemExit('disabledRouteState anchor not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+
+      - name: Regenerate clean routes
+        run: node scripts/generate-clean-public-urls.js
+
+      - name: Verify controlled application route
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('assets/data/clean-url-manifest.json','utf8'));
+          const route = p => manifest.routes.find(r => r.route === p);
+          for (const p of ['/careers/apply/','/cn/careers/apply/']) {
+            const r = route(p);
+            if (!r || r.disabled !== false) throw new Error(`${p} must be enabled`);
+            const html = fs.readFileSync(r.destination,'utf8');
+            if (/sv-disabled-route|window\.location\.replace\([^)]*open-roles/i.test(html)) throw new Error(`${p} still redirects`);
+            if (!/data-application-form/.test(html)) throw new Error(`${p} does not contain application form`);
+          }
+          for (const p of ['/careers/legal-assistant/','/cn/careers/legal-assistant/']) {
+            const r = route(p);
+            if (!r || r.disabled !== true) throw new Error(`${p} must remain hidden during controlled test`);
+          }
+          console.log('Controlled recruitment routing verified.');
+          NODE
+          node tests/recruitment-static-security.test.js
+
+      - name: Commit durable fix and generated routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/tmp-fix-recruitment-apply-route.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Fix controlled recruitment application route"
+          git push origin HEAD:agent/fix-recruitment-apply-route
