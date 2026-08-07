@@ -1,0 +1,47 @@
+name: Temporary Trim Turnstile Mobile PR
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tmp-trim-turnstile-mobile-pr.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  trim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Keep only intended recruitment client changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          keep="$RUNNER_TEMP/keep"
+          mkdir -p "$keep/assets/js" "$keep/careers/apply" "$keep/cn/careers/apply" "$keep/careers"
+          cp assets/js/recruitment-application.js "$keep/assets/js/recruitment-application.js"
+          cp careers/apply.html "$keep/careers/apply.html"
+          cp careers/apply_cn.html "$keep/careers/apply_cn.html"
+          cp careers/apply/index.html "$keep/careers/apply/index.html"
+          cp cn/careers/apply/index.html "$keep/cn/careers/apply/index.html"
+
+          git fetch --no-tags origin main
+          git checkout origin/main -- .
+
+          cp "$keep/assets/js/recruitment-application.js" assets/js/recruitment-application.js
+          cp "$keep/careers/apply.html" careers/apply.html
+          cp "$keep/careers/apply_cn.html" careers/apply_cn.html
+          cp "$keep/careers/apply/index.html" careers/apply/index.html
+          cp "$keep/cn/careers/apply/index.html" cn/careers/apply/index.html
+
+          git rm .github/workflows/tmp-trim-turnstile-mobile-pr.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Trim Turnstile mobile fix to recruitment files"
+          git push origin HEAD:${{ github.head_ref }}
