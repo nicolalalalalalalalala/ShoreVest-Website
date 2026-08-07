@@ -1,0 +1,74 @@
+name: Temporary Fix Turnstile Mobile PR
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tmp-fix-turnstile-mobile-pr.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Patch recruitment client and cache-bust application pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          p = Path('assets/js/recruitment-application.js')
+          s = p.read_text()
+
+          old = """        if (win.turnstile && typeof win.turnstile.render === 'function') {\n          state.turnstileId = win.turnstile.render(target, {\n            sitekey: publicConfig.turnstileSiteKey,\n            action: publicConfig.turnstileAction || 'recruitment-application',\n            callback: function (token) { state.botToken = token; },\n            'expired-callback': function () { state.botToken = ''; },\n            'error-callback': function () { state.botToken = ''; }\n          });\n          resolve(true);\n          return;\n        }\n        if (attempts >= 50) { resolve(false); return; }\n        win.setTimeout(tryRender, 100);\n"""
+          new = """        if (win.turnstile && typeof win.turnstile.render === 'function') {\n          try {\n            state.turnstileId = win.turnstile.render(target, {\n              sitekey: publicConfig.turnstileSiteKey,\n              action: publicConfig.turnstileAction || 'recruitment-application',\n              callback: function (token) { state.botToken = token; },\n              'expired-callback': function () { state.botToken = ''; },\n              'error-callback': function () { state.botToken = ''; }\n            });\n            resolve(true);\n            return;\n          } catch (_) {}\n        }\n        if (attempts >= 300) { resolve(false); return; }\n        win.setTimeout(tryRender, 100);\n"""
+          if old not in s:
+              raise SystemExit('Turnstile render block not found')
+          s = s.replace(old, new, 1)
+
+          old2 = """      return renderTurnstile(win, doc, publicConfig, state).then(function (turnstileReady) {\n        if (!turnstileReady) {\n          showState(doc, strings.unavailable);\n          return 'disabled';\n        }\n        if (!form) return 'ready';\n"""
+          new2 = """      return renderTurnstile(win, doc, publicConfig, state).then(function (turnstileReady) {\n        if (!turnstileReady) {\n          var turnstileError = doc.querySelector('[data-field-error=\"turnstile\"]');\n          if (turnstileError) turnstileError.textContent = strings.bot;\n        }\n        if (!form) return 'ready';\n"""
+          if old2 not in s:
+              raise SystemExit('Turnstile readiness block not found')
+          s = s.replace(old2, new2, 1)
+          p.write_text(s)
+
+          for name in ['careers/apply.html', 'careers/apply_cn.html']:
+              q = Path(name)
+              t = q.read_text()
+              t = t.replace('recruitment-application.js?v=20260808-capture-only', 'recruitment-application.js?v=20260808-turnstile-mobile')
+              q.write_text(t)
+          PY
+
+      - name: Generate clean routes and run checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          npm run validate:recruitment
+          npm run check:recruitment
+          npm run test:recruitment
+          npm run check:security
+          node scripts/generate-clean-public-urls.js
+          git diff --check
+          grep -q 'recruitment-application.js?v=20260808-turnstile-mobile' careers/apply/index.html
+          grep -q 'recruitment-application.js?v=20260808-turnstile-mobile' cn/careers/apply/index.html
+
+      - name: Commit final patch back to PR branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/tmp-fix-turnstile-mobile-pr.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Keep Careers application visible while Turnstile loads"
+          git push origin HEAD:${{ github.head_ref }}
