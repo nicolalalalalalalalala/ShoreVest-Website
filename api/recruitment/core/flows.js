@@ -298,7 +298,7 @@ async function reconcileAppliedScanOutcome(event, deps, application, file, event
   else if (event.result === S.Malicious) ok = file.technicalStatus === F.Malicious && application.technicalStatus === A.Blocked && await hasOutbox(deps, application.applicationReference, `outbox:${application.applicationReference}:${file.fileReference}:malicious`, N.MaliciousFileDetected);
   else ok = file.technicalStatus === F.ManualReview && application.technicalStatus === A.ManualReview && await hasOutbox(deps, application.applicationReference, `outbox:${application.applicationReference}:${file.fileReference}:manual-review`, N.ManualReviewRequired);
   if (!ok) return false;
-  await deps.scanEvents.complete(scanClaim, { success: true, reconciled: true });
+  await deps.scanEvents.complete(eventKey, { success: true, reconciled: true });
   return true;
 }
 
