@@ -1,9 +1,7 @@
 name: Temporary Recruitment Capture-Only Redeploy
 
 on:
-  push:
-    branches:
-      - agent/rebuild-recruitment-backend
+  pull_request:
     paths:
       - .github/workflows/tmp-redeploy-recruitment-capture-only.yml
 
@@ -78,7 +76,7 @@ jobs:
         name: Build immutable Function package
         shell: pwsh
         run: |
-          ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
+          ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.event.pull_request.head.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
 
       - id: deploy
         name: Deploy Function package
@@ -128,44 +126,3 @@ jobs:
           [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
           [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
           for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do [[ "$(value "$key")" == 'false' ]] || exit 1; done
-
-      - name: Record deployment result on branch
-        if: always()
-        shell: bash
-        env:
-          DEPLOYMENT_STATUS: ${{ job.status }}
-          OUT_CHECKOUT: ${{ steps.checkout.outcome }}
-          OUT_NODE: ${{ steps.node.outcome }}
-          OUT_LOGIN: ${{ steps.login.outcome }}
-          OUT_SAFETY: ${{ steps.safety.outcome }}
-          OUT_MANIFEST: ${{ steps.manifest.outcome }}
-          OUT_PACKAGE: ${{ steps.package.outcome }}
-          OUT_DEPLOY: ${{ steps.deploy.outcome }}
-          OUT_INDEX: ${{ steps.index.outcome }}
-          OUT_HEALTH: ${{ steps.health.outcome }}
-        run: |
-          set -euo pipefail
-          cat > recruitment-capture-deployment-status.json <<EOF
-          {
-            "status": "${DEPLOYMENT_STATUS}",
-            "sourceCommit": "${GITHUB_SHA}",
-            "functionApp": "${FUNCTION_APP}",
-            "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "steps": {
-              "checkout": "${OUT_CHECKOUT}",
-              "node": "${OUT_NODE}",
-              "azureLogin": "${OUT_LOGIN}",
-              "safety": "${OUT_SAFETY}",
-              "manifest": "${OUT_MANIFEST}",
-              "package": "${OUT_PACKAGE}",
-              "deploy": "${OUT_DEPLOY}",
-              "index": "${OUT_INDEX}",
-              "health": "${OUT_HEALTH}"
-            }
-          }
-          EOF
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add recruitment-capture-deployment-status.json
-          git commit -m 'Record recruitment capture deployment result [skip ci]' || exit 0
-          git push origin HEAD:agent/rebuild-recruitment-backend
