@@ -27,6 +27,9 @@ param environmentName string
 @description('Enable public recruitment API only after complete launch approval.')
 param enableApi bool = false
 
+@description('Allow the public API to capture applications while all external delivery, HR access and retention actions remain disabled.')
+param enableCaptureOnlyMode bool = false
+
 @description('Enable SharePoint and Graph outbox delivery only after resource grants are verified.')
 param enableOutboxDelivery bool = false
 
@@ -151,6 +154,7 @@ resource appSettings 'Microsoft.Web/sites/config@2024-04-01' = {
 
     RECRUITMENT_MANAGED_IDENTITY_CLIENT_ID: identity.properties.clientId
     RECRUITMENT_API_ENABLED: string(enableApi)
+    RECRUITMENT_CAPTURE_ONLY_MODE: string(enableCaptureOnlyMode)
     RECRUITMENT_ENVIRONMENT: runtimeEnvironment
     RECRUITMENT_ALLOWED_ORIGINS: 'https://shorevest.com,https://www.shorevest.com'
     RECRUITMENT_REQUIRE_ORIGIN: 'true'
@@ -213,6 +217,7 @@ resource appSettings 'Microsoft.Web/sites/config@2024-04-01' = {
 output functionAppId string = fn.id
 output managedIdentityClientId string = identity.properties.clientId
 output publicApiEnabled bool = enableApi
+output captureOnlyMode bool = enableCaptureOnlyMode
 output outboxDeliveryEnabled bool = enableOutboxDelivery
 output candidateAcknowledgementEnabled bool = enableCandidateAcknowledgement
 output hrAccessEnabled bool = enableHrAccess
