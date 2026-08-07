@@ -3,7 +3,7 @@
   "openRolesEnabled": false,
   "applicationsEnabled": false,
   "apiBase": "https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment",
-  "turnstileSiteKey": "",
+  "turnstileSiteKey": "0x4AAAAAAEJh3KNuIlG3ZdgM",
   "turnstileAction": "recruitment-application",
   "privacyNoticeUrl": "https://shorevest.com/privacy-policy/"
 }
