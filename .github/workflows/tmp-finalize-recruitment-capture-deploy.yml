@@ -1,0 +1,216 @@
+name: Temporary Final Recruitment Capture Deploy
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/tmp-finalize-recruitment-capture-deploy.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: recruitment-final-capture-deploy
+  cancel-in-progress: false
+
+env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP: svrc26hk-recruit-fn-test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: recruitment-test
+    steps:
+      - name: Check out hardened backend source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Overlay current-main recruitment contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          git checkout origin/main -- \
+            api/recruitment/core/flows.js \
+            api/recruitment/core/inMemoryAdapters.js \
+            assets/data/recruitment/roles.v1.json
+
+          node <<'NODE'
+          const m = require('./assets/data/recruitment/roles.v1.json');
+          const enabled = m.roles.filter((r) => r.application?.enabled === true);
+          if (enabled.length !== 1 || enabled[0].id !== 'legal-assistant' || enabled[0].application.privacyNoticeVersion !== '2026-08-08-v1') {
+            throw new Error('Expected exactly the controlled Legal Assistant application role');
+          }
+          NODE
+
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify capture-only safety state
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(az account show --query id -o tsv)" == "$AZURE_SUBSCRIPTION_ID" ]]
+          [[ "$(az account show --query tenantId -o tsv)" == "$AZURE_TENANT_ID" ]]
+
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+
+          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]] || { echo 'Capture API is not enabled.' >&2; exit 1; }
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]] || { echo 'Capture-only mode is not enabled.' >&2; exit 1; }
+          [[ "$(value RECRUITMENT_BOT_VERIFICATION_MODE)" == 'turnstile' ]] || { echo 'Turnstile is not configured.' >&2; exit 1; }
+
+          for key in \
+            RECRUITMENT_OUTBOX_DELIVERY_ENABLED \
+            RECRUITMENT_CANDIDATE_ACK_ENABLED \
+            RECRUITMENT_HR_ACCESS_ENABLED \
+            RECRUITMENT_RETENTION_ENABLED \
+            RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false." >&2; exit 1; }
+          done
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/recruitment-functions/package-lock.json
+
+      - name: Install production dependencies and run focused checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd services/recruitment-functions
+          npm ci --no-audit --no-fund
+          npm run check
+          npm run validate:manifest
+          npm test
+
+      - name: Build immutable Function package
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/recruitment-final"
+          stage="$work/stage"
+          package="$work/recruitment-functions.zip"
+          mkdir -p "$stage/services/recruitment-functions" "$stage/api/recruitment" "$stage/assets/data"
+
+          cd services/recruitment-functions
+          npm prune --omit=dev --no-audit --no-fund
+          cd "$GITHUB_WORKSPACE"
+
+          cp services/recruitment-functions/host.json "$stage/host.json"
+          cp services/recruitment-functions/package.json "$stage/services/recruitment-functions/package.json"
+          cp services/recruitment-functions/package-lock.json "$stage/services/recruitment-functions/package-lock.json"
+          cp -a services/recruitment-functions/src "$stage/services/recruitment-functions/src"
+          cp -a services/recruitment-functions/node_modules "$stage/services/recruitment-functions/node_modules"
+          cp -a api/recruitment/core "$stage/api/recruitment/core"
+          cp -a assets/data/recruitment "$stage/assets/data/recruitment"
+
+          STAGE="$stage" PACKAGE="$package" SOURCE_SHA="$GITHUB_SHA" python3 <<'PY'
+          import json, os, pathlib, zipfile, hashlib, datetime
+          stage = pathlib.Path(os.environ['STAGE'])
+          package = pathlib.Path(os.environ['PACKAGE'])
+          service_package = json.loads((stage/'services/recruitment-functions/package.json').read_text())
+          service_package['main'] = 'services/recruitment-functions/src/functions/index.js'
+          (stage/'package.json').write_text(json.dumps(service_package, indent=2) + '\n')
+          files = []
+          for path in sorted(p for p in stage.rglob('*') if p.is_file()):
+              rel = path.relative_to(stage).as_posix()
+              files.append(f"{rel}\n{hashlib.sha256(path.read_bytes()).hexdigest()}")
+          metadata = {
+              'sourceCommit': os.environ['SOURCE_SHA'],
+              'packagedAtUtc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'payloadSha256': hashlib.sha256('\n'.join(files).encode()).hexdigest(),
+              'contractOverlay': 'current-main api core + role manifest'
+          }
+          (stage/'deployment-metadata.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          with zipfile.ZipFile(package, 'w', zipfile.ZIP_DEFLATED) as z:
+              for path in sorted(p for p in stage.rglob('*') if p.is_file()):
+                  z.write(path, path.relative_to(stage).as_posix())
+          print('Package SHA-256:', hashlib.sha256(package.read_bytes()).hexdigest())
+          PY
+
+          (
+            cd "$stage"
+            node -e "require('./services/recruitment-functions/src/appFactory.js'); require('./services/recruitment-functions/src/functions/index.js');"
+          )
+
+      - name: Deploy Function package
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp deployment source config-zip \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP" \
+            --src "$RUNNER_TEMP/recruitment-final/recruitment-functions.zip" \
+            --build-remote false \
+            --timeout 600 \
+            --output none
+
+      - name: Verify all Functions indexed
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            initiateApplication completeUpload finalizeApplication health
+            hrCleanDocumentAccess hrRetentionControl defenderScanResult
+            quarantineCleanup retentionPolicyAssignment retentionPurge
+            retentionIdempotencyCleanup outboxWorker
+          )
+          for attempt in $(seq 1 24); do
+            names="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query '[].name' -o tsv 2>/dev/null | sed 's#^.*/##' || true)"
+            missing=0
+            for name in "${expected[@]}"; do grep -qx "$name" <<<"$names" || missing=$((missing+1)); done
+            echo "Index check $attempt: $missing missing"
+            [[ "$missing" == 0 ]] && exit 0
+            sleep 15
+          done
+          exit 1
+
+      - name: Verify health and safety after deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          health_url="https://${FUNCTION_APP}.azurewebsites.net/api/recruitment/health"
+          healthy=false
+          for attempt in $(seq 1 30); do
+            code="$(curl -sS -o "$RUNNER_TEMP/health.json" -w '%{http_code}' "$health_url" || true)"
+            echo "Health check $attempt: HTTP $code"
+            if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' "$RUNNER_TEMP/health.json" >/dev/null 2>&1; then
+              healthy=true
+              break
+            fi
+            sleep 10
+          done
+
+          if [[ "$healthy" != 'true' ]]; then
+            echo 'Health failed; fail-closing public API.' >&2
+            cat "$RUNNER_TEMP/health.json" >&2 || true
+            az functionapp config appsettings set \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$FUNCTION_APP" \
+              --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false \
+              --output none || true
+            exit 1
+          fi
+
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
+          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            [[ "$(value "$key")" == 'false' ]] || exit 1
+          done
+
+          echo 'Final capture-only package is healthy and safe.'
