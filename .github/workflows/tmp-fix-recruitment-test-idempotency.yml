@@ -1,0 +1,52 @@
+name: Temporary fix recruitment test idempotency
+
+on:
+  push:
+    branches:
+      - agent/recruitment-frontend-launch
+    paths:
+      - .github/workflows/tmp-fix-recruitment-test-idempotency.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/recruitment-frontend-launch
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Patch active idempotency claim handling
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('api/recruitment/core/inMemoryAdapters.js')
+          s = p.read_text(encoding='utf-8')
+          old = "if(e?.state==='CredentialIssuing'&&Date.parse(e.leaseExpiresAtUtc)>t)return later({status:'in_progress',retryAfterMs:1000});return later({status:'claimed',record:idemRecord(key,'Claimed',{leaseOwner:owner,leaseExpiresAtUtc,requestFingerprint:arguments[3]})});"
+          new = "if(e?.state==='Claimed'&&Date.parse(e.leaseExpiresAtUtc)>t)return later({status:'in_progress',retryAfterMs:1000});if(e?.state==='CredentialIssuing'&&Date.parse(e.leaseExpiresAtUtc)>t)return later({status:'in_progress',retryAfterMs:1000});return later({status:'claimed',record:idemRecord(key,'Claimed',{leaseOwner:owner,leaseExpiresAtUtc,requestFingerprint:arguments[3]})});"
+          if old not in s:
+              if new in s:
+                  print('Guard already present')
+              else:
+                  raise SystemExit('Expected idempotency claim pattern not found')
+          else:
+              p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+          npm ci --ignore-scripts
+          node tests/recruitment-application-core.test.js
+      - name: Commit patch and remove helper
+        shell: bash
+        run: |
+          git config user.name "shorevest-recruitment-bot"
+          git config user.email "actions@users.noreply.github.com"
+          rm .github/workflows/tmp-fix-recruitment-test-idempotency.yml
+          git add api/recruitment/core/inMemoryAdapters.js .github/workflows/tmp-fix-recruitment-test-idempotency.yml
+          git commit -m "Fix concurrent recruitment idempotency test adapter"
+          git push origin HEAD:agent/recruitment-frontend-launch
