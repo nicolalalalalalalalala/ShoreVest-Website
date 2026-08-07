@@ -9,7 +9,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 concurrency:
   group: recruitment-capture-only-redeploy
@@ -134,3 +134,24 @@ jobs:
             [[ "$(value "$key")" == 'false' ]] || exit 1
           done
           echo 'Capture-only Function package redeployed and healthy.'
+
+      - name: Record deployment result on branch
+        if: always()
+        shell: bash
+        env:
+          DEPLOYMENT_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          cat > recruitment-capture-deployment-status.json <<EOF
+          {
+            "status": "${DEPLOYMENT_STATUS}",
+            "sourceCommit": "${GITHUB_SHA}",
+            "functionApp": "${FUNCTION_APP}",
+            "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add recruitment-capture-deployment-status.json
+          git commit -m 'Record recruitment capture deployment result [skip ci]' || exit 0
+          git push origin HEAD:agent/rebuild-recruitment-backend
