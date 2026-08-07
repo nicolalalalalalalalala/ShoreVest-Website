@@ -25,15 +25,18 @@ jobs:
     timeout-minutes: 30
     environment: recruitment-test
     steps:
-      - uses: actions/checkout@v4
+      - id: checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - id: node
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
           cache-dependency-path: services/recruitment-functions/package-lock.json
 
-      - name: Check Azure OIDC configuration
+      - id: oidcvars
+        name: Check Azure OIDC configuration
         shell: bash
         run: |
           set -euo pipefail
@@ -41,14 +44,16 @@ jobs:
             [[ -n "$value" ]] || { echo 'Missing recruitment-test Azure OIDC variable.' >&2; exit 1; }
           done
 
-      - name: Sign in to Azure
+      - id: login
+        name: Sign in to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify capture-only safety state
+      - id: safety
+        name: Verify capture-only safety state
         shell: bash
         run: |
           set -euo pipefail
@@ -60,7 +65,8 @@ jobs:
             [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false." >&2; exit 1; }
           done
 
-      - name: Verify single controlled role
+      - id: manifest
+        name: Verify single controlled role
         shell: bash
         run: |
           set -euo pipefail
@@ -70,15 +76,16 @@ jobs:
           if (enabled.length !== 1 || enabled[0].id !== 'legal-assistant' || enabled[0].application.privacyNoticeVersion !== '2026-08-08-v1') {
             throw new Error('Controlled role manifest is not in the expected state');
           }
-          console.log('Controlled role manifest verified.');
           NODE
 
-      - name: Build immutable Function package
+      - id: package
+        name: Build immutable Function package
         shell: pwsh
         run: |
           ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
 
-      - name: Deploy Function package
+      - id: deploy
+        name: Deploy Function package
         shell: bash
         run: |
           set -euo pipefail
@@ -90,7 +97,8 @@ jobs:
             --timeout 600 \
             --output none
 
-      - name: Verify Functions indexed
+      - id: index
+        name: Verify Functions indexed
         shell: bash
         run: |
           set -euo pipefail
@@ -100,46 +108,46 @@ jobs:
             missing=0
             for name in "${expected[@]}"; do grep -qx "$name" <<<"$names" || missing=$((missing+1)); done
             if [[ "$missing" == 0 ]]; then exit 0; fi
-            echo "Index check $attempt: $missing required Functions missing."
             sleep 15
           done
           exit 1
 
-      - name: Verify health and safety after deployment
+      - id: health
+        name: Verify health and safety after deployment
         shell: bash
         run: |
           set -euo pipefail
           healthy=false
           for attempt in $(seq 1 24); do
             code="$(curl -sS -o "$RUNNER_TEMP/health.json" -w '%{http_code}' "https://${FUNCTION_APP}.azurewebsites.net/api/recruitment/health" || true)"
-            if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' "$RUNNER_TEMP/health.json" >/dev/null 2>&1; then
-              healthy=true
-              break
-            fi
-            echo "Health check $attempt: HTTP $code"
+            if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' "$RUNNER_TEMP/health.json" >/dev/null 2>&1; then healthy=true; break; fi
             sleep 10
           done
           if [[ "$healthy" != 'true' ]]; then
-            echo 'Health failed; disabling the public recruitment API as a fail-safe.' >&2
-            cat "$RUNNER_TEMP/health.json" >&2 || true
             az functionapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false --output none || true
             exit 1
           fi
-
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
           [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
           [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
-          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
-            [[ "$(value "$key")" == 'false' ]] || exit 1
-          done
-          echo 'Capture-only Function package redeployed and healthy.'
+          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do [[ "$(value "$key")" == 'false' ]] || exit 1; done
 
       - name: Record deployment result on branch
         if: always()
         shell: bash
         env:
           DEPLOYMENT_STATUS: ${{ job.status }}
+          OUT_CHECKOUT: ${{ steps.checkout.outcome }}
+          OUT_NODE: ${{ steps.node.outcome }}
+          OUT_OIDC_VARS: ${{ steps.oidcvars.outcome }}
+          OUT_LOGIN: ${{ steps.login.outcome }}
+          OUT_SAFETY: ${{ steps.safety.outcome }}
+          OUT_MANIFEST: ${{ steps.manifest.outcome }}
+          OUT_PACKAGE: ${{ steps.package.outcome }}
+          OUT_DEPLOY: ${{ steps.deploy.outcome }}
+          OUT_INDEX: ${{ steps.index.outcome }}
+          OUT_HEALTH: ${{ steps.health.outcome }}
         run: |
           set -euo pipefail
           cat > recruitment-capture-deployment-status.json <<EOF
@@ -147,7 +155,19 @@ jobs:
             "status": "${DEPLOYMENT_STATUS}",
             "sourceCommit": "${GITHUB_SHA}",
             "functionApp": "${FUNCTION_APP}",
-            "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "steps": {
+              "checkout": "${OUT_CHECKOUT}",
+              "node": "${OUT_NODE}",
+              "oidcVariables": "${OUT_OIDC_VARS}",
+              "azureLogin": "${OUT_LOGIN}",
+              "safety": "${OUT_SAFETY}",
+              "manifest": "${OUT_MANIFEST}",
+              "package": "${OUT_PACKAGE}",
+              "deploy": "${OUT_DEPLOY}",
+              "index": "${OUT_INDEX}",
+              "health": "${OUT_HEALTH}"
+            }
           }
           EOF
           git config user.name 'github-actions[bot]'
