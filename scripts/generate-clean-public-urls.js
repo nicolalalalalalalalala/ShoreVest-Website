@@ -9,6 +9,7 @@ const ROOT = path.resolve(__dirname, '..');
 const SITE_ORIGIN = 'https://shorevest.com';
 const MANIFEST_PATH = path.join(ROOT, 'assets', 'data', 'clean-url-manifest.json');
 const SITE_CONFIG = require(path.join(ROOT, 'assets', 'js', 'site-config.js'));
+const RECRUITMENT_PUBLIC_CONFIG = require(path.join(ROOT, 'assets', 'data', 'recruitment', 'public-config.json'));
 
 function trackedFiles() {
   return execFileSync('git', ['ls-files'], { cwd: ROOT, encoding: 'utf8' })
@@ -100,11 +101,24 @@ function isCareerRoleRoute(route) {
   return /^\/(?:cn\/)?careers\/[^/]+\/$/i.test(route);
 }
 
+function isCareersApplicationRoute(route) {
+  return /^\/(?:cn\/)?careers\/apply\/$/i.test(route);
+}
+
 function isMediaArticleRoute(route) {
   return /^\/media\/[^/]+\/$/i.test(route);
 }
 
 function disabledRouteState(route) {
+  if (isCareersApplicationRoute(route)) {
+    if (RECRUITMENT_PUBLIC_CONFIG.applicationsEnabled !== true) {
+      return {
+        reason: 'careers-disabled',
+        redirectTarget: route.startsWith('/cn/') ? '/cn/careers/#open-roles' : '/careers/#open-roles'
+      };
+    }
+    return null;
+  }
   if (SITE_CONFIG.careersOpenRolesEnabled !== true && isCareerRoleRoute(route)) {
     return {
       reason: 'careers-disabled',
