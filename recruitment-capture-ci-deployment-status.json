@@ -1,0 +1,14 @@
+{
+  "status": "failure",
+  "sourceCommit": "fe8e2f63c1b55f1b661b3cefaa462b60045f9bed",
+  "recordedAtUtc": "2026-08-07T21:21:09Z",
+  "steps": {
+    "azureLogin": "success",
+    "safety": "success",
+    "manifest": "success",
+    "package": "success",
+    "deploy": "success",
+    "index": "success",
+    "health": "failure"
+  }
+}
