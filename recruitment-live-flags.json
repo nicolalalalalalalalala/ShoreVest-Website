@@ -1,0 +1,34 @@
+[
+  {
+    "name": "RECRUITMENT_API_ENABLED",
+    "value": "true"
+  },
+  {
+    "name": "RECRUITMENT_BOT_VERIFICATION_MODE",
+    "value": "turnstile"
+  },
+  {
+    "name": "RECRUITMENT_OUTBOX_DELIVERY_ENABLED",
+    "value": "false"
+  },
+  {
+    "name": "RECRUITMENT_CANDIDATE_ACK_ENABLED",
+    "value": "false"
+  },
+  {
+    "name": "RECRUITMENT_HR_ACCESS_ENABLED",
+    "value": "false"
+  },
+  {
+    "name": "RECRUITMENT_RETENTION_ENABLED",
+    "value": "false"
+  },
+  {
+    "name": "RECRUITMENT_RETENTION_DELETION_ENABLED",
+    "value": "false"
+  },
+  {
+    "name": "RECRUITMENT_CAPTURE_ONLY_MODE",
+    "value": "true"
+  }
+]
