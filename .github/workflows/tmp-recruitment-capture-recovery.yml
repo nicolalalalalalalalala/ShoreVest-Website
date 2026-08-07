@@ -1,0 +1,119 @@
+name: Temporary Recruitment Capture Recovery
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-recruitment-capture-recovery.yml
+
+permissions:
+  id-token: write
+  contents: write
+
+concurrency:
+  group: recruitment-capture-recovery
+  cancel-in-progress: false
+
+env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP: svrc26hk-recruit-fn-test
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: recruitment-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - id: recover
+        name: Re-enable capture-only and probe health
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP" \
+            --settings \
+              RECRUITMENT_CAPTURE_ONLY_MODE=true \
+              RECRUITMENT_API_ENABLED=true \
+              RECRUITMENT_OUTBOX_DELIVERY_ENABLED=false \
+              RECRUITMENT_CANDIDATE_ACK_ENABLED=false \
+              RECRUITMENT_HR_ACCESS_ENABLED=false \
+              RECRUITMENT_RETENTION_ENABLED=false \
+              RECRUITMENT_RETENTION_DELETION_ENABLED=false \
+            --output none
+
+          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
+
+          healthy=false
+          code=000
+          echo '{}' > /tmp/health.json
+          for attempt in $(seq 1 24); do
+            code="$(curl -sS -o /tmp/health.json -w '%{http_code}' "https://${FUNCTION_APP}.azurewebsites.net/api/recruitment/health" || true)"
+            echo "Health attempt $attempt: HTTP $code"
+            cat /tmp/health.json || true
+            echo
+            if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' /tmp/health.json >/dev/null 2>&1; then
+              healthy=true
+              break
+            fi
+            sleep 10
+          done
+
+          cp /tmp/health.json recruitment-capture-recovery-health.json
+          printf '%s' "$code" > /tmp/http-code.txt
+          printf '%s' "$healthy" > /tmp/healthy.txt
+
+          if [[ "$healthy" != 'true' ]]; then
+            az functionapp config appsettings set \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$FUNCTION_APP" \
+              --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false \
+              --output none
+            az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
+          fi
+
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          jq '[.[] | select(.name=="RECRUITMENT_API_ENABLED" or .name=="RECRUITMENT_CAPTURE_ONLY_MODE" or .name=="RECRUITMENT_OUTBOX_DELIVERY_ENABLED" or .name=="RECRUITMENT_CANDIDATE_ACK_ENABLED" or .name=="RECRUITMENT_HR_ACCESS_ENABLED" or .name=="RECRUITMENT_RETENTION_ENABLED" or .name=="RECRUITMENT_RETENTION_DELETION_ENABLED") | {name,value}]' <<<"$settings" > recruitment-capture-recovery-flags.json
+
+      - name: Record recovery result
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+          LOGIN_OUTCOME: ${{ steps.login.outcome }}
+          RECOVER_OUTCOME: ${{ steps.recover.outcome }}
+        run: |
+          set -euo pipefail
+          code="$(cat /tmp/http-code.txt 2>/dev/null || printf '')"
+          healthy="$(cat /tmp/healthy.txt 2>/dev/null || printf '')"
+          cat > recruitment-capture-recovery-status.json <<EOF
+          {
+            "jobStatus": "${JOB_STATUS}",
+            "azureLogin": "${LOGIN_OUTCOME}",
+            "recoveryStep": "${RECOVER_OUTCOME}",
+            "healthHttp": "${code}",
+            "healthy": "${healthy}",
+            "sourceCommit": "${GITHUB_SHA}",
+            "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add recruitment-capture-recovery-status.json
+          [[ -f recruitment-capture-recovery-health.json ]] && git add recruitment-capture-recovery-health.json
+          [[ -f recruitment-capture-recovery-flags.json ]] && git add recruitment-capture-recovery-flags.json
+          git commit -m 'Record recruitment capture recovery result [skip ci]' || exit 0
+          git push origin HEAD:agent/rebuild-recruitment-backend
