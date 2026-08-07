@@ -1,0 +1,157 @@
+name: Temporary build recruitment frontend launch
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-build-recruitment-frontend-launch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-launch-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout backend source branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/rebuild-recruitment-backend
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "shorevest-recruitment-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+      - name: Enable one controlled-test role in the shared manifest
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('assets/data/recruitment/roles.v1.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          target = 'legal-assistant'
+          found = False
+
+          for role in data.get('roles', []):
+              app = role.get('application') or {}
+              if role.get('id') == target:
+                  if role.get('status') != 'published' or role.get('contentReviewRequired') is True:
+                      raise SystemExit('legal-assistant is not safe to enable')
+                  app['enabled'] = True
+                  app['privacyNoticeVersion'] = '2026-08-08-v1'
+                  found = True
+              else:
+                  app['enabled'] = False
+                  app['privacyNoticeVersion'] = None
+              role['application'] = app
+
+          if not found:
+              raise SystemExit('legal-assistant role not found')
+
+          data['generatedAtUtc'] = '2026-08-08T00:00:00Z'
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+          npm ci --ignore-scripts
+          npm run validate:recruitment
+
+          if ! git diff --quiet -- assets/data/recruitment/roles.v1.json; then
+            git add assets/data/recruitment/roles.v1.json
+            git commit -m "Enable controlled recruitment application test role"
+            git push origin HEAD:agent/rebuild-recruitment-backend
+          fi
+
+      - name: Record tested source commit
+        id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Rebuild small launch branch from current main
+        shell: bash
+        run: |
+          SOURCE_SHA="${{ steps.source.outputs.sha }}"
+          git fetch origin main
+          git checkout -B agent/recruitment-frontend-launch origin/main
+
+          git checkout "$SOURCE_SHA" -- \
+            careers/apply.html \
+            careers/apply_cn.html \
+            assets/css/recruitment-application.css \
+            assets/js/recruitment-application.js \
+            assets/js/recruitment-role-detail.js \
+            assets/js/recruitment-role-list.js \
+            assets/data/recruitment/roles.v1.json
+
+          cat > assets/data/recruitment/public-config.json <<'JSON'
+          {
+            "schemaVersion": "1.0",
+            "openRolesEnabled": false,
+            "applicationsEnabled": true,
+            "apiBase": "https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment",
+            "turnstileSiteKey": "0x4AAAAAAEJh3KNuIlG3ZdgM",
+            "turnstileAction": "recruitment-application",
+            "privacyNoticeUrl": "https://shorevest.com/privacy-policy/"
+          }
+          JSON
+
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('_headers')
+          text = path.read_text(encoding='utf-8')
+
+          text = text.replace(
+              "# Public pages never call either service. See docs/employee-portal/ENTRA_ID_SETUP.md.\n",
+              "# Public pages never call either service. See docs/employee-portal/ENTRA_ID_SETUP.md.\n"
+              "# The Careers application flow additionally allows only the ShoreVest recruitment\n"
+              "# Function App, private CV storage account, and Cloudflare Turnstile.\n"
+          )
+          text = text.replace(
+              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;",
+              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com;"
+          )
+          text = text.replace(
+              "connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com;",
+              "connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://svrc26hk-recruit-fn-test.azurewebsites.net https://svrc26hkcvtest.blob.core.windows.net https://challenges.cloudflare.com;"
+          )
+          text = text.replace(
+              "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.linkedin.com https://login.microsoftonline.com;",
+              "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.linkedin.com https://login.microsoftonline.com https://challenges.cloudflare.com;"
+          )
+
+          required = [
+              'https://challenges.cloudflare.com',
+              'https://svrc26hk-recruit-fn-test.azurewebsites.net',
+              'https://svrc26hkcvtest.blob.core.windows.net'
+          ]
+          for value in required:
+              if value not in text:
+                  raise SystemExit(f'CSP patch failed: {value} missing')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          node --check assets/js/recruitment-application.js
+          node --check assets/js/recruitment-role-detail.js
+          node --check assets/js/recruitment-role-list.js
+          npm ci --ignore-scripts
+          npm run validate:recruitment
+          npm run check:security
+
+          git add \
+            careers/apply.html \
+            careers/apply_cn.html \
+            assets/css/recruitment-application.css \
+            assets/js/recruitment-application.js \
+            assets/js/recruitment-role-detail.js \
+            assets/js/recruitment-role-list.js \
+            assets/data/recruitment/roles.v1.json \
+            assets/data/recruitment/public-config.json \
+            _headers
+
+          git commit -m "Prepare controlled Careers application launch"
+          git push --force-with-lease origin HEAD:agent/recruitment-frontend-launch
