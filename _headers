@@ -6,8 +6,10 @@
 # can reach the token endpoint and perform silent token renewal. graph.microsoft.com
 # is allowed in connect-src for the signed-in user's least-privilege Travel calendar read.
 # Public pages never call either service. See docs/employee-portal/ENTRA_ID_SETUP.md.
+# The Careers application flow additionally allows only the ShoreVest recruitment
+# Function App, private CV storage account, and Cloudflare Turnstile.
 /*
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.linkedin.com https://login.microsoftonline.com; media-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://login.microsoftonline.com https://graph.microsoft.com https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://svrc26hk-recruit-fn-test.azurewebsites.net https://svrc26hkcvtest.blob.core.windows.net https://challenges.cloudflare.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://www.linkedin.com https://login.microsoftonline.com https://challenges.cloudflare.com; media-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin

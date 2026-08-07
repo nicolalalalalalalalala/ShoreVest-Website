@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtUtc": "2026-07-21T00:00:00Z",
+  "generatedAtUtc": "2026-08-08T00:00:00Z",
   "roles": [
     {
       "id": "distressed-debt-investment-manager",
@@ -207,9 +207,9 @@
       "dateUpdated": "2026-07-21",
       "displayOrder": 2,
       "application": {
-        "enabled": false,
+        "enabled": true,
         "deadlineUtc": null,
-        "privacyNoticeVersion": null,
+        "privacyNoticeVersion": "2026-08-08-v1",
         "allowedSources": [
           "website",
           "linkedin",

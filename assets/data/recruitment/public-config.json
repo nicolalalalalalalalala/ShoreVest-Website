@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0",
+  "openRolesEnabled": false,
+  "applicationsEnabled": true,
+  "apiBase": "https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment",
+  "turnstileSiteKey": "0x4AAAAAAEJh3KNuIlG3ZdgM",
+  "turnstileAction": "recruitment-application",
+  "privacyNoticeUrl": "https://shorevest.com/privacy-policy/"
+}

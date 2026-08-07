@@ -5,6 +5,7 @@
   'use strict';
 
   var MANIFEST_PATH = 'assets/data/recruitment/roles.v1.json';
+  var PUBLIC_CONFIG_PATH = 'assets/data/recruitment/public-config.json';
   var SUPPORTED_LOCALES = { en: true, 'zh-CN': true };
   var LINK_LABELS = { en: 'View role', 'zh-CN': '查看职位' };
 
@@ -15,14 +16,6 @@
   function getLocale(doc) {
     var lang = doc && doc.documentElement ? doc.documentElement.lang : '';
     return SUPPORTED_LOCALES[lang] ? lang : null;
-  }
-
-  function flagEnabled(win) {
-    return !!(
-      win &&
-      win.SHOREVEST_SITE_CONFIG &&
-      win.SHOREVEST_SITE_CONFIG.careersOpenRolesEnabled === true
-    );
   }
 
   function localized(role, field, locale) {
@@ -126,25 +119,25 @@
     return rows.length;
   }
 
+  function json(win, path) {
+    return win.fetch(path, { credentials: 'same-origin', cache: 'no-store' }).then(function (response) {
+      if (!response || !response.ok) throw new Error('Recruitment data unavailable');
+      return response.json();
+    });
+  }
+
   function initRoleList(win) {
     var doc = win.document;
-    if (!doc) return Promise.resolve(0);
-
-    // Keep the Open Roles section and its empty-state message visible when
-    // listings are disabled; only skip loading individual role cards.
-    if (!flagEnabled(win)) return Promise.resolve(0);
-
-    if (!doc.querySelector('[data-role-list="open-roles"]') || typeof win.fetch !== 'function') {
+    if (!doc || !doc.querySelector('[data-role-list="open-roles"]') || typeof win.fetch !== 'function') {
       return Promise.resolve(0);
     }
 
-    return win.fetch(MANIFEST_PATH, { credentials: 'same-origin' })
-      .then(function (response) {
-        if (!response || !response.ok) throw new Error('Manifest unavailable');
-        return response.json();
-      })
-      .then(function (manifest) {
-        return renderRolesFromManifest(doc, manifest, { featureEnabled: true });
+    return json(win, PUBLIC_CONFIG_PATH)
+      .then(function (publicConfig) {
+        if (!publicConfig || publicConfig.openRolesEnabled !== true) return 0;
+        return json(win, MANIFEST_PATH).then(function (manifest) {
+          return renderRolesFromManifest(doc, manifest, { featureEnabled: true });
+        });
       })
       .catch(function () {
         return 0;
@@ -157,6 +150,7 @@
     initRoleList: initRoleList,
     renderRolesFromManifest: renderRolesFromManifest,
     isSafeDetailPath: isSafeDetailPath,
-    MANIFEST_PATH: MANIFEST_PATH
+    MANIFEST_PATH: MANIFEST_PATH,
+    PUBLIC_CONFIG_PATH: PUBLIC_CONFIG_PATH
   };
 });
