@@ -1,0 +1,9 @@
+{
+  "jobStatus": "success",
+  "azureLogin": "success",
+  "recoveryStep": "success",
+  "healthHttp": "503",
+  "healthy": "false",
+  "sourceCommit": "bb136fdef0e42e300413ca97d5c50b435384bde9",
+  "recordedAtUtc": "2026-08-07T21:28:27Z"
+}
