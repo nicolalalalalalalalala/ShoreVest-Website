@@ -7,8 +7,9 @@ resource_group='rg-shorevest-recruitment-test-eastasia'
 function_app='svrc26hk-recruit-fn-test'
 repository_url='https://github.com/shorevest/website.git'
 source_sha='c5f7b21a93218c9e0d9d2e77413129c89b923186'
+enable_capture_only="${ENABLE_CAPTURE_ONLY:-false}"
 
-for command in az git node npm python3; do
+for command in az git node npm python3 jq curl; do
   command -v "$command" >/dev/null 2>&1 || {
     echo "Required command is missing: $command" >&2
     exit 1
@@ -43,7 +44,7 @@ for key in \
   RECRUITMENT_RETENTION_DELETION_ENABLED; do
   value="$(jq -r --arg key "$key" '.[] | select(.name == $key) | .value' <<<"$settings_json")"
   if [[ "${value,,}" != 'false' ]]; then
-    echo "Safety check failed: $key must remain false." >&2
+    echo "Safety check failed: $key must remain false before this deployment." >&2
     exit 1
   fi
 done
@@ -131,7 +132,7 @@ PY
   node -e "require('./services/recruitment-functions/src/appFactory.js'); require('./services/recruitment-functions/src/functions/index.js');"
 )
 
-echo 'Deploying the corrected package to the disabled test Function App...'
+echo 'Deploying the capture-only capable package to the disabled test Function App...'
 az functionapp deployment source config-zip \
   --resource-group "$resource_group" \
   --name "$function_app" \
@@ -217,7 +218,81 @@ files_id="$(jq -r '.[] | select(.name == "RECRUITMENT_FILES_LIST_ID") | .value' 
 }
 
 echo
-printf '%s\n' "$names" | sort
-echo
 echo 'Capture-only capable recruitment package deployed successfully.'
-echo 'SharePoint IDs retained. Public API, delivery, HR access and retention remain disabled until explicitly enabled.'
+
+if [[ "${enable_capture_only,,}" != 'true' ]]; then
+  echo 'Public API, delivery, HR access and retention remain disabled.'
+  exit 0
+fi
+
+echo 'Enabling capture-only mode. Delivery, candidate email, HR access and retention will stay OFF.'
+az functionapp config appsettings set \
+  --resource-group "$resource_group" \
+  --name "$function_app" \
+  --settings \
+    RECRUITMENT_CAPTURE_ONLY_MODE=true \
+    RECRUITMENT_API_ENABLED=true \
+    RECRUITMENT_OUTBOX_DELIVERY_ENABLED=false \
+    RECRUITMENT_CANDIDATE_ACK_ENABLED=false \
+    RECRUITMENT_HR_ACCESS_ENABLED=false \
+    RECRUITMENT_RETENTION_ENABLED=false \
+    RECRUITMENT_RETENTION_DELETION_ENABLED=false \
+  --output none
+
+az functionapp restart --resource-group "$resource_group" --name "$function_app" --output none
+
+health_url="https://${function_app}.azurewebsites.net/api/recruitment/health"
+healthy=false
+for attempt in $(seq 1 18); do
+  status="$(curl -sS -o "$work_root/health.json" -w '%{http_code}' "$health_url" || true)"
+  if [[ "$status" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' "$work_root/health.json" >/dev/null 2>&1; then
+    healthy=true
+    break
+  fi
+  echo "Capture-only health check $attempt: HTTP $status. Waiting..."
+  sleep 10
+done
+
+if [[ "$healthy" != 'true' ]]; then
+  echo 'Capture-only health did not become ready. Rolling the public API back OFF.' >&2
+  if [[ -s "$work_root/health.json" ]]; then
+    cat "$work_root/health.json" >&2 || true
+    echo >&2
+  fi
+  az functionapp config appsettings set \
+    --resource-group "$resource_group" \
+    --name "$function_app" \
+    --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false \
+    --output none || true
+  az functionapp restart --resource-group "$resource_group" --name "$function_app" --output none || true
+  exit 1
+fi
+
+settings_json="$(az functionapp config appsettings list \
+  --resource-group "$resource_group" \
+  --name "$function_app" \
+  --output json)"
+
+for key in \
+  RECRUITMENT_OUTBOX_DELIVERY_ENABLED \
+  RECRUITMENT_CANDIDATE_ACK_ENABLED \
+  RECRUITMENT_HR_ACCESS_ENABLED \
+  RECRUITMENT_RETENTION_ENABLED \
+  RECRUITMENT_RETENTION_DELETION_ENABLED; do
+  value="$(jq -r --arg key "$key" '.[] | select(.name == $key) | .value' <<<"$settings_json")"
+  if [[ "${value,,}" != 'false' ]]; then
+    echo "Final safety check failed: $key is not false. Rolling API back OFF." >&2
+    az functionapp config appsettings set \
+      --resource-group "$resource_group" \
+      --name "$function_app" \
+      --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false \
+      --output none || true
+    az functionapp restart --resource-group "$resource_group" --name "$function_app" --output none || true
+    exit 1
+  fi
+done
+
+echo
+echo 'CAPTURE-ONLY MODE IS READY.'
+echo 'The public API can accept and durably store applications.'
+echo 'Email delivery, candidate acknowledgements, HR document access and retention actions are still disabled.'
