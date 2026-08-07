@@ -26,9 +26,9 @@
       "route": "/careers/apply/",
       "destination": "careers/apply/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/distressed-debt-investment-manager.html",
@@ -89,9 +89,9 @@
       "route": "/cn/careers/apply/",
       "destination": "cn/careers/apply/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/cn/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/distressed-debt-investment-manager_cn.html",
