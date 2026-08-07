@@ -56,7 +56,7 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify capture-only safety state
+      - name: Verify safe pre-deploy state
         shell: bash
         run: |
           set -euo pipefail
@@ -66,8 +66,13 @@ jobs:
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
 
-          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]] || { echo 'Capture API is not enabled.' >&2; exit 1; }
-          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]] || { echo 'Capture-only mode is not enabled.' >&2; exit 1; }
+          api="$(value RECRUITMENT_API_ENABLED)"
+          capture="$(value RECRUITMENT_CAPTURE_ONLY_MODE)"
+          [[ "$api" == 'false' || "$api" == 'true' ]] || { echo 'API flag is missing or invalid.' >&2; exit 1; }
+          if [[ "$api" == 'true' && "$capture" != 'true' ]]; then
+            echo 'API is enabled without capture-only mode.' >&2
+            exit 1
+          fi
           [[ "$(value RECRUITMENT_BOT_VERIFICATION_MODE)" == 'turnstile' ]] || { echo 'Turnstile is not configured.' >&2; exit 1; }
 
           for key in \
@@ -79,6 +84,8 @@ jobs:
             [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false." >&2; exit 1; }
           done
 
+          echo "Safe pre-deploy state confirmed: API=$api capture-only=$capture"
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -86,7 +93,7 @@ jobs:
           cache: npm
           cache-dependency-path: services/recruitment-functions/package-lock.json
 
-      - name: Install production dependencies and run focused checks
+      - name: Install dependencies and run Function checks
         shell: bash
         run: |
           set -euo pipefail
@@ -177,6 +184,24 @@ jobs:
             sleep 15
           done
           exit 1
+
+      - name: Enable capture-only mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP" \
+            --settings \
+              RECRUITMENT_CAPTURE_ONLY_MODE=true \
+              RECRUITMENT_API_ENABLED=true \
+              RECRUITMENT_OUTBOX_DELIVERY_ENABLED=false \
+              RECRUITMENT_CANDIDATE_ACK_ENABLED=false \
+              RECRUITMENT_HR_ACCESS_ENABLED=false \
+              RECRUITMENT_RETENTION_ENABLED=false \
+              RECRUITMENT_RETENTION_DELETION_ENABLED=false \
+            --output none
+          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
 
       - name: Verify health and safety after deployment
         shell: bash
