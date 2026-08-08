@@ -255,7 +255,7 @@ app.timer('retentionIdempotencyCleanup', {
 });
 
 app.timer('outboxWorker', {
-  schedule: '0 */5 * * * *',
+  schedule: '0 * * * * *',
   handler: async (_, context) => {
     const config = loadConfig();
     if (config.outboxDelivery.enabled !== true) {
@@ -279,6 +279,9 @@ app.timer('outboxWorker', {
     }
 
     const now = Date.now();
+    const notificationCutoff = config.outboxDelivery.notBeforeUtc
+      ? Date.parse(config.outboxDelivery.notBeforeUtc)
+      : null;
     const batch = await dependencies.applicationStore.claimOutboxBatch({
       limit: 10,
       owner: context.invocationId,
@@ -287,6 +290,16 @@ app.timer('outboxWorker', {
 
     for (const event of batch) {
       try {
+        if (
+          Number.isFinite(notificationCutoff) &&
+          Number.isFinite(Date.parse(event.createdAtUtc)) &&
+          Date.parse(event.createdAtUtc) < notificationCutoff
+        ) {
+          await dependencies.applicationStore.completeOutboxEvent(event, {
+            deliveryReference: 'skipped:pre-notification-activation'
+          });
+          continue;
+        }
         const delivery = await dependencies.outboxDispatcher.deliver(event, dependencies);
         const durableEvent = delivery?.event || event;
         await dependencies.applicationStore.completeOutboxEvent(durableEvent, delivery || {});
