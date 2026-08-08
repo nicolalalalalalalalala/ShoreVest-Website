@@ -26,9 +26,6 @@ body.careers-role-page.careers-preview-page .careers-section {
 
 body.careers-role-page.careers-preview-page .careers-two-col {
   display: block;
-  width: 100%;
-  max-width: none;
-  margin-inline: 0;
 }
 
 body.careers-role-page.careers-preview-page .careers-two-col > :first-child,
