@@ -163,6 +163,7 @@ jobs:
       - run: git diff --check
 
   deploy_capture:
+    needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/agent/rebuild-recruitment-backend'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -269,7 +270,7 @@ jobs:
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           current_cutoff="$(jq -r '.[] | select(.name == "RECRUITMENT_OUTBOX_NOT_BEFORE_UTC") | .value' <<<"$settings" | head -n1)"
           if [[ -z "$current_cutoff" || "$current_cutoff" == 'null' ]]; then
-            current_cutoff="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            current_cutoff="$(node -e 'process.stdout.write(new Date().toISOString())')"
           fi
           az functionapp config appsettings set \
             --resource-group "$AZURE_RESOURCE_GROUP" \

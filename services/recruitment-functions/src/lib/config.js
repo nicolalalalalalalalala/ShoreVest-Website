@@ -209,6 +209,14 @@ function validateConfig(config) {
     if (!config.teamNotification?.mailbox) missing.push('teamNotification.mailbox');
     else if (!validShoreVestMailbox(config.teamNotification.mailbox)) {
       invalid.push('teamNotification.mailbox');
+    } else if (
+      config.candidateAcknowledgement?.mailbox &&
+      config.teamNotification.mailbox.toLowerCase() !== config.candidateAcknowledgement.mailbox.toLowerCase()
+    ) {
+      // The same mailbox is intentionally used for candidate send-as and internal
+      // recruitment notifications. Readiness probes this mailbox once, which
+      // guarantees both delivery paths use a verified Graph/Exchange target.
+      invalid.push('teamNotification.mailbox');
     }
   }
 
