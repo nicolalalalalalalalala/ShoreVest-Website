@@ -19,6 +19,7 @@
       required: 'This field is required.',
       email: 'Please enter a valid email address.',
       linkedin: 'Please enter a valid LinkedIn profile URL.',
+      wordLimit: 'Please keep your response to 200 words or fewer.',
       fileMissing: 'Please upload your resume or CV.',
       fileType: 'Please upload a PDF or DOCX file.',
       fileSize: 'The selected file exceeds the 10 MB limit.',
@@ -31,7 +32,7 @@
       network: 'We could not submit your application. Please check your connection and try again.',
       rate: 'Too many attempts were received. Please wait a few minutes and try again.',
       successTitle: 'Application received',
-      successBody: 'Thank you for applying to ShoreVest. We have received your application.',
+      successBody: 'Thank you for your interest in ShoreVest. We have received your application. If your experience aligns with the role, a member of our team will contact you regarding next steps.',
       successReference: 'Application reference:'
     },
     'zh-CN': {
@@ -41,6 +42,7 @@
       required: '此项为必填项。',
       email: '请输入有效的电子邮箱地址。',
       linkedin: '请输入有效的 LinkedIn 个人主页链接。',
+      wordLimit: '请精简您的职位兴趣说明。',
       fileMissing: '请上传您的简历。',
       fileType: '请上传 PDF 或 DOCX 文件。',
       fileSize: '所选文件超过 10 MB 上限。',
@@ -167,6 +169,27 @@
     if (summary) { summary.hidden = true; summary.textContent = ''; }
   }
 
+  function wordCount(value) {
+    var text = String(value || '').trim();
+    return text ? text.split(/\s+/).length : 0;
+  }
+
+  function buildCoverNote(lang, answers) {
+    var labels = lang === 'zh-CN' ? {
+      interest: '职位兴趣', willing: '广州工作 / 搬迁', authorization: '中国大陆工作资格', start: '最早到岗时间', chinese: '中文水平', english: '英语水平'
+    } : {
+      interest: 'Role interest', willing: 'Based in / willing to relocate to Guangzhou', authorization: 'Authorized to work in mainland China', start: 'Earliest available start date', chinese: 'Chinese proficiency', english: 'English proficiency'
+    };
+    return [
+      labels.interest + ':\n' + answers.interest,
+      labels.willing + ': ' + answers.willing,
+      labels.authorization + ': ' + answers.authorization,
+      labels.start + ': ' + answers.start,
+      labels.chinese + ': ' + answers.chinese,
+      labels.english + ': ' + answers.english
+    ].join('\n\n');
+  }
+
   function validate(doc, role, strings, botToken) {
     var errors = {};
     function value(name) {
@@ -175,11 +198,28 @@
     }
     var fullName = value('fullName');
     var email = value('email');
+    var telephone = value('telephone');
+    var currentLocation = value('currentLocation');
     var linkedinUrl = value('linkedinUrl');
+    var coverNote = value('coverNote');
+    var willingGuangzhou = value('willingGuangzhou');
+    var workAuthorization = value('workAuthorization');
+    var earliestStartDate = value('earliestStartDate');
+    var chineseProficiency = value('chineseProficiency');
+    var englishProficiency = value('englishProficiency');
     if (!fullName) errors.fullName = strings.required;
     if (!email) errors.email = strings.required;
     else if (!validEmail(email)) errors.email = strings.email;
+    if (!telephone) errors.telephone = strings.required;
+    if (!currentLocation) errors.currentLocation = strings.required;
     if (linkedinUrl && !validLinkedIn(linkedinUrl)) errors.linkedinUrl = strings.linkedin;
+    if (!coverNote) errors.coverNote = strings.required;
+    else if (locale(doc) === 'en' && wordCount(coverNote) > 200) errors.coverNote = strings.wordLimit;
+    if (!willingGuangzhou) errors.willingGuangzhou = strings.required;
+    if (!workAuthorization) errors.workAuthorization = strings.required;
+    if (!earliestStartDate) errors.earliestStartDate = strings.required;
+    if (!chineseProficiency) errors.chineseProficiency = strings.required;
+    if (!englishProficiency) errors.englishProficiency = strings.required;
     var fileNode = doc.querySelector('[data-field="cv"]');
     var file = fileNode && fileNode.files && fileNode.files[0];
     var cv = role.application.cv;
@@ -321,7 +361,7 @@
               telephone: field('telephone'),
               currentLocation: field('currentLocation'),
               linkedinUrl: field('linkedinUrl'),
-              coverNote: field('coverNote')
+              coverNote: buildCoverNote(lang, { interest: field('coverNote'), willing: field('willingGuangzhou'), authorization: field('workAuthorization'), start: field('earliestStartDate'), chinese: field('chineseProficiency'), english: field('englishProficiency') })
             },
             file: {
               originalName: checked.file.name,

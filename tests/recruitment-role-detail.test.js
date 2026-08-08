@@ -18,6 +18,7 @@ r=render('zh-CN','legal-assistant',[role('draft')], true); assert.match(r.text()
 r=render('en','unknown-role',[role()]); assert.strictEqual(r.status,'not-found');
 r=render('en','bad id',[role()]); assert.strictEqual(r.status,'invalid-role');
 const html=role(); html.title.en='<img src=x>Legal'; r=render('en','legal-assistant',[html]); assert.strictEqual(r.d.hero.findByTag('img').length,0); assert.strictEqual(innerHtmlWrites,0);
+const duplicateStart=role(); duplicateStart.targetStartDate.en='Open until filled'; duplicateStart.recruitmentStatus.en='Open until filled'; r=render('en','legal-assistant',[duplicateStart]); assert.doesNotMatch(r.text(),/Target Start Date/,'duplicate recruitment status is not repeated as a target start date');
 assert.strictEqual(renderer.applicationHref(role(),'en'),'/careers/apply.html?role=legal-assistant&source=website');
 assert.strictEqual(renderer.applicationHref(role(),'zh-CN'),'/careers/apply_cn.html?role=legal-assistant&source=website');
 assert.strictEqual(renderer.hasPreview({ location: { href: 'https://example.com/careers/legal-assistant.html?preview=1' } }), true);
