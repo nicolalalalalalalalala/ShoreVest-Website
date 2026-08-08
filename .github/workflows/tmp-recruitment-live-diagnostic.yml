@@ -1,0 +1,56 @@
+name: Temporary Recruitment Live Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tmp-recruitment-live-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe live recruitment API
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment'
+          ORIGIN='https://shorevest.com'
+
+          echo '=== HEALTH ==='
+          curl -sS -D /tmp/health.headers -o /tmp/health.body "$BASE/health"
+          sed -n '1,30p' /tmp/health.headers
+          cat /tmp/health.body
+          echo
+
+          echo '=== PREFLIGHT INITIATE ==='
+          curl -sS -X OPTIONS -D /tmp/options.headers -o /tmp/options.body \
+            -H "Origin: $ORIGIN" \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: content-type' \
+            "$BASE/applications/initiate" || true
+          sed -n '1,50p' /tmp/options.headers
+          cat /tmp/options.body || true
+          echo
+
+          echo '=== INVALID POST WITH ORIGIN ==='
+          STATUS=$(curl -sS -o /tmp/post.body -D /tmp/post.headers -w '%{http_code}' \
+            -X POST \
+            -H "Origin: $ORIGIN" \
+            -H 'Content-Type: application/json' \
+            --data '{}' \
+            "$BASE/applications/initiate" || true)
+          echo "HTTP $STATUS"
+          sed -n '1,50p' /tmp/post.headers
+          cat /tmp/post.body || true
+          echo
+
+          echo '=== ASSERT CORS ==='
+          grep -qi '^access-control-allow-origin: https://shorevest.com' /tmp/options.headers || { echo 'Missing/incorrect CORS allow-origin on preflight'; exit 20; }
+          grep -qi '^access-control-allow-methods:.*POST' /tmp/options.headers || { echo 'POST not allowed in CORS preflight'; exit 21; }
+          grep -qi '^access-control-allow-origin: https://shorevest.com' /tmp/post.headers || { echo 'Missing/incorrect CORS allow-origin on POST response'; exit 22; }
+          echo 'CORS is correctly exposed to shorevest.com.'
