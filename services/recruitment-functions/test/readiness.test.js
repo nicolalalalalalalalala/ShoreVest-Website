@@ -112,6 +112,10 @@ test('enabled API checks Key Vault secrets and enabled delivery checks Graph res
       mailbox: 'recruitment@shorevest.com',
       privacyNoticeUrl: 'https://shorevest.com/privacy-policy/'
     },
+    teamNotification: {
+      enabled: true,
+      mailbox: 'careers@shorevest.com'
+    },
     hrAccess: {
       enabled: true,
       platformAuthenticationEnabled: true,
