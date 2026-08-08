@@ -2,7 +2,7 @@
   'use strict';
   var DEFAULT_MANIFEST_PATH = '../assets/data/recruitment/roles.v1.json';
   var PUBLIC_CONFIG_PATH = '../assets/data/recruitment/public-config.json';
-  var ROLE_STYLESHEET = '/assets/css/recruitment-role-detail.css?v=20260809-layout-2';
+  var ROLE_STYLESHEET = '/assets/css/recruitment-role-detail.css?v=20260809-layout-3';
   var CHINESE_FONT_STYLESHEET = '/assets/css/chinese-font-uniform.css?v=20260722-cn-serif-unify';
   var SUPPORTED_LOCALES = { en: true, 'zh-CN': true };
   var STRINGS = {
