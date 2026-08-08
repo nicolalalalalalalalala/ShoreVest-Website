@@ -1,0 +1,244 @@
+name: Temporary refine Careers application and Distressed Debt role
+on:
+  push:
+    branches: [agent/refine-careers-application-and-distressed-role]
+    paths:
+      - '.github/workflows/tmp-refine-careers-application.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/refine-careers-application-and-distressed-role
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Refine Careers pages
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          function read(path) { return fs.readFileSync(path, 'utf8'); }
+          function write(path, value) { fs.writeFileSync(path, value); }
+          function replaceOnce(text, oldValue, newValue, label) {
+            if (!text.includes(oldValue)) throw new Error(`Missing expected text for ${label}`);
+            return text.replace(oldValue, newValue);
+          }
+
+          const enMain = `<main>
+          <section class="careers-hero"><div class="sv-shell careers-hero__grid"><div class="careers-hero__lead"><p class="careers-eyebrow">Careers · Application</p><h1 class="careers-title careers-application__role-title" data-application-role-title>Application</h1><p class="careers-application__role-meta" data-application-role-meta></p></div></div></section>
+          <section class="careers-section careers-application"><div class="sv-shell">
+            <p class="careers-application__intro">Complete the form below to apply for this position.</p>
+            <p class="careers-application__state" data-application-state role="status">Applications are not available at this time.</p>
+            <div class="careers-application__errors" data-application-errors role="alert" tabindex="-1" hidden></div>
+            <div class="careers-application__success" data-application-success role="status" tabindex="-1" hidden></div>
+            <form class="careers-application__form" data-application-form novalidate hidden>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">Contact information</legend>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-full-name">Full name <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-full-name" data-field="fullName" type="text" autocomplete="name" maxlength="200" required><span class="careers-application__field-error" data-field-error="fullName" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-email">Email address <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-email" data-field="email" type="email" autocomplete="email" maxlength="254" required><span class="careers-application__field-error" data-field-error="email" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-telephone">Phone number <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-telephone" data-field="telephone" type="tel" autocomplete="tel" maxlength="50" required><span class="careers-application__field-error" data-field-error="telephone" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-location">Current location <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-location" data-field="currentLocation" type="text" autocomplete="address-level2" maxlength="200" required><span class="careers-application__field-error" data-field-error="currentLocation" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-linkedin">LinkedIn profile <span class="careers-application__optional">(optional)</span></label><input class="careers-application__input" id="app-linkedin" data-field="linkedinUrl" type="url" inputmode="url" maxlength="300" placeholder="https://www.linkedin.com/in/…"><span class="careers-application__field-error" data-field-error="linkedinUrl" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">Application materials</legend>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-cv">Resume / CV <span class="careers-application__req">*</span></label><input class="careers-application__file" id="app-cv" data-field="cv" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required><p class="careers-application__hint">PDF or DOCX, up to 10 MB.</p><span class="careers-application__field-error" data-field-error="cv" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-note">Why are you interested in this role at ShoreVest? <span class="careers-application__req">*</span></label><textarea class="careers-application__textarea" id="app-note" data-field="coverNote" maxlength="2000" required></textarea><p class="careers-application__hint">Briefly explain your interest in the position and any experience you believe is particularly relevant. Maximum 200 words.</p><span class="careers-application__field-error" data-field-error="coverNote" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">Role information</legend>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-guangzhou">Are you currently based in, or willing to relocate to, Guangzhou? <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-guangzhou" data-field="willingGuangzhou" required><option value="">Select one</option><option value="Yes">Yes</option><option value="No">No</option></select><span class="careers-application__field-error" data-field-error="willingGuangzhou" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-authorization">Are you legally authorized to work in mainland China? <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-authorization" data-field="workAuthorization" required><option value="">Select one</option><option value="Yes">Yes</option><option value="No">No</option></select><span class="careers-application__field-error" data-field-error="workAuthorization" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-start-date">Earliest available start date <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-start-date" data-field="earliestStartDate" type="text" maxlength="100" placeholder="e.g., September 2026 or two weeks' notice" required><span class="careers-application__field-error" data-field-error="earliestStartDate" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-chinese">Chinese proficiency <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-chinese" data-field="chineseProficiency" required><option value="">Select one</option><option value="Native">Native</option><option value="Professional">Professional</option><option value="Conversational">Conversational</option><option value="Basic">Basic</option><option value="None">None</option></select><span class="careers-application__field-error" data-field-error="chineseProficiency" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-english">English proficiency <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-english" data-field="englishProficiency" required><option value="">Select one</option><option value="Native">Native</option><option value="Professional">Professional</option><option value="Conversational">Conversational</option><option value="Basic">Basic</option><option value="None">None</option></select><span class="careers-application__field-error" data-field-error="englishProficiency" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">Acknowledgments</legend>
+                <div class="careers-application__field"><div class="careers-application__consent"><input id="app-privacy" data-field="privacyAccepted" type="checkbox" required><span class="careers-application__consent-text"><label for="app-privacy">I have read ShoreVest's <a href="../privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a> and understand that the information I submit will be used to evaluate my candidacy and administer the recruitment process.</label></span></div><span class="careers-application__field-error" data-field-error="privacyAccepted" role="alert"></span></div>
+                <div class="careers-application__field"><div class="careers-application__consent"><input id="app-accuracy" data-field="accuracyConfirmed" type="checkbox" required><span class="careers-application__consent-text"><label for="app-accuracy">I confirm that the information I have provided is accurate and complete to the best of my knowledge.</label></span></div><span class="careers-application__field-error" data-field-error="accuracyConfirmed" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset"><legend class="careers-application__legend">Security verification</legend><div data-turnstile></div><span class="careers-application__field-error" data-field-error="turnstile" role="alert"></span></fieldset>
+              <p class="careers-application__submit-error" data-application-submit-error role="alert" hidden></p>
+              <div class="careers-application__actions"><button class="careers-application__submit" data-application-submit type="submit">Submit application</button></div>
+            </form>
+            <p class="careers-meta-note">Please do not submit sensitive personal information that is not required for your application, including government identification or financial information. ShoreVest will never ask candidates to pay a fee as part of the recruitment process.</p>
+          </div></section>
+          </main>`;
+
+          const zhMain = `<main>
+          <section class="careers-hero"><div class="sv-shell careers-hero__grid"><div class="careers-hero__lead"><p class="careers-eyebrow">人才招聘 · 职位申请</p><h1 class="careers-title careers-application__role-title" data-application-role-title>职位申请</h1><p class="careers-application__role-meta" data-application-role-meta></p></div></div></section>
+          <section class="careers-section careers-application"><div class="sv-shell">
+            <p class="careers-application__intro">请填写以下表单申请该职位。</p>
+            <p class="careers-application__state" data-application-state role="status">目前暂不接受在线申请。</p>
+            <div class="careers-application__errors" data-application-errors role="alert" tabindex="-1" hidden></div>
+            <div class="careers-application__success" data-application-success role="status" tabindex="-1" hidden></div>
+            <form class="careers-application__form" data-application-form novalidate hidden>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">候选人信息</legend>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-full-name">姓名 <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-full-name" data-field="fullName" type="text" autocomplete="name" maxlength="200" required><span class="careers-application__field-error" data-field-error="fullName" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-email">电子邮箱 <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-email" data-field="email" type="email" autocomplete="email" maxlength="254" required><span class="careers-application__field-error" data-field-error="email" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-telephone">电话号码 <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-telephone" data-field="telephone" type="tel" autocomplete="tel" maxlength="50" required><span class="careers-application__field-error" data-field-error="telephone" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-location">当前所在城市或地区 <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-location" data-field="currentLocation" type="text" autocomplete="address-level2" maxlength="200" required><span class="careers-application__field-error" data-field-error="currentLocation" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-linkedin">LinkedIn 个人主页链接 <span class="careers-application__optional">（选填）</span></label><input class="careers-application__input" id="app-linkedin" data-field="linkedinUrl" type="url" inputmode="url" maxlength="300" placeholder="https://www.linkedin.com/in/…"><span class="careers-application__field-error" data-field-error="linkedinUrl" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">申请材料</legend>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-cv">简历 <span class="careers-application__req">*</span></label><input class="careers-application__file" id="app-cv" data-field="cv" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required><p class="careers-application__hint">仅支持 PDF 或 DOCX，最大 10 MB。</p><span class="careers-application__field-error" data-field-error="cv" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-note">为什么您对 ShoreVest 的该职位感兴趣？ <span class="careers-application__req">*</span></label><textarea class="careers-application__textarea" id="app-note" data-field="coverNote" maxlength="2000" required></textarea><p class="careers-application__hint">请简要说明您对该职位的兴趣，以及您认为最相关的经验。</p><span class="careers-application__field-error" data-field-error="coverNote" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">职位信息</legend>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-guangzhou">您目前是否在广州，或愿意搬迁至广州工作？ <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-guangzhou" data-field="willingGuangzhou" required><option value="">请选择</option><option value="是">是</option><option value="否">否</option></select><span class="careers-application__field-error" data-field-error="willingGuangzhou" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-authorization">您目前是否具有在中国大陆合法工作的资格？ <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-authorization" data-field="workAuthorization" required><option value="">请选择</option><option value="是">是</option><option value="否">否</option></select><span class="careers-application__field-error" data-field-error="workAuthorization" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-start-date">最早可到岗时间 <span class="careers-application__req">*</span></label><input class="careers-application__input" id="app-start-date" data-field="earliestStartDate" type="text" maxlength="100" placeholder="例如：2026 年 9 月或两周后" required><span class="careers-application__field-error" data-field-error="earliestStartDate" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-chinese">中文水平 <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-chinese" data-field="chineseProficiency" required><option value="">请选择</option><option value="母语">母语</option><option value="专业工作水平">专业工作水平</option><option value="日常交流">日常交流</option><option value="基础">基础</option><option value="无">无</option></select><span class="careers-application__field-error" data-field-error="chineseProficiency" role="alert"></span></div>
+                <div class="careers-application__field"><label class="careers-application__label" for="app-english">英语水平 <span class="careers-application__req">*</span></label><select class="careers-application__select" id="app-english" data-field="englishProficiency" required><option value="">请选择</option><option value="母语">母语</option><option value="专业工作水平">专业工作水平</option><option value="日常交流">日常交流</option><option value="基础">基础</option><option value="无">无</option></select><span class="careers-application__field-error" data-field-error="englishProficiency" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset">
+                <legend class="careers-application__legend">确认事项</legend>
+                <div class="careers-application__field"><div class="careers-application__consent"><input id="app-privacy" data-field="privacyAccepted" type="checkbox" required><span class="careers-application__consent-text"><label for="app-privacy">本人已阅读 ShoreVest 的<a href="../cn/privacy-policy/" target="_blank" rel="noopener">隐私政策</a>，并知悉 ShoreVest 可使用本次申请所提交的信息评估本人应聘资格及开展招聘流程。</label></span></div><span class="careers-application__field-error" data-field-error="privacyAccepted" role="alert"></span></div>
+                <div class="careers-application__field"><div class="careers-application__consent"><input id="app-accuracy" data-field="accuracyConfirmed" type="checkbox" required><span class="careers-application__consent-text"><label for="app-accuracy">本人确认所提交的信息据本人所知准确无误。</label></span></div><span class="careers-application__field-error" data-field-error="accuracyConfirmed" role="alert"></span></div>
+              </fieldset>
+              <fieldset class="careers-application__fieldset"><legend class="careers-application__legend">安全验证</legend><div data-turnstile></div><span class="careers-application__field-error" data-field-error="turnstile" role="alert"></span></fieldset>
+              <p class="careers-application__submit-error" data-application-submit-error role="alert" hidden></p>
+              <div class="careers-application__actions"><button class="careers-application__submit" data-application-submit type="submit">提交申请</button></div>
+            </form>
+            <p class="careers-meta-note">请勿提交与职位申请无关的敏感个人信息，包括身份证件号码或金融信息。ShoreVest 绝不会要求候选人在招聘过程中支付费用。</p>
+          </div></section>
+          </main>`;
+
+          for (const [path, main] of [['careers/apply.html', enMain], ['careers/apply_cn.html', zhMain]]) {
+            let html = read(path);
+            if (!/<main>[\s\S]*?<\/main>/.test(html)) throw new Error(`Main section missing in ${path}`);
+            html = html.replace(/<main>[\s\S]*?<\/main>/, main);
+            html = html.replace('recruitment-application.css?v=20260808-role-first', 'recruitment-application.css?v=20260809-application-refine');
+            html = html.replace('recruitment-application.js?v=20260808-turnstile-mobile', 'recruitment-application.js?v=20260809-application-refine');
+            write(path, html);
+          }
+
+          let appJs = read('assets/js/recruitment-application.js');
+          appJs = replaceOnce(appJs,
+            "      linkedin: 'Please enter a valid LinkedIn profile URL.',\n",
+            "      linkedin: 'Please enter a valid LinkedIn profile URL.',\n      wordLimit: 'Please keep your response to 200 words or fewer.',\n",
+            'English word-limit message');
+          appJs = replaceOnce(appJs,
+            "      linkedin: '请输入有效的 LinkedIn 个人主页链接。',\n",
+            "      linkedin: '请输入有效的 LinkedIn 个人主页链接。',\n      wordLimit: '请精简您的职位兴趣说明。',\n",
+            'Chinese word-limit message');
+          appJs = appJs.replace(
+            "      successBody: 'Thank you for applying to ShoreVest. We have received your application.',",
+            "      successBody: 'Thank you for your interest in ShoreVest. We have received your application. If your experience aligns with the role, a member of our team will contact you regarding next steps.',"
+          );
+          const helpers = `  function wordCount(value) {\n    var text = String(value || '').trim();\n    return text ? text.split(/\\s+/).length : 0;\n  }\n\n  function buildCoverNote(lang, answers) {\n    var labels = lang === 'zh-CN' ? {\n      interest: '职位兴趣', willing: '广州工作 / 搬迁', authorization: '中国大陆工作资格', start: '最早到岗时间', chinese: '中文水平', english: '英语水平'\n    } : {\n      interest: 'Role interest', willing: 'Based in / willing to relocate to Guangzhou', authorization: 'Authorized to work in mainland China', start: 'Earliest available start date', chinese: 'Chinese proficiency', english: 'English proficiency'\n    };\n    return [\n      labels.interest + ':\\n' + answers.interest,\n      labels.willing + ': ' + answers.willing,\n      labels.authorization + ': ' + answers.authorization,\n      labels.start + ': ' + answers.start,\n      labels.chinese + ': ' + answers.chinese,\n      labels.english + ': ' + answers.english\n    ].join('\\n\\n');\n  }\n\n`;
+          appJs = replaceOnce(appJs, '  function validate(doc, role, strings, botToken) {', helpers + '  function validate(doc, role, strings, botToken) {', 'application helpers');
+          const validatePattern = /  function validate\(doc, role, strings, botToken\) \{[\s\S]*?\n  \}\n\n  function showErrors/;
+          if (!validatePattern.test(appJs)) throw new Error('validate function not found');
+          appJs = appJs.replace(validatePattern, `  function validate(doc, role, strings, botToken) {\n    var errors = {};\n    function value(name) {\n      var node = doc.querySelector('[data-field="' + name + '"]');\n      return node ? String(node.value || '').trim() : '';\n    }\n    var fullName = value('fullName');\n    var email = value('email');\n    var telephone = value('telephone');\n    var currentLocation = value('currentLocation');\n    var linkedinUrl = value('linkedinUrl');\n    var coverNote = value('coverNote');\n    var willingGuangzhou = value('willingGuangzhou');\n    var workAuthorization = value('workAuthorization');\n    var earliestStartDate = value('earliestStartDate');\n    var chineseProficiency = value('chineseProficiency');\n    var englishProficiency = value('englishProficiency');\n    if (!fullName) errors.fullName = strings.required;\n    if (!email) errors.email = strings.required;\n    else if (!validEmail(email)) errors.email = strings.email;\n    if (!telephone) errors.telephone = strings.required;\n    if (!currentLocation) errors.currentLocation = strings.required;\n    if (linkedinUrl && !validLinkedIn(linkedinUrl)) errors.linkedinUrl = strings.linkedin;\n    if (!coverNote) errors.coverNote = strings.required;\n    else if (locale(doc) === 'en' && wordCount(coverNote) > 200) errors.coverNote = strings.wordLimit;\n    if (!willingGuangzhou) errors.willingGuangzhou = strings.required;\n    if (!workAuthorization) errors.workAuthorization = strings.required;\n    if (!earliestStartDate) errors.earliestStartDate = strings.required;\n    if (!chineseProficiency) errors.chineseProficiency = strings.required;\n    if (!englishProficiency) errors.englishProficiency = strings.required;\n    var fileNode = doc.querySelector('[data-field="cv"]');\n    var file = fileNode && fileNode.files && fileNode.files[0];\n    var cv = role.application.cv;\n    if (!file) errors.cv = strings.fileMissing;\n    else {\n      var ext = extension(file.name);\n      var mime = declaredMime(file);\n      if (!cv.allowedExtensions.includes(ext) || !cv.allowedMimeTypes.includes(mime)) errors.cv = strings.fileType;\n      else if (file.size < 1 || file.size > cv.maxSizeBytes) errors.cv = strings.fileSize;\n    }\n    var privacy = doc.querySelector('[data-field="privacyAccepted"]');\n    var accuracy = doc.querySelector('[data-field="accuracyConfirmed"]');\n    if (!privacy || privacy.checked !== true) errors.privacyAccepted = strings.privacy;\n    if (!accuracy || accuracy.checked !== true) errors.accuracyConfirmed = strings.accuracy;\n    if (!botToken) errors.turnstile = strings.bot;\n    return { errors: errors, file: file };\n  }\n\n  function showErrors`);
+          appJs = replaceOnce(appJs,
+            "              coverNote: field('coverNote')",
+            "              coverNote: buildCoverNote(lang, { interest: field('coverNote'), willing: field('willingGuangzhou'), authorization: field('workAuthorization'), start: field('earliestStartDate'), chinese: field('chineseProficiency'), english: field('englishProficiency') })",
+            'structured application note');
+          write('assets/js/recruitment-application.js', appJs);
+
+          let css = read('assets/css/recruitment-application.css');
+          css = css.replace(
+            'body.careers-application-page .careers-application__input,\nbody.careers-application-page .careers-application__textarea {',
+            'body.careers-application-page .careers-application__input,\nbody.careers-application-page .careers-application__select,\nbody.careers-application-page .careers-application__textarea {'
+          );
+          css = css.replace(
+            'body.careers-application-page .careers-application__input:focus-visible,\nbody.careers-application-page .careers-application__textarea:focus-visible {',
+            'body.careers-application-page .careers-application__input:focus-visible,\nbody.careers-application-page .careers-application__select:focus-visible,\nbody.careers-application-page .careers-application__textarea:focus-visible {'
+          );
+          css = replaceOnce(css,
+            'body.careers-application-page .careers-application__textarea { min-height:120px; resize:vertical; }',
+            'body.careers-application-page .careers-application__textarea { min-height:140px; resize:vertical; }\nbody.careers-application-page .careers-application__select { min-height:48px; border-radius:0; }',
+            'select styles');
+          write('assets/css/recruitment-application.css', css);
+
+          const manifestPath = 'assets/data/recruitment/roles.v1.json';
+          const manifest = JSON.parse(read(manifestPath));
+          manifest.generatedAtUtc = '2026-08-09T00:00:00Z';
+          const distressed = manifest.roles.find(r => r.id === 'distressed-debt-investment-manager');
+          if (!distressed) throw new Error('Distressed Debt role missing');
+          distressed.roleOverview.en = 'This role leads distressed debt and special situations investments from sourcing and evaluation through structuring, post-investment management and exit. Reporting directly to the Managing Partner, the Investment Manager assesses opportunities, coordinates due diligence and transaction execution, and works with banks, asset management companies, law firms and other external counterparties. The role also supports business development and provides guidance to junior team members.';
+          distressed.responsibilities.en = [
+            'Evaluate distressed debt and special situations opportunities, including transaction structure, asset value, recovery prospects, downside risks and potential returns, and prepare analysis to support investment decisions.',
+            'Conduct legal due diligence on debt investment opportunities, identify material legal risks in proposed transaction structures and prepare clear risk analysis for investment decision-making.',
+            'Lead or participate in the structuring of debt investments and draft and review key transaction documents, including investment agreements, guarantee agreements and related documentation.',
+            'Manage existing debt investments following closing, monitor debtor performance, identify and address potential default risks, and support recovery and exit execution.',
+            'Work with internal teams during negotiations and coordinate with external parties, including law firms and valuation firms, to support compliant and timely execution.',
+            'Monitor macroeconomic, regulatory and policy developments relevant to the firm’s investment activities and provide legal, compliance and industry analysis to support investment decisions.',
+            'Support business development activities and provide guidance to junior team members as required.'
+          ];
+          distressed.requiredQualifications.en = [
+            'Bachelor’s degree or above in law or a related discipline.',
+            'At least two years of relevant experience in a financial institution’s legal department, non-contentious legal practice at a law firm or non-performing loan resolution.',
+            'Strong knowledge of civil and commercial law and relevant financial regulatory frameworks, with familiarity across the full lifecycle of debt investments.',
+            'Strong legal drafting and document review skills, with the ability to assess transaction structures, risk and recovery considerations.',
+            'Strong analytical, communication and coordination skills, with the ability to work effectively in a fast-paced environment and travel frequently as required.',
+            'High professional integrity, sound judgment, strong risk awareness and a collaborative approach.'
+          ];
+          distressed.preferredQualifications.en = ['National Unified Legal Professional Qualification Certificate, Class A.'];
+          distressed.summary.en = 'Lead distressed debt and special situations investments from evaluation and structuring through post-investment management and exit, with a focus on downside protection, legal risk and recovery.';
+          distressed.dateUpdated = '2026-08-09';
+          write(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+
+          let roleJs = read('assets/js/recruitment-role-detail.js');
+          const oldFacts = "  function createRoleFacts(doc, strings, locale, role){var facts=el(doc,'div','careers-role-facts');[['reportingLine',strings.reportingLine],['targetStartDate',strings.targetStartDate]].forEach(function(pair){var value=t(role,pair[0],locale);if(!value)return;var item=el(doc,'div','careers-role-fact');item.appendChild(el(doc,'h3',null,pair[1]));item.appendChild(el(doc,'p',null,value));facts.appendChild(item);});return facts;}";
+          const newFacts = "  function createRoleFacts(doc, strings, locale, role){var facts=el(doc,'div','careers-role-facts'),recruitmentStatus=t(role,'recruitmentStatus',locale);[['reportingLine',strings.reportingLine],['targetStartDate',strings.targetStartDate]].forEach(function(pair){var value=t(role,pair[0],locale);if(!value||(pair[0]==='targetStartDate'&&value===recruitmentStatus))return;var item=el(doc,'div','careers-role-fact');item.appendChild(el(doc,'h3',null,pair[1]));item.appendChild(el(doc,'p',null,value));facts.appendChild(item);});return facts;}";
+          roleJs = replaceOnce(roleJs, oldFacts, newFacts, 'duplicate target-start suppression');
+          write('assets/js/recruitment-role-detail.js', roleJs);
+
+          const roleFiles = [
+            'careers/distressed-debt-investment-manager.html',
+            'careers/distressed-debt-investment-manager_cn.html',
+            'careers/legal-assistant.html',
+            'careers/legal-assistant_cn.html'
+          ];
+          for (const path of roleFiles) {
+            if (!fs.existsSync(path)) continue;
+            let html = read(path);
+            html = html.replace('recruitment-role-detail.js?v=20260718', 'recruitment-role-detail.js?v=20260809-careers-refine');
+            write(path, html);
+          }
+
+          let distressedHtml = read('careers/distressed-debt-investment-manager.html');
+          const ldMatch = distressedHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+          if (!ldMatch) throw new Error('Distressed Debt JobPosting JSON-LD missing');
+          const ld = JSON.parse(ldMatch[1]);
+          ld.description = [
+            distressed.roleOverview.en,
+            ...distressed.responsibilities.en,
+            ...distressed.requiredQualifications.en,
+            ...distressed.preferredQualifications.en
+          ].join(' ');
+          distressedHtml = distressedHtml.replace(ldMatch[0], '<script type="application/ld+json">' + JSON.stringify(ld) + '</script>');
+          write('careers/distressed-debt-investment-manager.html', distressedHtml);
+
+          let roleTest = read('tests/recruitment-role-detail.test.js');
+          const marker = "assert.strictEqual(renderer.applicationHref(role(),'en'),'/careers/apply.html?role=legal-assistant&source=website');";
+          roleTest = replaceOnce(roleTest, marker,
+            "const duplicateStart=role(); duplicateStart.targetStartDate.en='Open until filled'; duplicateStart.recruitmentStatus.en='Open until filled'; r=render('en','legal-assistant',[duplicateStart]); assert.doesNotMatch(r.text(),/Target Start Date/,'duplicate recruitment status is not repeated as a target start date');\n" + marker,
+            'duplicate start-date regression test');
+          write('tests/recruitment-role-detail.test.js', roleTest);
+          NODE
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate recruitment system
+        run: |
+          npm run check:recruitment
+          npm run validate:recruitment
+          npm run test:recruitment
+          git diff --check
+      - name: Commit refinements
+        run: |
+          rm .github/workflows/tmp-refine-careers-application.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
+          git add careers/apply.html careers/apply_cn.html assets/js/recruitment-application.js assets/css/recruitment-application.css assets/data/recruitment/roles.v1.json assets/js/recruitment-role-detail.js careers/distressed-debt-investment-manager.html careers/distressed-debt-investment-manager_cn.html careers/legal-assistant.html careers/legal-assistant_cn.html tests/recruitment-role-detail.test.js .github/workflows/tmp-refine-careers-application.yml
+          git commit -m 'Refine Careers application and Distressed Debt role'
+          git push origin HEAD:agent/refine-careers-application-and-distressed-role
