@@ -31,41 +31,31 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Read latest recruitment technical states
+      - name: Read recent recruitment request telemetry
         shell: bash
         run: |
           set -euo pipefail
-          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
-          endpoint="$(jq -r '.[] | select(.name=="RECRUITMENT_COSMOS_ENDPOINT") | .value' <<<"$settings")"
-          database="$(jq -r '.[] | select(.name=="RECRUITMENT_COSMOS_DATABASE") | .value' <<<"$settings")"
-          account="$(python3 - <<'PY' "$endpoint"
-          import sys, urllib.parse
-          print(urllib.parse.urlparse(sys.argv[1]).hostname.split('.')[0])
-          PY
-          )"
-          [[ -n "$account" && -n "$database" && "$database" != null ]]
-          key="$(az cosmosdb keys list --resource-group "$AZURE_RESOURCE_GROUP" --name "$account" --type keys --query primaryMasterKey -o tsv)"
-          [[ -n "$key" ]]
+          component="$(az resource list --resource-group "$AZURE_RESOURCE_GROUP" --resource-type 'microsoft.insights/components' --query '[0].name' -o tsv)"
+          [[ -n "$component" ]] || { echo 'No Application Insights component found'; exit 2; }
+          echo "Application Insights component: $component"
 
-          mkdir -p /tmp/cosmosdiag && cd /tmp/cosmosdiag
-          npm init -y >/dev/null 2>&1
-          npm install @azure/cosmos@4 --no-audit --no-fund >/dev/null 2>&1
-          COSMOS_ENDPOINT="$endpoint" COSMOS_DATABASE="$database" COSMOS_KEY="$key" node <<'NODE'
-          const { CosmosClient } = require('@azure/cosmos');
-          const client = new CosmosClient({ endpoint: process.env.COSMOS_ENDPOINT, key: process.env.COSMOS_KEY });
-          const c = client.database(process.env.COSMOS_DATABASE).container('submissions');
-          async function run() {
-            const apps = await c.items.query({
-              query: `SELECT TOP 8 c.applicationReference, c.roleId, c.technicalStatus, c.submittedAtServerUtc, c.updatedAtUtc, c._ts FROM c WHERE c.docType = 'application' ORDER BY c._ts DESC`
-            }, { enableCrossPartitionQuery: true }).fetchAll();
-            const files = await c.items.query({
-              query: `SELECT TOP 8 c.applicationReference, c.fileReference, c.technicalStatus, c.updatedAtUtc, c._ts FROM c WHERE c.docType = 'file' ORDER BY c._ts DESC`
-            }, { enableCrossPartitionQuery: true }).fetchAll();
-            console.log('=== LATEST APPLICATION TECHNICAL STATES (no candidate data) ===');
-            console.log(JSON.stringify(apps.resources, null, 2));
-            console.log('=== LATEST FILE TECHNICAL STATES (no file content/name) ===');
-            console.log(JSON.stringify(files.resources, null, 2));
-          }
-          run().catch((e) => { console.error('DIAGNOSTIC_FAILED', e.code || e.message); process.exit(1); });
-          NODE
-          unset key
+          echo '=== RECENT RECRUITMENT REQUESTS ==='
+          az monitor app-insights query \
+            --app "$component" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --analytics-query "requests | where timestamp > ago(45m) | where url contains '/api/recruitment/' | project timestamp, name, resultCode, success, url | order by timestamp desc | take 40" \
+            -o table
+
+          echo '=== RECENT RECRUITMENT TRACES ==='
+          az monitor app-insights query \
+            --app "$component" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --analytics-query "traces | where timestamp > ago(45m) | where message startswith 'recruitment_' | project timestamp, message, severityLevel | order by timestamp desc | take 40" \
+            -o table || true
+
+          echo '=== RECENT TURNSTILE DEPENDENCIES ==='
+          az monitor app-insights query \
+            --app "$component" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --analytics-query "dependencies | where timestamp > ago(45m) | where target contains 'challenges.cloudflare.com' or name contains 'siteverify' | project timestamp, name, target, resultCode, success, duration | order by timestamp desc | take 20" \
+            -o table || true
