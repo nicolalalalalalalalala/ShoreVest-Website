@@ -1,7 +1,9 @@
 /* ShoreVest recruitment application form. Scoped to the application pages. */
 body.careers-application-page .careers-application { padding-block: clamp(40px, 5vw, 72px); }
 body.careers-application-page .careers-application__intro { max-width: 62ch; }
-body.careers-application-page .careers-application__role-meta { margin-top: 8px; font: 400 15px/1.6 var(--sv-font); color: var(--sv-qing-light, #7AAFAF); }
+body.careers-application-page .careers-application__role-title { max-width: 18ch; }
+body.careers-application-page .careers-application__kicker { margin: 16px 0 0; font: 600 12px/1.3 var(--sv-font); letter-spacing: .09em; text-transform: uppercase; color: rgba(252,249,241,.72); }
+body.careers-application-page .careers-application__role-meta { margin-top: 12px; font: 400 clamp(15px,1.5vw,18px)/1.55 var(--sv-font); color: var(--sv-qing-light, #7AAFAF); }
 body.careers-application-page .careers-application__state { margin-top: 24px; font: 400 16px/1.65 var(--sv-font); color: var(--sv-qing-light, #7AAFAF); }
 body.careers-application-page .careers-application__form { margin-top: 32px; max-width: 720px; }
 body.careers-application-page .careers-application__fieldset { margin: 0 0 36px; padding: 0; border: 0; border-top: 1px solid rgba(252,249,241,.14); }
