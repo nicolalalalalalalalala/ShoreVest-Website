@@ -65,14 +65,27 @@ app.timer('quarantineCleanup', { schedule: '0 */10 * * * *', handler: async (_, 
   for (const file of batch) await flows.retryQuarantineCleanup({ applicationReference: file.applicationReference, fileReference: file.fileReference }, deps);
 } });
 
-app.timer('outboxWorker', { schedule: '0 */5 * * * *', handler: async (_, context) => {
+app.timer('outboxWorker', { schedule: '0 */1 * * * *', handler: async (_, context) => {
   const deps = createDeps(loadConfig(), context);
-  const batch = await deps.applicationStore.claimOutboxBatch({ limit: 10, owner: context.invocationId, leaseExpiresAtUtc: new Date(Date.now() + 300000).toISOString() });
-  for (const event of batch) await deps.applicationStore.markOutboxAttempt(event, 'RetryableFailure');
+  const batch = await deps.applicationStore.claimOutboxBatch({ limit: 20, owner: context.invocationId, leaseExpiresAtUtc: new Date(Date.now() + 300000).toISOString() });
+  for (const event of batch) {
+    try {
+      const application = await deps.applicationStore.getApplication(event.applicationReference);
+      if (!application) throw new Error('application not found for notification');
+      await deps.mailer.sendOutbox(event, application);
+      await deps.applicationStore.markOutboxAttempt(event, 'Completed');
+      context.log('recruitment_notification_sent', { type: event.type, applicationReference: event.applicationReference });
+    } catch (error) {
+      context.error('recruitment_notification_failed', { type: event.type, applicationReference: event.applicationReference, code: error.code || error.status || 'SEND_FAILED' });
+      try { await deps.applicationStore.markOutboxAttempt(event, 'RetryableFailure'); } catch (markError) {
+        context.error('recruitment_notification_retry_state_failed', { applicationReference: event.applicationReference, code: markError.code || markError.statusCode || 'STATE_FAILED' });
+      }
+    }
+  }
 } });
 
 app.http('health', { methods: ['GET'], authLevel: 'anonymous', route: 'recruitment/health', handler: async (request) => {
   const config = loadConfig();
   const shape = validateConfig(config);
-  return { status: shape.ok ? 200 : 503, headers: withCors(request, config), jsonBody: { ok: shape.ok, runtime: 'active', configuration: shape.ok ? 'valid' : 'invalid' } };
+  return { status: shape.ok ? 200 : 503, headers: withCors(request, config), jsonBody: { ok: shape.ok, runtime: 'active', configuration: shape.ok ? 'valid' : 'invalid', notifications: config.notificationsEnabled ? 'enabled' : 'disabled' } };
 } });
