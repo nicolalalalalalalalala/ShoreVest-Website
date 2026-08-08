@@ -31,7 +31,9 @@ function launchEnvironment(patch = {}) {
     RECRUITMENT_FILES_LIST_ID: 'files-list',
     RECRUITMENT_CANDIDATE_ACK_ENABLED: 'true',
     RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED: 'true',
-    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'hr@shorevest.com',
+    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'careers@shorevest.com',
+    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'true',
+    RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: 'careers@shorevest.com',
     RECRUITMENT_HR_ACCESS_ENABLED: 'true',
     RECRUITMENT_PLATFORM_AUTH_ENABLED: 'true',
     RECRUITMENT_RETENTION_ENABLED: 'true',
@@ -89,7 +91,6 @@ test('Turnstile action is required and bounded to a simple stable identifier', (
       RECRUITMENT_BOT_VERIFICATION_ACTION: action
     })));
     if (action === '') {
-      // An empty environment value falls back to the safe default.
       assert.equal(shape.ok, true);
     } else {
       assert.ok(shape.invalid.includes('botVerification.expectedAction'));

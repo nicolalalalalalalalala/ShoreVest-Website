@@ -87,6 +87,10 @@ function config() {
       templateApproved: true,
       mailbox: 'hr@shorevest.com',
       privacyNoticeUrl: 'https://shorevest.com/privacy-policy/'
+    },
+    teamNotification: {
+      enabled: true,
+      mailbox: 'careers@shorevest.com'
     }
   };
 }
@@ -205,7 +209,7 @@ test('projection upserts the application and every file in the application parti
   assert.equal(upserts[0].keyField, 'ApplicationReference');
   assert.equal(upserts[1].keyField, 'FileReference');
   assert.equal(upserts[2].keyValue, 'SV-FILE-SECOND');
-  assert.equal(result.deliveryReference, 'application:1|file:2|file:3');
+  assert.equal(result.deliveryReference, 'application:1|file:2|file:3|team-mail:draft-1');
 });
 
 test('file-specific events do not query unrelated application files', async () => {

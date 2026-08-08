@@ -58,6 +58,13 @@ function validPrivacyNoticeUrl(value) {
   }
 }
 
+function validUtcTimestamp(value) {
+  if (value == null || value === '') return true;
+  if (typeof value !== 'string' || value.length > 64) return false;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) && /Z$/i.test(value.trim());
+}
+
 function loadConfig(env = process.env) {
   const environment = env.RECRUITMENT_ENVIRONMENT || 'production';
   const production = environment === 'production' || environment === 'prod';
@@ -66,6 +73,7 @@ function loadConfig(env = process.env) {
     (production ? 'https://shorevest.com,https://www.shorevest.com' : '')
   );
   const approvedOriginHostnames = originHostnames(origins);
+  const candidateMailbox = String(env.RECRUITMENT_CANDIDATE_ACK_MAILBOX || '').trim();
 
   return {
     apiEnabled: bool(env.RECRUITMENT_API_ENABLED),
@@ -104,7 +112,8 @@ function loadConfig(env = process.env) {
       enabled: bool(env.RECRUITMENT_OUTBOX_DELIVERY_ENABLED),
       leaseSeconds: positiveInteger(env.RECRUITMENT_OUTBOX_LEASE_SECONDS, 300),
       retrySeconds: positiveInteger(env.RECRUITMENT_OUTBOX_RETRY_SECONDS, 900),
-      maxAttempts: positiveInteger(env.RECRUITMENT_OUTBOX_MAX_ATTEMPTS, 10)
+      maxAttempts: positiveInteger(env.RECRUITMENT_OUTBOX_MAX_ATTEMPTS, 10),
+      notBeforeUtc: String(env.RECRUITMENT_OUTBOX_NOT_BEFORE_UTC || '').trim()
     },
     graph: {
       endpoint: env.RECRUITMENT_GRAPH_ENDPOINT || 'https://graph.microsoft.com/v1.0'
@@ -117,10 +126,14 @@ function loadConfig(env = process.env) {
     candidateAcknowledgement: {
       enabled: bool(env.RECRUITMENT_CANDIDATE_ACK_ENABLED),
       templateApproved: bool(env.RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED),
-      mailbox: String(env.RECRUITMENT_CANDIDATE_ACK_MAILBOX || '').trim(),
+      mailbox: candidateMailbox,
       privacyNoticeUrl: String(
         env.RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL || 'https://shorevest.com/privacy-policy/'
       ).trim()
+    },
+    teamNotification: {
+      enabled: bool(env.RECRUITMENT_TEAM_NOTIFICATION_ENABLED),
+      mailbox: String(env.RECRUITMENT_TEAM_NOTIFICATION_MAILBOX || candidateMailbox).trim()
     },
     hrAccess: {
       enabled: bool(env.RECRUITMENT_HR_ACCESS_ENABLED),
@@ -166,9 +179,11 @@ function validateConfig(config) {
     invalid.push('botVerification.mode');
   }
 
+  // Capture-only continues to block HR document access and all retention/deletion
+  // automation. Notification delivery is intentionally allowed so a captured
+  // application can be projected and acknowledged without opening CV access or
+  // enabling destructive lifecycle actions.
   if (config.captureOnly === true) {
-    if (config.outboxDelivery?.enabled === true) invalid.push('outboxDelivery.enabled');
-    if (config.candidateAcknowledgement?.enabled === true) invalid.push('candidateAcknowledgement.enabled');
     if (config.hrAccess?.enabled === true) invalid.push('hrAccess.enabled');
     if (config.retention?.enabled === true) invalid.push('retention.enabled');
     if (config.retention?.deletionEnabled === true) invalid.push('retention.deletionEnabled');
@@ -179,6 +194,7 @@ function validateConfig(config) {
     if (!config.sharePoint?.siteId) missing.push('sharePoint.siteId');
     if (!config.sharePoint?.applicationsListId) missing.push('sharePoint.applicationsListId');
     if (!config.sharePoint?.filesListId) missing.push('sharePoint.filesListId');
+    if (!validUtcTimestamp(config.outboxDelivery?.notBeforeUtc)) invalid.push('outboxDelivery.notBeforeUtc');
     if (config.candidateAcknowledgement?.enabled !== true) invalid.push('candidateAcknowledgement.enabled');
     if (config.candidateAcknowledgement?.templateApproved !== true) invalid.push('candidateAcknowledgement.templateApproved');
     if (!config.candidateAcknowledgement?.mailbox) missing.push('candidateAcknowledgement.mailbox');
@@ -188,6 +204,11 @@ function validateConfig(config) {
     if (!config.candidateAcknowledgement?.privacyNoticeUrl) missing.push('candidateAcknowledgement.privacyNoticeUrl');
     else if (!validPrivacyNoticeUrl(config.candidateAcknowledgement.privacyNoticeUrl)) {
       invalid.push('candidateAcknowledgement.privacyNoticeUrl');
+    }
+    if (config.teamNotification?.enabled !== true) invalid.push('teamNotification.enabled');
+    if (!config.teamNotification?.mailbox) missing.push('teamNotification.mailbox');
+    else if (!validShoreVestMailbox(config.teamNotification.mailbox)) {
+      invalid.push('teamNotification.mailbox');
     }
   }
 
@@ -249,6 +270,7 @@ module.exports = {
   sameStringSet,
   validShoreVestMailbox,
   validPrivacyNoticeUrl,
+  validUtcTimestamp,
   loadConfig,
   validateConfig
 };

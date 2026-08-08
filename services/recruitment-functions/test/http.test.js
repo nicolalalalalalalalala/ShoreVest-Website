@@ -220,6 +220,8 @@ test('enabled production API validates only when all launch controls are configu
     RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED: 'true',
     RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'hr@shorevest.com',
     RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL: 'https://shorevest.com/privacy-policy/',
+    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'true',
+    RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: 'careers@shorevest.com',
     RECRUITMENT_HR_ACCESS_ENABLED: 'true',
     RECRUITMENT_PLATFORM_AUTH_ENABLED: 'true',
     RECRUITMENT_HR_REQUIRED_ROLE: 'Recruitment.HR',

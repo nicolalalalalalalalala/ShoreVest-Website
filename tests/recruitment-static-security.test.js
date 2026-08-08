@@ -20,7 +20,7 @@ const applicationPages = ['careers/apply.html','careers/apply_cn.html'];
 const manifest = JSON.parse(read('assets/data/recruitment/roles.v1.json'));
 const publicConfig = JSON.parse(read('assets/data/recruitment/public-config.json'));
 
-assert.strictEqual(publicConfig.openRolesEnabled, false, 'open roles remain off until controlled frontend launch');
+assert.strictEqual(publicConfig.openRolesEnabled, false, 'open roles remain off on the backend deployment branch');
 assert.strictEqual(publicConfig.applicationsEnabled, false, 'backend source branch does not publish the application frontend');
 assert.strictEqual(publicConfig.turnstileSiteKey, '0x4AAAAAAEJh3KNuIlG3ZdgM', 'only the public Turnstile site key is present');
 assert.strictEqual(publicConfig.apiBase, 'https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment');
@@ -31,31 +31,26 @@ for (const role of manifest.roles) {
   assert.strictEqual(role.status, 'published', `${role.id} source content remains approved`);
   assert.strictEqual(role.contentReviewRequired, false, `${role.id} content review is cleared`);
   assert.strictEqual(role.contentReviewNote, '', `${role.id} note is cleared`);
-  if (role.id === 'legal-assistant') {
-    assert.strictEqual(role.application.enabled, true, 'backend accepts the single controlled Legal Assistant test role');
-    assert.strictEqual(role.application.privacyNoticeVersion, '2026-08-08-v1');
-  } else {
-    assert.strictEqual(role.application.enabled, false, `${role.id} remains closed for online applications`);
-    assert.strictEqual(role.application.privacyNoticeVersion, null);
-  }
+  assert.strictEqual(role.application.enabled, true, `${role.id} is approved for the secure online application API`);
+  assert.strictEqual(role.application.privacyNoticeVersion, '2026-08-08-v1', `${role.id} uses the approved privacy notice version`);
 }
-assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 1, 'exactly one controlled test role is enabled in the shared manifest');
+assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 2, 'both approved roles are enabled in the shared backend manifest');
 
 for (const f of rolePages) {
   const s = read(f);
-  assert.match(s, /noindex, nofollow, noarchive/, `${f} is excluded from search while roles are disabled`);
+  assert.match(s, /noindex, nofollow, noarchive/, `${f} is excluded from search while the backend branch frontend stays disabled`);
   assert.match(s, /<script[^>]+application\/ld\+json[^>]*>[\s\S]*JobPosting/i, `${f} preserves approved JobPosting source content`);
   assert.doesNotMatch(s, /baseSalary|salary|compensation|jobBenefits|validThrough|applicantLocationRequirements|TELECOMMUTE/i, `${f} does not invent employment terms`);
 }
 for (const f of disabledCleanRolePages) {
   const s = read(f);
   assert.match(s, /noindex, nofollow, noarchive/, `${f} disabled route is excluded from search`);
-  assert.match(s, /window\.location\.replace\("\/(?:cn\/)?careers\/#open-roles"\)/, `${f} redirects to the Careers no-vacancies state`);
+  assert.match(s, /window\.location\.replace\("\/(?:cn\/)?careers\/#open-roles"\)/, `${f} redirects to the Careers no-vacancies state on the backend branch`);
 }
 
 for (const f of applicationPages) {
   const s = read(f);
-  assert.match(s, /noindex, nofollow, noarchive/, `${f} is not indexed before frontend activation`);
+  assert.match(s, /noindex, nofollow, noarchive/, `${f} is not indexed before frontend activation on this branch`);
   assert.match(s, /data-application-form/, `${f} contains the staged application form`);
   assert.match(s, /type="file"/, `${f} contains one CV file input`);
   assert.match(s, /data-turnstile/, `${f} contains the Turnstile mount`);
@@ -85,9 +80,9 @@ assert.match(headers, /https:\/\/svrc26hkcvtest\.blob\.core\.windows\.net/, 'CSP
 assert.match(headers, /https:\/\/challenges\.cloudflare\.com/, 'CSP permits Turnstile');
 assert.doesNotMatch(headers, /https:\/\/\*\.azurewebsites\.net|https:\/\/\*\.blob\.core\.windows\.net/, 'CSP does not use broad Azure wildcards');
 
-assert.match(read('assets/js/site-config.js'), /careersOpenRolesEnabled: false/, 'legacy public careers flag remains disabled');
+assert.match(read('assets/js/site-config.js'), /careersOpenRolesEnabled: false/, 'legacy public careers flag remains disabled on the backend branch');
 for (const slug of ['distressed-debt-investment-manager','legal-assistant']) {
-  assert.doesNotMatch(read('sitemap.xml'), new RegExp(`https://shorevest\\.com/(?:cn/)?careers/${slug}/`), `${slug} clean routes remain absent from sitemap before activation`);
+  assert.doesNotMatch(read('sitemap.xml'), new RegExp(`https://shorevest\\.com/(?:cn/)?careers/${slug}/`), `${slug} clean routes remain absent from sitemap before frontend activation on this branch`);
 }
 for (const f of ['api/recruitment/applicationValidation.js','api/recruitment/fileSignatures.js','api/recruitment/handler.js','api/recruitment/core/flows.js']) {
   assert.doesNotMatch(read(f), /applicationStatement|status: active|applicationEnabled|role\.files/, `${f} does not preserve the obsolete upload-through-API contract`);

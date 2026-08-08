@@ -24,6 +24,8 @@ function captureEnvironment(patch = {}) {
     RECRUITMENT_BOT_VERIFICATION_ACTION: 'recruitment-application',
     RECRUITMENT_OUTBOX_DELIVERY_ENABLED: 'false',
     RECRUITMENT_CANDIDATE_ACK_ENABLED: 'false',
+    RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED: 'false',
+    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'false',
     RECRUITMENT_HR_ACCESS_ENABLED: 'false',
     RECRUITMENT_RETENTION_ENABLED: 'false',
     RECRUITMENT_RETENTION_DELETION_ENABLED: 'false',
@@ -37,10 +39,25 @@ test('capture-only mode allows the public API with delivery, HR and retention di
   assert.deepEqual(validateConfig(config), { ok: true, missing: [], invalid: [] });
 });
 
-test('capture-only mode fails closed if any downstream capability is enabled', () => {
+test('capture-only mode allows non-destructive candidate and Careers mailbox notifications', () => {
+  const config = loadConfig(captureEnvironment({
+    RECRUITMENT_OUTBOX_DELIVERY_ENABLED: 'true',
+    RECRUITMENT_SHAREPOINT_SITE_ID: 'site-id',
+    RECRUITMENT_APPLICATIONS_LIST_ID: 'applications-list',
+    RECRUITMENT_FILES_LIST_ID: 'files-list',
+    RECRUITMENT_CANDIDATE_ACK_ENABLED: 'true',
+    RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED: 'true',
+    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'careers@shorevest.com',
+    RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL: 'https://shorevest.com/privacy-policy/',
+    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'true',
+    RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: 'careers@shorevest.com'
+  }));
+  assert.equal(config.captureOnly, true);
+  assert.deepEqual(validateConfig(config), { ok: true, missing: [], invalid: [] });
+});
+
+test('capture-only mode still fails closed for HR access and retention or deletion', () => {
   for (const [setting, expected] of [
-    ['RECRUITMENT_OUTBOX_DELIVERY_ENABLED', 'outboxDelivery.enabled'],
-    ['RECRUITMENT_CANDIDATE_ACK_ENABLED', 'candidateAcknowledgement.enabled'],
     ['RECRUITMENT_HR_ACCESS_ENABLED', 'hrAccess.enabled'],
     ['RECRUITMENT_RETENTION_ENABLED', 'retention.enabled'],
     ['RECRUITMENT_RETENTION_DELETION_ENABLED', 'retention.deletionEnabled']

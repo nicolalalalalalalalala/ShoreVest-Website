@@ -193,7 +193,7 @@ jobs:
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - id: safety
-        name: Verify capture-only safety state
+        name: Verify capture safety state before deployment
         shell: bash
         run: |
           set -euo pipefail
@@ -203,22 +203,27 @@ jobs:
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
           [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]] || { echo 'Public capture API is not currently enabled.' >&2; exit 1; }
           [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]] || { echo 'Capture-only mode is not currently enabled.' >&2; exit 1; }
-          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+          for key in RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
             [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false." >&2; exit 1; }
           done
 
       - id: manifest
-        name: Verify single controlled application role
+        name: Verify approved online application roles
         shell: bash
         run: |
           set -euo pipefail
           node <<'NODE'
           const m = require('./assets/data/recruitment/roles.v1.json');
           const enabled = m.roles.filter(r => r.application && r.application.enabled === true);
-          if (enabled.length !== 1 || enabled[0].id !== 'legal-assistant' || enabled[0].application.privacyNoticeVersion !== '2026-08-08-v1') {
-            throw new Error('Controlled role manifest is not in the expected state');
+          const ids = enabled.map(r => r.id).sort();
+          const expected = ['distressed-debt-investment-manager', 'legal-assistant'];
+          if (JSON.stringify(ids) !== JSON.stringify(expected)) {
+            throw new Error(`Unexpected enabled application roles: ${ids.join(', ')}`);
           }
-          console.log('Legal Assistant is the only enabled online application role.');
+          if (enabled.some(r => r.application.privacyNoticeVersion !== '2026-08-08-v1')) {
+            throw new Error('An enabled role does not use the approved recruitment privacy version');
+          }
+          console.log('Both approved public roles accept the secure online application flow.');
           NODE
 
       - id: package
@@ -228,7 +233,7 @@ jobs:
           ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
 
       - id: deploy
-        name: Deploy Function package without changing runtime flags
+        name: Deploy Function package before changing notification flags
         shell: bash
         run: |
           set -euo pipefail
@@ -245,7 +250,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected=(initiateApplication completeUpload finalizeApplication health)
+          expected=(initiateApplication completeUpload finalizeApplication health outboxWorker)
           for attempt in $(seq 1 24); do
             names="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query '[].name' -o tsv 2>/dev/null | sed 's#^.*/##' || true)"
             missing=0
@@ -256,8 +261,39 @@ jobs:
           done
           exit 1
 
+      - id: activate_notifications
+        name: Enable candidate and Careers mailbox notifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          current_cutoff="$(jq -r '.[] | select(.name == "RECRUITMENT_OUTBOX_NOT_BEFORE_UTC") | .value' <<<"$settings" | head -n1)"
+          if [[ -z "$current_cutoff" || "$current_cutoff" == 'null' ]]; then
+            current_cutoff="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          fi
+          az functionapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$FUNCTION_APP" \
+            --settings \
+              RECRUITMENT_API_ENABLED=true \
+              RECRUITMENT_CAPTURE_ONLY_MODE=true \
+              RECRUITMENT_OUTBOX_DELIVERY_ENABLED=true \
+              RECRUITMENT_OUTBOX_NOT_BEFORE_UTC="$current_cutoff" \
+              RECRUITMENT_CANDIDATE_ACK_ENABLED=true \
+              RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED=true \
+              RECRUITMENT_CANDIDATE_ACK_MAILBOX=careers@shorevest.com \
+              RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL=https://shorevest.com/privacy-policy/ \
+              RECRUITMENT_TEAM_NOTIFICATION_ENABLED=true \
+              RECRUITMENT_TEAM_NOTIFICATION_MAILBOX=careers@shorevest.com \
+              RECRUITMENT_HR_ACCESS_ENABLED=false \
+              RECRUITMENT_RETENTION_ENABLED=false \
+              RECRUITMENT_RETENTION_DELETION_ENABLED=false \
+            --output none
+          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP"
+          echo "Notification activation cutoff: $current_cutoff"
+
       - id: health
-        name: Verify live capture-only health and safety
+        name: Verify live capture plus notification health and safety
         shell: bash
         run: |
           set -euo pipefail
@@ -272,16 +308,35 @@ jobs:
             sleep 10
           done
           if [[ "$healthy" != 'true' ]]; then
-            echo 'New package failed health. Disabling the public API as a fail-safe.' >&2
+            echo 'Notification-enabled runtime failed health. Reverting notification delivery while preserving capture.' >&2
             cat "$RUNNER_TEMP/health.json" >&2 || true
-            az functionapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --settings RECRUITMENT_API_ENABLED=false RECRUITMENT_CAPTURE_ONLY_MODE=false --output none || true
+            az functionapp config appsettings set \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$FUNCTION_APP" \
+              --settings \
+                RECRUITMENT_API_ENABLED=true \
+                RECRUITMENT_CAPTURE_ONLY_MODE=true \
+                RECRUITMENT_OUTBOX_DELIVERY_ENABLED=false \
+                RECRUITMENT_CANDIDATE_ACK_ENABLED=false \
+                RECRUITMENT_TEAM_NOTIFICATION_ENABLED=false \
+                RECRUITMENT_HR_ACCESS_ENABLED=false \
+                RECRUITMENT_RETENTION_ENABLED=false \
+                RECRUITMENT_RETENTION_DELETION_ENABLED=false \
+              --output none || true
+            az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" || true
             exit 1
           fi
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
           [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
           [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
-          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do [[ "$(value "$key")" == 'false' ]] || exit 1; done
+          [[ "$(value RECRUITMENT_OUTBOX_DELIVERY_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_CANDIDATE_ACK_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_TEAM_NOTIFICATION_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_HR_ACCESS_ENABLED)" == 'false' ]]
+          [[ "$(value RECRUITMENT_RETENTION_ENABLED)" == 'false' ]]
+          [[ "$(value RECRUITMENT_RETENTION_DELETION_ENABLED)" == 'false' ]]
           cp "$RUNNER_TEMP/health.json" recruitment-capture-live-health.json
 
       - name: Record Azure deployment result
@@ -295,6 +350,7 @@ jobs:
           OUT_PACKAGE: ${{ steps.package.outcome }}
           OUT_DEPLOY: ${{ steps.deploy.outcome }}
           OUT_INDEX: ${{ steps.index.outcome }}
+          OUT_ACTIVATE: ${{ steps.activate_notifications.outcome }}
           OUT_HEALTH: ${{ steps.health.outcome }}
         run: |
           set -euo pipefail
@@ -310,6 +366,7 @@ jobs:
               "package": "${OUT_PACKAGE}",
               "deploy": "${OUT_DEPLOY}",
               "index": "${OUT_INDEX}",
+              "activateNotifications": "${OUT_ACTIVATE}",
               "health": "${OUT_HEALTH}"
             }
           }
