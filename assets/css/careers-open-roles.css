@@ -110,3 +110,11 @@ html[lang="zh-CN"] body.careers-preview-page .careers-role-row__link {
     margin-top: 0;
   }
 }
+
+/* Public vacancies are temporarily withdrawn. Keep the underlying recruitment
+   implementation intact, but remove all openings UI from the Careers page. */
+body.careers-preview-page .careers-open-roles,
+body.careers-preview-page .careers-hero__actions a[href*="#open-roles"],
+body.careers-preview-page .careers-pagenav a[href*="#open-roles"] {
+  display: none !important;
+}
