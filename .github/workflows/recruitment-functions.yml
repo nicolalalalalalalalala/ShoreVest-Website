@@ -6,6 +6,7 @@ on:
       - agent/rebuild-recruitment-backend
     paths:
       - .github/workflows/recruitment-functions.yml
+      - services/recruitment-functions/HOTFIX_TRIGGER.txt
   workflow_dispatch:
 
 permissions:
