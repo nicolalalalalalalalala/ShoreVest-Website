@@ -21,7 +21,7 @@
   function backHref(locale){return locale==='zh-CN'?'../cn/careers/#open-roles':'../careers/#open-roles';}
   function updateLanguageLinks(doc, preview){ if(!preview)return; Array.prototype.forEach.call(doc.querySelectorAll ? doc.querySelectorAll('a.sv-lang, .sv-mobile-utils a[href$=".html"], link[rel="alternate"]') : [], function(a){ var href=a.getAttribute('href'); if(href && /careers\/.+\.html$|^[a-z0-9-]+(?:_cn)?\.html$/i.test(href) && href.indexOf('preview=1')===-1){ a.setAttribute('href', appendPreviewParam(href, true)); } }); }
   function renderStatusOnly(doc, hero, body, strings, locale, msg){hero.replaceChildren(el(doc,'p','careers-eyebrow',strings.eyebrow),el(doc,'h1','careers-title',strings.eyebrow)); var wrap=el(doc,'div','sv-shell careers-two-col'); wrap.appendChild(el(doc,'div')); var copy=el(doc,'div','careers-copy'+(locale==='zh-CN'?' careers-copy--cn':'')); copy.appendChild(el(doc,'p','careers-pending',msg)); var a=el(doc,'a','sv-textlink',strings.back); a.href=backHref(locale); copy.appendChild(a); wrap.appendChild(copy); body.replaceChildren(wrap);}
-  function applicationHref(role, locale){var base=locale==='zh-CN'?'/cn/careers/apply/':'/careers/apply/';return base+'?role='+encodeURIComponent(role.id)+'&source=website';}
+  function applicationHref(role, locale){var base=locale==='zh-CN'?'/careers/apply_cn.html':'/careers/apply.html';return base+'?role='+encodeURIComponent(role.id)+'&source=website';}
   function renderApplicationSection(doc, copy, role, strings, preview, publicConfig){
     if(role.status==='closed'){copy.appendChild(el(doc,'p','careers-pending',strings.closed));return;}
     if(role.status==='draft'&&preview){copy.appendChild(el(doc,'p','careers-pending',strings.applicationsNotOpen));return;}
