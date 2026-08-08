@@ -81,12 +81,12 @@
         "zh-CN": "长期招聘"
       },
       "datePosted": "2026-07-21",
-      "dateUpdated": "2026-07-21",
+      "dateUpdated": "2026-08-09",
       "displayOrder": 1,
       "application": {
-        "enabled": false,
+        "enabled": true,
         "deadlineUtc": null,
-        "privacyNoticeVersion": null,
+        "privacyNoticeVersion": "2026-08-08-v1",
         "allowedSources": [
           "website",
           "linkedin",
