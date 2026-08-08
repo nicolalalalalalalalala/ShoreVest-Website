@@ -1,0 +1,71 @@
+name: Temporary refresh recruitment notification tests
+on:
+  push:
+    branches: [agent/enable-recruitment-notifications]
+    paths:
+      - '.github/workflows/tmp-refresh-recruitment-notification-tests.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/enable-recruitment-notifications
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Update delivery fixtures
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          function replace(path, from, to) {
+            let s = fs.readFileSync(path, 'utf8');
+            if (!s.includes(from)) throw new Error(`Expected text not found in ${path}`);
+            s = s.replace(from, to);
+            fs.writeFileSync(path, s);
+          }
+
+          replace(
+            'services/recruitment-functions/test/http.test.js',
+            "    RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL: 'https://shorevest.com/privacy-policy/',\n    RECRUITMENT_HR_ACCESS_ENABLED: 'true',",
+            "    RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL: 'https://shorevest.com/privacy-policy/',\n    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'true',\n    RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: 'careers@shorevest.com',\n    RECRUITMENT_HR_ACCESS_ENABLED: 'true',"
+          );
+
+          replace(
+            'services/recruitment-functions/test/readiness.test.js',
+            "    candidateAcknowledgement: {\n      enabled: true,\n      templateApproved: true,\n      mailbox: 'recruitment@shorevest.com',\n      privacyNoticeUrl: 'https://shorevest.com/privacy-policy/'\n    },\n    hrAccess:",
+            "    candidateAcknowledgement: {\n      enabled: true,\n      templateApproved: true,\n      mailbox: 'recruitment@shorevest.com',\n      privacyNoticeUrl: 'https://shorevest.com/privacy-policy/'\n    },\n    teamNotification: {\n      enabled: true,\n      mailbox: 'careers@shorevest.com'\n    },\n    hrAccess:"
+          );
+
+          for (const path of [
+            'services/recruitment-functions/test/retentionDestructiveLease.test.js',
+            'services/recruitment-functions/test/retentionWorker.test.js'
+          ]) {
+            replace(
+              path,
+              "    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'hr@shorevest.com',\n    RECRUITMENT_PLATFORM_AUTH_ENABLED: 'true',",
+              "    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'hr@shorevest.com',\n    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'true',\n    RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: 'careers@shorevest.com',\n    RECRUITMENT_PLATFORM_AUTH_ENABLED: 'true',"
+            );
+          }
+
+          replace(
+            'services/recruitment-functions/test/dispatcher.test.js',
+            "    candidateAcknowledgement: {\n      enabled: true,\n      templateApproved: true,\n      mailbox: 'hr@shorevest.com',\n      privacyNoticeUrl: 'https://shorevest.com/privacy-policy/'\n    }\n  };",
+            "    candidateAcknowledgement: {\n      enabled: true,\n      templateApproved: true,\n      mailbox: 'hr@shorevest.com',\n      privacyNoticeUrl: 'https://shorevest.com/privacy-policy/'\n    },\n    teamNotification: {\n      enabled: true,\n      mailbox: 'careers@shorevest.com'\n    }\n  };"
+          );
+          replace(
+            'services/recruitment-functions/test/dispatcher.test.js',
+            "  assert.equal(result.deliveryReference, 'application:1|file:2|file:3');",
+            "  assert.equal(result.deliveryReference, 'application:1|file:2|file:3|team-mail:draft-1');"
+          );
+          NODE
+      - name: Remove temporary workflow and commit
+        run: |
+          rm .github/workflows/tmp-refresh-recruitment-notification-tests.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add services/recruitment-functions/test .github/workflows/tmp-refresh-recruitment-notification-tests.yml
+          git commit -m 'Align Function tests with recruitment notifications'
+          git push origin HEAD:agent/enable-recruitment-notifications
