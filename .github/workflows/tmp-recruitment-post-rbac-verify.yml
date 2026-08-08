@@ -1,0 +1,110 @@
+name: Temporary Recruitment Post-RBAC Verify
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tmp-recruitment-post-rbac-verify.yml'
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+  AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+  AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+  AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+  FUNCTION_APP: svrc26hk-recruit-fn-test
+  KEY_VAULT: svrc26hk-recruit-kv-test
+  MANAGED_IDENTITY: svrc26hk-recruit-mi-test
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: recruitment-test
+    steps:
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify RBAC and safety flags
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRINCIPAL_ID="$(az identity show --resource-group "$AZURE_RESOURCE_GROUP" --name "$MANAGED_IDENTITY" --query principalId -o tsv)"
+          VAULT_ID="$(az keyvault show --name "$KEY_VAULT" --query id -o tsv)"
+          roles="$(az role assignment list --assignee-object-id "$PRINCIPAL_ID" --scope "$VAULT_ID" --include-inherited -o json)"
+          echo "$roles" | jq '[.[] | {role: .roleDefinitionName, scope: .scope}]'
+          echo "$roles" | jq -e 'any(.[]; .roleDefinitionName == "Key Vault Secrets User")' >/dev/null
+
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
+          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            [[ "$(value "$key")" == 'false' ]]
+          done
+
+      - name: Restart Function App
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
+
+      - name: Wait for healthy recruitment dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://${FUNCTION_APP}.azurewebsites.net/api/recruitment"
+          healthy=false
+          for attempt in $(seq 1 36); do
+            code="$(curl -sS -o /tmp/health.json -w '%{http_code}' "$BASE/health" || true)"
+            body="$(cat /tmp/health.json 2>/dev/null || true)"
+            echo "Health $attempt: HTTP $code $body"
+            if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready" and .components.secrets == "ready" and .components.storage == "ready" and .components.cosmos == "ready"' /tmp/health.json >/dev/null 2>&1; then
+              healthy=true
+              break
+            fi
+            sleep 10
+          done
+          [[ "$healthy" == 'true' ]] || exit 30
+
+      - name: Verify browser CORS and safe API response
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://${FUNCTION_APP}.azurewebsites.net/api/recruitment"
+          for ORIGIN in 'https://shorevest.com' 'https://www.shorevest.com'; do
+            curl -sS -X OPTIONS -D /tmp/options.headers -o /tmp/options.body \
+              -H "Origin: $ORIGIN" \
+              -H 'Access-Control-Request-Method: POST' \
+              -H 'Access-Control-Request-Headers: content-type' \
+              "$BASE/applications/initiate"
+            grep -qi "^access-control-allow-origin: $ORIGIN" /tmp/options.headers
+            grep -qi '^access-control-allow-methods:.*POST' /tmp/options.headers
+          done
+
+          status="$(curl -sS -o /tmp/post.body -D /tmp/post.headers -w '%{http_code}' \
+            -X POST \
+            -H 'Origin: https://shorevest.com' \
+            -H 'Content-Type: application/json' \
+            --data '{}' \
+            "$BASE/applications/initiate" || true)"
+          echo "Invalid POST returned HTTP $status"
+          cat /tmp/post.body
+          grep -qi '^access-control-allow-origin: https://shorevest.com' /tmp/post.headers
+          [[ "$status" != '500' && "$status" != '503' && "$status" != '000' ]]
+
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
+          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
+            [[ "$(value "$key")" == 'false' ]]
+          done
+          echo 'Recruitment backend is healthy, CORS-valid, and still capture-only.'
