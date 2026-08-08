@@ -1,0 +1,105 @@
+name: Repair recruitment Mail.Send permission
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/grant-recruitment-mail-send.yml
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    environment: recruitment-test
+    env:
+      AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+      AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+      AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+      AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+      FUNCTION_APP: svrc26hk-recruit-fn-test
+      GRAPH_APP_ID: 00000003-0000-0000-c000-000000000000
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/rebuild-recruitment-backend
+          fetch-depth: 0
+
+      - name: Sign in to Azure
+        id: login
+        continue-on-error: true
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Grant Mail.Send to recruitment managed identity
+        id: grant
+        if: steps.login.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -u
+          status=unknown
+          detail=''
+          function_principal="$(az functionapp identity show --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query principalId -o tsv 2>/tmp/function-identity.err || true)"
+          if [[ -z "$function_principal" ]]; then
+            status=failed
+            detail="Unable to resolve Function managed identity: $(tr '\n' ' ' </tmp/function-identity.err | head -c 500)"
+          else
+            graph_json="$(az ad sp show --id "$GRAPH_APP_ID" -o json 2>/tmp/graph-sp.err || true)"
+            graph_sp="$(jq -r '.id // empty' <<<"$graph_json" 2>/dev/null || true)"
+            mail_send_role="$(jq -r '[.appRoles[]? | select(.value == "Mail.Send" and (.allowedMemberTypes | index("Application")))] | .[0].id // empty' <<<"$graph_json" 2>/dev/null || true)"
+            if [[ -z "$graph_sp" || -z "$mail_send_role" ]]; then
+              status=failed
+              detail="Unable to resolve Microsoft Graph service principal or Mail.Send app role: $(tr '\n' ' ' </tmp/graph-sp.err | head -c 500)"
+            else
+              existing="$(az rest --method GET --uri "https://graph.microsoft.com/v1.0/servicePrincipals/${function_principal}/appRoleAssignments" 2>/tmp/list-assignments.err || true)"
+              already="$(jq -r --arg resource "$graph_sp" --arg role "$mail_send_role" '[.value[]? | select(.resourceId == $resource and .appRoleId == $role)] | length' <<<"$existing" 2>/dev/null || echo 0)"
+              if [[ "$already" =~ ^[1-9] ]]; then
+                status=already_present
+                detail='Microsoft Graph Mail.Send application role was already assigned to the Function managed identity.'
+              else
+                body="$(jq -cn --arg p "$function_principal" --arg r "$graph_sp" --arg a "$mail_send_role" '{principalId:$p,resourceId:$r,appRoleId:$a}')"
+                code="$(az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/${function_principal}/appRoleAssignments" --headers Content-Type=application/json --body "$body" --only-show-errors >/tmp/grant.out 2>/tmp/grant.err; echo $?)"
+                if [[ "$code" == '0' ]]; then
+                  status=granted
+                  detail='Microsoft Graph Mail.Send application role assigned to the Function managed identity.'
+                  az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none || true
+                else
+                  status=failed
+                  detail="Directory rejected Mail.Send assignment: $(tr '\n' ' ' </tmp/grant.err | head -c 900)"
+                fi
+              fi
+            fi
+          fi
+          jq -n \
+            --arg status "$status" \
+            --arg detail "$detail" \
+            --arg recordedAtUtc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{status:$status,detail:$detail,recordedAtUtc:$recordedAtUtc}' \
+            > recruitment-mail-send-permission-status.json
+
+      - name: Record repair result and remove one-shot workflow
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f recruitment-mail-send-permission-status.json ]]; then
+            jq -n \
+              --arg status 'failed' \
+              --arg detail 'Azure login failed before the permission check could run.' \
+              --arg recordedAtUtc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              '{status:$status,detail:$detail,recordedAtUtc:$recordedAtUtc}' \
+              > recruitment-mail-send-permission-status.json
+          fi
+          rm -f .github/workflows/grant-recruitment-mail-send.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Record recruitment Mail.Send permission repair' || exit 0
+          git push origin HEAD:agent/rebuild-recruitment-backend
