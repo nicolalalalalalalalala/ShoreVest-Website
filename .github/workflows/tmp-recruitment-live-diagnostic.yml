@@ -1,4 +1,4 @@
-name: Temporary Recruitment Live Repair
+name: Temporary Recruitment Live Diagnostic
 
 on:
   pull_request:
@@ -11,10 +11,6 @@ permissions:
   id-token: write
   contents: read
 
-concurrency:
-  group: recruitment-live-repair
-  cancel-in-progress: false
-
 env:
   AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
   AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
@@ -25,9 +21,9 @@ env:
   MANAGED_IDENTITY: svrc26hk-recruit-mi-test
 
 jobs:
-  repair:
+  diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     environment: recruitment-test
     steps:
       - name: Sign in to Azure
@@ -37,115 +33,42 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify safety flags
-        shell: bash
-        run: |
-          set -euo pipefail
-          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
-          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
-          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
-          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
-          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
-            [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false"; exit 1; }
-          done
-          echo 'Capture-only safety flags confirmed.'
-
-      - name: Repair Function App CORS
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo 'Current CORS:'
-          az functionapp cors show --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json || true
-          az functionapp cors add \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$FUNCTION_APP" \
-            --allowed-origins 'https://shorevest.com' 'https://www.shorevest.com' \
-            --output none
-          echo 'Updated CORS:'
-          az functionapp cors show --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json
-
-      - name: Ensure Function identity can read recruitment secrets
+      - name: Inspect live state
         shell: bash
         run: |
           set -euo pipefail
           PRINCIPAL_ID="$(az identity show --resource-group "$AZURE_RESOURCE_GROUP" --name "$MANAGED_IDENTITY" --query principalId -o tsv)"
           CLIENT_ID="$(az identity show --resource-group "$AZURE_RESOURCE_GROUP" --name "$MANAGED_IDENTITY" --query clientId -o tsv)"
           VAULT_ID="$(az keyvault show --name "$KEY_VAULT" --query id -o tsv)"
-          RBAC="$(az keyvault show --name "$KEY_VAULT" --query properties.enableRbacAuthorization -o tsv)"
-          echo "Managed identity client ID: $CLIENT_ID"
-          echo "Key Vault RBAC mode: $RBAC"
-
+          echo '=== CORS ==='
+          az functionapp cors show --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json
+          echo '=== MANAGED IDENTITY ==='
+          echo "clientId=$CLIENT_ID"
+          echo "principalId=$PRINCIPAL_ID"
+          echo '=== KEY VAULT MODE ==='
+          az keyvault show --name "$KEY_VAULT" --query '{rbac:properties.enableRbacAuthorization,publicNetworkAccess:properties.publicNetworkAccess}' -o json
+          echo '=== MANAGED IDENTITY ROLES AT VAULT SCOPE ==='
+          az role assignment list --assignee-object-id "$PRINCIPAL_ID" --scope "$VAULT_ID" --include-inherited --query '[].{role:roleDefinitionName,scope:scope}' -o json
+          echo '=== SECRET SETTING NAMES ==='
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
-          configured_client="$(jq -r '.[] | select(.name=="RECRUITMENT_MANAGED_IDENTITY_CLIENT_ID") | .value' <<<"$settings")"
-          [[ "$configured_client" == "$CLIENT_ID" ]] || { echo 'Function App is not configured for the expected recruitment managed identity.'; exit 1; }
-
-          if [[ "${RBAC,,}" == 'true' ]]; then
-            existing="$(az role assignment list --assignee-object-id "$PRINCIPAL_ID" --scope "$VAULT_ID" --include-inherited --query "[?roleDefinitionName=='Key Vault Secrets User'] | length(@)" -o tsv)"
-            if [[ "$existing" == '0' ]]; then
-              az role assignment create \
-                --assignee-object-id "$PRINCIPAL_ID" \
-                --assignee-principal-type ServicePrincipal \
-                --role 'Key Vault Secrets User' \
-                --scope "$VAULT_ID" \
-                --output none
-              echo 'Added Key Vault Secrets User to recruitment managed identity.'
-            else
-              echo 'Key Vault Secrets User already present.'
-            fi
-          else
-            az keyvault set-policy \
-              --name "$KEY_VAULT" \
-              --object-id "$PRINCIPAL_ID" \
-              --secret-permissions get list \
-              --output none
-            echo 'Ensured Key Vault get/list access policy.'
-          fi
-
           for setting in RECRUITMENT_COMPLETION_TOKEN_SECRET_NAME RECRUITMENT_FINGERPRINT_SECRET_NAME RECRUITMENT_BOT_VERIFICATION_SECRET_NAME; do
             name="$(jq -r --arg key "$setting" '.[] | select(.name==$key) | .value' <<<"$settings")"
-            [[ -n "$name" && "$name" != 'null' ]] || { echo "$setting is missing"; exit 1; }
             echo "$setting=$name"
           done
-
-      - name: Restart Function App and wait for healthy dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
+          echo '=== HEALTH ==='
           BASE="https://${FUNCTION_APP}.azurewebsites.net/api/recruitment"
-          healthy=false
-          for attempt in $(seq 1 30); do
-            code="$(curl -sS -o /tmp/health.json -w '%{http_code}' "$BASE/health" || true)"
-            echo "Health $attempt: HTTP $code $(cat /tmp/health.json 2>/dev/null || true)"
-            if [[ "$code" == '200' ]] && jq -e '.ok == true and .dependencies == "ready"' /tmp/health.json >/dev/null 2>&1; then
-              healthy=true
-              break
-            fi
-            sleep 10
-          done
-          [[ "$healthy" == 'true' ]] || { echo 'Recruitment dependencies are still unhealthy.'; exit 30; }
-
-      - name: Verify browser preflight and fail-closed controls
-        shell: bash
-        run: |
-          set -euo pipefail
-          BASE="https://${FUNCTION_APP}.azurewebsites.net/api/recruitment"
-          for ORIGIN in 'https://shorevest.com' 'https://www.shorevest.com'; do
-            curl -sS -X OPTIONS -D /tmp/options.headers -o /tmp/options.body \
-              -H "Origin: $ORIGIN" \
-              -H 'Access-Control-Request-Method: POST' \
-              -H 'Access-Control-Request-Headers: content-type' \
-              "$BASE/applications/initiate"
-            echo "Preflight for $ORIGIN"
-            sed -n '1,40p' /tmp/options.headers
-            grep -qi "^access-control-allow-origin: $ORIGIN" /tmp/options.headers
-            grep -qi '^access-control-allow-methods:.*POST' /tmp/options.headers
-          done
-
-          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
-          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
-          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
-          for key in RECRUITMENT_OUTBOX_DELIVERY_ENABLED RECRUITMENT_CANDIDATE_ACK_ENABLED RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
-            [[ "$(value "$key")" == 'false' ]]
-          done
-          echo 'Live recruitment API is healthy, browser CORS is valid, and capture-only controls remain intact.'
+          code="$(curl -sS -o /tmp/health.json -w '%{http_code}' "$BASE/health" || true)"
+          echo "HTTP $code"
+          cat /tmp/health.json
+          echo
+          echo '=== PREFLIGHT ==='
+          curl -sS -X OPTIONS -D /tmp/options.headers -o /tmp/options.body \
+            -H 'Origin: https://shorevest.com' \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: content-type' \
+            "$BASE/applications/initiate"
+          sed -n '1,40p' /tmp/options.headers
+          cat /tmp/options.body || true
+          echo
+          grep -qi '^access-control-allow-origin: https://shorevest.com' /tmp/options.headers
+          echo 'Preflight CORS is now valid for shorevest.com.'
