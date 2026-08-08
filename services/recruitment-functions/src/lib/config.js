@@ -30,6 +30,8 @@ function loadConfig(env = process.env) {
     cleanContainer: env.RECRUITMENT_CLEAN_CONTAINER || 'recruitment-clean',
     uploadStorageAccountName: env.RECRUITMENT_UPLOAD_STORAGE_ACCOUNT_NAME,
     botVerificationMode: env.RECRUITMENT_BOT_VERIFICATION_MODE || '',
+    notificationMailbox: env.RECRUITMENT_NOTIFICATION_MAILBOX || 'careers@shorevest.com',
+    notificationsEnabled: env.RECRUITMENT_NOTIFICATIONS_ENABLED == null ? true : bool(env.RECRUITMENT_NOTIFICATIONS_ENABLED),
     rateLimit: {
       enabled: bool(env.RECRUITMENT_RATE_LIMIT_ENABLED),
       allowDisabled: !production || bool(env.RECRUITMENT_RATE_LIMIT_ALLOW_DISABLED),
@@ -48,7 +50,8 @@ function validateConfig(config) {
     'keyVaultUrl',
     'completionTokenSecretName',
     'fingerprintSecretName',
-    'rateLimitSecretName'
+    'rateLimitSecretName',
+    'notificationMailbox'
   ]) {
     if (!config[key]) missing.push(key);
   }
