@@ -1,7 +1,7 @@
 {
   "status": "success",
-  "sourceCommit": "6ab230639de41f373b70a3acb67328aaf00f77fd",
-  "recordedAtUtc": "2026-08-08T18:47:47Z",
+  "sourceCommit": "95acf3940ddd2f404ee0e3bbc377adba1725a3a2",
+  "recordedAtUtc": "2026-08-08T19:26:23Z",
   "steps": {
     "azureLogin": "success",
     "safety": "success",
