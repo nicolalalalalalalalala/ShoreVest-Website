@@ -13,6 +13,7 @@ const { loadManifest } = require('./lib/manifest');
 const { createCosmosAdapters } = require('./adapters/cosmos');
 const { createBlobAdapter } = require('./adapters/blob');
 const { createSecretProvider, createTokenAdapter, createFingerprintAdapter } = require('./adapters/secrets');
+const { createMailer } = require('./lib/mailer');
 
 function randomHex(bytes) {
   return crypto.randomBytes(bytes).toString('hex').toUpperCase();
@@ -69,6 +70,11 @@ function createDeps(cfg = loadConfig(), context) {
     ...cosmos,
     storage,
     sas: storage,
+    mailer: createMailer({
+      credential,
+      mailbox: cfg.notificationMailbox,
+      enabled: cfg.notificationsEnabled
+    }),
     tokens: createTokenAdapter(secrets, cfg.completionTokenSecretName),
     fingerprints: createFingerprintAdapter(secrets, cfg.fingerprintSecretName),
     now: async () => new Date(),
