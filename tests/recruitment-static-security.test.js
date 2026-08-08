@@ -2,7 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
-// Controlled launch: one online application role is allowed while the public Open Roles listing stays hidden.
+// Public launch: approved role pages are visible, while online application access remains controlled per role.
 function read(f){return fs.readFileSync(path.join(root,f),'utf8');}
 
 const rolePages = [
@@ -11,18 +11,12 @@ const rolePages = [
   'careers/legal-assistant.html',
   'careers/legal-assistant_cn.html'
 ];
-const disabledCleanRolePages = [
-  'careers/distressed-debt-investment-manager/index.html',
-  'cn/careers/distressed-debt-investment-manager/index.html',
-  'careers/legal-assistant/index.html',
-  'cn/careers/legal-assistant/index.html'
-];
 const applicationPages = ['careers/apply.html','careers/apply_cn.html'];
 const manifest = JSON.parse(read('assets/data/recruitment/roles.v1.json'));
 const publicConfig = JSON.parse(read('assets/data/recruitment/public-config.json'));
 
-assert.strictEqual(publicConfig.openRolesEnabled, false, 'open roles remain hidden during the controlled test');
-assert.strictEqual(publicConfig.applicationsEnabled, true, 'the dedicated application page is enabled for the controlled test');
+assert.strictEqual(publicConfig.openRolesEnabled, true, 'approved Open Roles are publicly visible');
+assert.strictEqual(publicConfig.applicationsEnabled, true, 'the dedicated application page is enabled');
 assert.strictEqual(publicConfig.turnstileSiteKey, '0x4AAAAAAEJh3KNuIlG3ZdgM', 'only the public Turnstile site key is published');
 assert.strictEqual(publicConfig.apiBase, 'https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment');
 assert.strictEqual(publicConfig.turnstileAction, 'recruitment-application');
@@ -33,31 +27,25 @@ for (const role of manifest.roles) {
   assert.strictEqual(role.contentReviewRequired, false, `${role.id} content review is cleared`);
   assert.strictEqual(role.contentReviewNote, '', `${role.id} note is cleared`);
   if (role.id === 'legal-assistant') {
-    assert.strictEqual(role.application.enabled, true, 'Legal Assistant is the only controlled online-application test role');
+    assert.strictEqual(role.application.enabled, true, 'Legal Assistant accepts online applications');
     assert.strictEqual(role.application.privacyNoticeVersion, '2026-08-08-v1', 'Legal Assistant uses the approved privacy version');
   } else {
     assert.strictEqual(role.application.enabled, false, `${role.id} remains closed for online applications`);
     assert.strictEqual(role.application.privacyNoticeVersion, null, `${role.id} has no active privacy version`);
   }
 }
-assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 1, 'exactly one role accepts online applications during the controlled test');
+assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 1, 'exactly one role accepts online applications');
 
 for (const f of rolePages) {
   const s = read(f);
-  assert.match(s, /noindex, nofollow, noarchive/, `${f} is excluded from search while Open Roles is hidden`);
   assert.match(s, /<script[^>]+application\/ld\+json[^>]*>[\s\S]*JobPosting/i, `${f} preserves approved JobPosting source content`);
   assert.doesNotMatch(s, /<form\b|type=["']file["']/i, `${f} does not embed the application form`);
   assert.doesNotMatch(s, /baseSalary|salary|compensation|jobBenefits|validThrough|applicantLocationRequirements|TELECOMMUTE/i, `${f} does not invent employment terms`);
 }
-for (const f of disabledCleanRolePages) {
-  const s = read(f);
-  assert.match(s, /noindex, nofollow, noarchive/, `${f} disabled route is excluded from search`);
-  assert.match(s, /window\.location\.replace\("\/(?:cn\/)?careers\/#open-roles"\)/, `${f} redirects to the Careers no-vacancies state`);
-}
 
 for (const f of applicationPages) {
   const s = read(f);
-  assert.match(s, /noindex, nofollow, noarchive/, `${f} is not indexed during the controlled test`);
+  assert.match(s, /noindex, nofollow, noarchive/, `${f} remains excluded from search indexing`);
   assert.match(s, /data-application-form/, `${f} contains the application form`);
   assert.match(s, /type="file"/, `${f} contains one CV file input`);
   assert.match(s, /data-turnstile/, `${f} contains the Turnstile mount`);
@@ -65,6 +53,9 @@ for (const f of applicationPages) {
   assert.doesNotMatch(s, /mailto:|hr@shorevest\.com/i, `${f} does not send applications by email`);
   assert.doesNotMatch(s, /data-recruitment-mock|fake success|localStorage|sessionStorage|indexedDB/i, `${f} does not contain a production mock or browser persistence`);
 }
+
+assert.strictEqual(fs.existsSync(path.join(root, 'careers/application-test-20260808.html')), false, 'temporary application test page is removed');
+assert.strictEqual(fs.existsSync(path.join(root, 'assets/js/recruitment-test-diagnostic.js')), false, 'temporary recruitment diagnostic client is removed');
 
 const appClient = read('assets/js/recruitment-application.js');
 for (const route of ['/applications/initiate','/applications/complete','/applications/finalize']) {
@@ -87,10 +78,7 @@ assert.match(headers, /https:\/\/svrc26hkcvtest\.blob\.core\.windows\.net/, 'CSP
 assert.match(headers, /https:\/\/challenges\.cloudflare\.com/, 'CSP permits Turnstile');
 assert.doesNotMatch(headers, /https:\/\/\*\.azurewebsites\.net|https:\/\/\*\.blob\.core\.windows\.net/, 'CSP does not use broad Azure wildcards');
 
-assert.match(read('assets/js/site-config.js'), /careersOpenRolesEnabled: false/, 'legacy public Careers listing flag remains disabled');
-for (const slug of ['distressed-debt-investment-manager','legal-assistant']) {
-  assert.doesNotMatch(read('sitemap.xml'), new RegExp(`https://shorevest\\.com/(?:cn/)?careers/${slug}/`), `${slug} clean routes remain absent from sitemap during the controlled test`);
-}
+assert.match(read('assets/js/site-config.js'), /careersOpenRolesEnabled: true/, 'legacy public Careers route flag is aligned with the launch state');
 for (const f of ['api/recruitment/applicationValidation.js','api/recruitment/fileSignatures.js','api/recruitment/handler.js','api/recruitment/core/flows.js']) {
   assert.doesNotMatch(read(f), /applicationStatement|status: active|applicationEnabled|role\.files/, `${f} does not preserve the obsolete upload-through-API contract`);
 }
