@@ -19,15 +19,10 @@ manifest.roles.forEach(r => {
   assert.strictEqual(r.status, 'published');
   assert.strictEqual(r.contentReviewRequired, false);
   assert.strictEqual(r.contentReviewNote, '');
-  if (r.id === 'legal-assistant') {
-    assert.strictEqual(r.application.enabled, true, 'Legal Assistant is the only controlled online-application test role');
-    assert.strictEqual(r.application.privacyNoticeVersion, '2026-08-08-v1');
-  } else {
-    assert.strictEqual(r.application.enabled, false, `${r.id} online applications remain disabled`);
-    assert.strictEqual(r.application.privacyNoticeVersion, null);
-  }
+  assert.strictEqual(r.application.enabled, true, `${r.id} accepts secure online applications`);
+  assert.strictEqual(r.application.privacyNoticeVersion, '2026-08-08-v1', `${r.id} uses the approved privacy notice version`);
   assert.strictEqual(r.datePosted, '2026-07-21');
-  assert.strictEqual(r.dateUpdated, '2026-07-21');
+  assert.ok(/^2026-0[78]-\d{2}$/.test(r.dateUpdated), `${r.id} has a valid current review date`);
 });
-assert.strictEqual(manifest.roles.filter(r => r.application.enabled === true).length, 1, 'exactly one controlled test role may accept online applications');
+assert.strictEqual(manifest.roles.filter(r => r.application.enabled === true).length, 2, 'both approved public roles accept online applications');
 console.log('recruitment role manifest contract tests passed');

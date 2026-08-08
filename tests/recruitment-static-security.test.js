@@ -2,7 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
-// Public launch: approved role pages are visible, while online application access remains controlled per role.
+// Public launch: approved role pages are visible and both approved roles use the secure online application flow.
 function read(f){return fs.readFileSync(path.join(root,f),'utf8');}
 
 const rolePages = [
@@ -26,15 +26,10 @@ for (const role of manifest.roles) {
   assert.strictEqual(role.status, 'published', `${role.id} source content remains approved`);
   assert.strictEqual(role.contentReviewRequired, false, `${role.id} content review is cleared`);
   assert.strictEqual(role.contentReviewNote, '', `${role.id} note is cleared`);
-  if (role.id === 'legal-assistant') {
-    assert.strictEqual(role.application.enabled, true, 'Legal Assistant accepts online applications');
-    assert.strictEqual(role.application.privacyNoticeVersion, '2026-08-08-v1', 'Legal Assistant uses the approved privacy version');
-  } else {
-    assert.strictEqual(role.application.enabled, false, `${role.id} remains closed for online applications`);
-    assert.strictEqual(role.application.privacyNoticeVersion, null, `${role.id} has no active privacy version`);
-  }
+  assert.strictEqual(role.application.enabled, true, `${role.id} accepts online applications`);
+  assert.strictEqual(role.application.privacyNoticeVersion, '2026-08-08-v1', `${role.id} uses the approved privacy version`);
 }
-assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 1, 'exactly one role accepts online applications');
+assert.strictEqual(manifest.roles.filter(role => role.application.enabled === true).length, 2, 'both approved roles accept online applications');
 
 for (const f of rolePages) {
   const s = read(f);
