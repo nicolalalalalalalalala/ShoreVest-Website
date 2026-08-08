@@ -1,9 +1,9 @@
 name: Temporary Polish Recruitment Copy US
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/polish-recruitment-copy-us
+      - main
     paths:
       - '.github/workflows/tmp-polish-recruitment-copy-us.yml'
 
