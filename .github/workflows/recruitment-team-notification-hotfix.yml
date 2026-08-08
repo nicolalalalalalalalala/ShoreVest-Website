@@ -168,3 +168,5 @@ jobs:
           done
           cat "$RUNNER_TEMP/health.json" >&2 || true
           exit 1
+
+# second push intentionally retriggers this workflow after it exists on the branch
