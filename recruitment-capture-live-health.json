@@ -1,7 +1,1 @@
-{
-  "diagnosticType": "azure-function-deployment-log",
-  "capturedAtUtc": "2026-08-08T20:42:31.9433124Z",
-  "sourceCommit": "1c6f166cc109f22e204695c1d6be0aa9b094e3b2",
-  "commandExitCode": 1,
-  "deploymentLog": "ERROR: Failed to connect to 'https://svrc26hk-recruit-fn-test.scm.azurewebsites.net/api/deployments/' with status code '502' and reason 'Bad Gateway'"
-}
+{"ok":true,"runtime":"active","configuration":"valid","dependencies":"ready","components":{"storage":"ready","cosmos":"ready","secrets":"ready","graph":"ready"}}
