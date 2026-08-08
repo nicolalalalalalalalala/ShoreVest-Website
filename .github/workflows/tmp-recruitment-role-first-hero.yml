@@ -1,0 +1,92 @@
+name: Temporary Recruitment Role First Hero
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tmp-recruitment-role-first-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/recruitment-role-first-hero
+          fetch-depth: 0
+
+      - name: Make job role the primary application heading
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          en_pages = [
+              Path('careers/apply.html'),
+              Path('careers/apply/index.html'),
+              Path('careers/application-test-20260808.html'),
+          ]
+          zh_pages = [
+              Path('careers/apply_cn.html'),
+              Path('cn/careers/apply/index.html'),
+          ]
+
+          old_en = '<p class="careers-eyebrow">Careers</p><h1 class="careers-title">Apply to ShoreVest</h1><p class="careers-hero__meta" data-application-role-title>Application</p><p class="careers-application__role-meta" data-application-role-meta></p>'
+          new_en = '<p class="careers-eyebrow">Careers · Application</p><h1 class="careers-title careers-application__role-title" data-application-role-title>Application</h1><p class="careers-application__kicker">Apply to ShoreVest</p><p class="careers-application__role-meta" data-application-role-meta></p>'
+          old_zh = '<p class="careers-eyebrow">人才招聘</p><h1 class="careers-title">申请该职位</h1><p class="careers-hero__meta" data-application-role-title>职位申请</p><p class="careers-application__role-meta" data-application-role-meta></p>'
+          new_zh = '<p class="careers-eyebrow">人才招聘 · 职位申请</p><h1 class="careers-title careers-application__role-title" data-application-role-title>职位申请</h1><p class="careers-application__kicker">申请加入 ShoreVest</p><p class="careers-application__role-meta" data-application-role-meta></p>'
+
+          for p in en_pages:
+              s = p.read_text()
+              if old_en not in s:
+                  raise SystemExit(f'English hero not found in {p}')
+              s = s.replace(old_en, new_en, 1)
+              s = s.replace('recruitment-application.css?v=20260808-capture-only', 'recruitment-application.css?v=20260808-role-first')
+              p.write_text(s)
+
+          for p in zh_pages:
+              s = p.read_text()
+              if old_zh not in s:
+                  raise SystemExit(f'Chinese hero not found in {p}')
+              s = s.replace(old_zh, new_zh, 1)
+              s = s.replace('recruitment-application.css?v=20260808-capture-only', 'recruitment-application.css?v=20260808-role-first')
+              p.write_text(s)
+
+          css = Path('assets/css/recruitment-application.css')
+          s = css.read_text()
+          old = 'body.careers-application-page .careers-application__intro { max-width: 62ch; }\nbody.careers-application-page .careers-application__role-meta { margin-top: 8px; font: 400 15px/1.6 var(--sv-font); color: var(--sv-qing-light, #7AAFAF); }'
+          new = '''body.careers-application-page .careers-application__intro { max-width: 62ch; }\nbody.careers-application-page .careers-application__role-title { max-width: 18ch; }\nbody.careers-application-page .careers-application__kicker { margin: 16px 0 0; font: 600 12px/1.3 var(--sv-font); letter-spacing: .09em; text-transform: uppercase; color: rgba(252,249,241,.72); }\nbody.careers-application-page .careers-application__role-meta { margin-top: 12px; font: 400 clamp(15px,1.5vw,18px)/1.55 var(--sv-font); color: var(--sv-qing-light, #7AAFAF); }'''
+          if old not in s:
+              raise SystemExit('Expected application CSS block not found')
+          css.write_text(s.replace(old, new, 1))
+          PY
+
+      - name: Validate Careers application changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          npm run validate:recruitment
+          npm run check:recruitment
+          npm run check:security
+          grep -q '<h1 class="careers-title careers-application__role-title" data-application-role-title>' careers/application-test-20260808.html
+          grep -q 'class="careers-application__kicker">Apply to ShoreVest' careers/application-test-20260808.html
+          grep -q 'class="careers-application__kicker">申请加入 ShoreVest' cn/careers/apply/index.html
+          git diff --check
+
+      - name: Commit role-first hero and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/tmp-recruitment-role-first-hero.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add careers/apply.html careers/apply/index.html careers/application-test-20260808.html careers/apply_cn.html cn/careers/apply/index.html assets/css/recruitment-application.css
+          git diff --cached --check
+          git commit -m "Make job role primary on application page"
+          git push origin HEAD:agent/recruitment-role-first-hero
