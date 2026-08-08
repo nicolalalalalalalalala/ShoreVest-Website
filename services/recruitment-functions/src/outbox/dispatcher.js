@@ -33,6 +33,39 @@ function boundedText(value, maximum) {
   return text.length <= maximum ? text : text.slice(0, maximum);
 }
 
+function escapeHtml(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[character]);
+}
+
+function formatSubmittedAt(value, chinese = false) {
+  const date = new Date(value);
+  if (!value || Number.isNaN(date.getTime())) return String(value || '');
+
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+  const hour24 = date.getUTCHours();
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+
+  if (chinese) {
+    return `${year}年${month + 1}月${day}日 ${String(hour24).padStart(2, '0')}:${minutes} UTC`;
+  }
+
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const period = hour24 >= 12 ? 'PM' : 'AM';
+  const hour = hour24 % 12 || 12;
+  return `${day} ${months[month]} ${year}, ${hour}:${minutes} ${period} UTC`;
+}
+
 function retentionPurged(record, event) {
   return event?.type === EVENTS.RetentionPurged || record?.retentionState === 'Purged';
 }
@@ -151,51 +184,111 @@ function fileFields(file, event = {}) {
 }
 
 function acknowledgementMessage(application, config) {
-  const submittedAt = application.submittedAtServerUtc || application.finalizedAtUtc || application.lastUpdatedAtUtc;
-  const privacyUrl = config.privacyNoticeUrl;
+  const rawSubmittedAt = application.submittedAtServerUtc || application.finalizedAtUtc || application.lastUpdatedAtUtc;
   const reference = application.applicationReference;
   const role = application.roleTitle;
   const name = application.candidateName;
   const chinese = application.locale === 'zh-CN';
+  const submittedAt = formatSubmittedAt(rawSubmittedAt, chinese);
+  const privacyUrl = config.privacyNoticeUrl;
   const subject = chinese
-    ? `ShoreVest 已收到您的申请 - ${role} - ${reference}`
-    : `Application received by ShoreVest - ${role} - ${reference}`;
-  const content = chinese
-    ? [
-      `${name}，您好：`,
-      '',
-      `我们已收到您对 ${role} 职位的申请。`,
-      `申请编号：${reference}`,
-      `提交时间：${submittedAt}`,
-      '',
-      '我们的招聘团队会审阅您的申请。如需进一步资料或安排面试，我们会通过 ShoreVest 官方渠道与您联系。',
-      '',
-      `隐私说明：${privacyUrl}`,
-      '',
-      'ShoreVest 不会在招聘过程中要求候选人付款。请勿向未经核实的联系人提供密码、银行资料或敏感身份证明。',
-      '',
-      'ShoreVest 人力资源团队'
-    ].join('\n')
-    : [
-      `Dear ${name},`,
-      '',
-      `We have received your application for the ${role} position.`,
-      `Application reference: ${reference}`,
-      `Submitted: ${submittedAt}`,
-      '',
-      'Our recruitment team will review your application. We will contact you through an official ShoreVest channel if we require further information or would like to arrange an interview.',
-      '',
-      `Privacy notice: ${privacyUrl}`,
-      '',
-      'ShoreVest will never ask a candidate to make a payment during the recruitment process. Do not provide passwords, banking information, or sensitive identity documents to an unverified contact.',
-      '',
-      'ShoreVest Human Resources'
-    ].join('\n');
+    ? `申请已收到 | ${role} | ShoreVest`
+    : `Application received | ${role} | ShoreVest`;
+
+  const safeName = escapeHtml(name);
+  const safeRole = escapeHtml(role);
+  const safeReference = escapeHtml(reference);
+  const safeSubmittedAt = escapeHtml(submittedAt);
+  const safePrivacyUrl = escapeHtml(privacyUrl);
+  const preheader = chinese
+    ? `我们已收到您对 ${safeRole} 职位的申请。`
+    : `We have received your application for the ${safeRole} position.`;
+
+  const copy = chinese
+    ? {
+      greeting: `${safeName}，您好：`,
+      thanks: '感谢您对 ShoreVest 的关注。',
+      received: `我们已收到您对 <strong>${safeRole}</strong> 职位的申请，招聘团队将对您的申请材料进行审核。`,
+      next: '如您的经验与职位要求相符，我们的团队将与您联系并告知后续安排。',
+      details: '申请详情',
+      position: '职位',
+      reference: '申请编号',
+      submitted: '提交时间',
+      retain: '请保留申请编号，以备后续查询。',
+      privacyPrefix: '有关我们如何收集和处理候选人信息的详情，请参阅',
+      privacyLabel: '隐私政策',
+      security: 'ShoreVest 不会在招聘过程中要求候选人付款，也不会索取密码或银行资料。',
+      signature: 'ShoreVest 人力资源团队'
+    }
+    : {
+      greeting: `Dear ${safeName},`,
+      thanks: 'Thank you for your interest in ShoreVest.',
+      received: `We have received your application for the <strong>${safeRole}</strong> position and our recruitment team will review your submission.`,
+      next: 'If your experience is aligned with the requirements of the role, a member of our team will contact you regarding next steps.',
+      details: 'Application details',
+      position: 'Position',
+      reference: 'Application reference',
+      submitted: 'Submitted',
+      retain: 'Please retain your application reference for your records.',
+      privacyPrefix: 'For information on how we collect and process candidate information, please see our',
+      privacyLabel: 'Privacy Policy',
+      security: 'ShoreVest will never ask a candidate to make a payment or provide passwords or banking information during the recruitment process.',
+      signature: 'ShoreVest Human Resources'
+    };
+
+  const content = `<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body style="margin:0;padding:0;background:#ffffff;color:#1d1d1b;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${preheader}</div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#ffffff;">
+    <tr>
+      <td align="center" style="padding:36px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;border-collapse:collapse;font-family:'DIN 2014',Arial,Helvetica,sans-serif;color:#1d1d1b;">
+          <tr>
+            <td style="padding:0 0 26px 0;border-bottom:2px solid #a64332;font-size:22px;line-height:1;font-weight:700;letter-spacing:1.8px;">SHOREVEST</td>
+          </tr>
+          <tr>
+            <td style="padding:32px 0 0 0;font-size:16px;line-height:1.65;">
+              <p style="margin:0 0 22px 0;">${copy.greeting}</p>
+              <p style="margin:0 0 18px 0;">${copy.thanks}</p>
+              <p style="margin:0 0 18px 0;">${copy.received}</p>
+              <p style="margin:0 0 28px 0;">${copy.next}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:22px 24px;background:#f4f0e7;">
+              <div style="margin:0 0 14px 0;font-size:12px;line-height:1.4;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;">${copy.details}</div>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;font-family:'DIN 2014',Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#1d1d1b;">
+                <tr><td style="width:165px;padding:3px 12px 3px 0;font-weight:700;vertical-align:top;">${copy.position}</td><td style="padding:3px 0;vertical-align:top;">${safeRole}</td></tr>
+                <tr><td style="width:165px;padding:3px 12px 3px 0;font-weight:700;vertical-align:top;">${copy.reference}</td><td style="padding:3px 0;vertical-align:top;word-break:break-word;">${safeReference}</td></tr>
+                <tr><td style="width:165px;padding:3px 12px 3px 0;font-weight:700;vertical-align:top;">${copy.submitted}</td><td style="padding:3px 0;vertical-align:top;">${safeSubmittedAt}</td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:26px 0 0 0;font-size:15px;line-height:1.65;">
+              <p style="margin:0 0 20px 0;">${copy.retain}</p>
+              <p style="margin:0 0 20px 0;">${copy.privacyPrefix} <a href="${safePrivacyUrl}" style="color:#566f66;text-decoration:underline;">${copy.privacyLabel}</a>.</p>
+              <p style="margin:0 0 30px 0;color:#555555;">${copy.security}</p>
+              <p style="margin:0;">${copy.signature}<br><a href="https://shorevest.com/" style="color:#566f66;text-decoration:none;">shorevest.com</a></p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
   return {
     subject: boundedText(subject, 255),
-    body: { contentType: 'Text', content },
-    toRecipients: [{ emailAddress: { address: application.candidateEmail } }]
+    body: { contentType: 'HTML', content },
+    toRecipients: [{ emailAddress: { address: application.candidateEmail } }],
+    replyTo: [{ emailAddress: { address: config.mailbox, name: 'ShoreVest Careers' } }]
   };
 }
 
