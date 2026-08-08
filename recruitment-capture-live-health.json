@@ -1,1 +1,1 @@
-{"ok":true,"runtime":"active","configuration":"valid","dependencies":"ready","components":{"storage":"ready","secrets":"ready","cosmos":"ready"}}
+{"ok":true,"runtime":"active","configuration":"valid","dependencies":"ready","components":{"storage":"ready","cosmos":"ready","secrets":"ready","graph":"ready"}}
