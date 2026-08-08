@@ -26,8 +26,10 @@ function deliveryEnvironment(patch = {}) {
     RECRUITMENT_FILES_LIST_ID: 'files-list',
     RECRUITMENT_CANDIDATE_ACK_ENABLED: 'true',
     RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED: 'true',
-    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'recruitment@shorevest.com',
+    RECRUITMENT_CANDIDATE_ACK_MAILBOX: 'careers@shorevest.com',
     RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL: 'https://shorevest.com/privacy-policy/',
+    RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'true',
+    RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: 'careers@shorevest.com',
     ...patch
   };
 }
@@ -51,12 +53,12 @@ test('privacy link is restricted to the ShoreVest privacy page', () => {
   assert.equal(validPrivacyNoticeUrl('https://shorevest.com/other-page/'), false);
 });
 
-test('valid external delivery configuration accepts only the approved sender and privacy URL', () => {
+test('valid external delivery configuration accepts only approved ShoreVest mailboxes and privacy URL', () => {
   const config = loadConfig(deliveryEnvironment());
   assert.deepEqual(validateConfig(config), { ok: true, missing: [], invalid: [] });
 });
 
-test('external delivery fails closed for off-domain or injected mailbox values', () => {
+test('external delivery fails closed for off-domain or injected candidate sender mailbox values', () => {
   for (const mailbox of [
     'recruitment@example.com',
     'Recruitment <recruitment@shorevest.com>',
@@ -66,6 +68,15 @@ test('external delivery fails closed for off-domain or injected mailbox values',
       RECRUITMENT_CANDIDATE_ACK_MAILBOX: mailbox
     })));
     assert.ok(shape.invalid.includes('candidateAcknowledgement.mailbox'));
+  }
+});
+
+test('Careers team notification mailbox is separately validated', () => {
+  for (const mailbox of ['careers@example.com', 'Careers <careers@shorevest.com>', 'careers@shorevest.com\nBcc:x@example.com']) {
+    const shape = validateConfig(loadConfig(deliveryEnvironment({
+      RECRUITMENT_TEAM_NOTIFICATION_MAILBOX: mailbox
+    })));
+    assert.ok(shape.invalid.includes('teamNotification.mailbox'));
   }
 });
 
