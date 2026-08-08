@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "generatedAtUtc": "2026-08-08T00:00:00Z",
+  "generatedAtUtc": "2026-08-09T00:00:00Z",
   "roles": [
     {
       "id": "distressed-debt-investment-manager",
@@ -33,16 +33,18 @@
         "zh-CN": "长期招聘"
       },
       "roleOverview": {
-        "en": "This role leads distressed debt and special situations investments from sourcing to exit, reporting directly to the Managing Partner. Responsibilities include due diligence, deal structuring, post-investment management and stakeholder coordination with banks, asset management companies and law firms. The position also involves business development and mentoring junior team members.",
+        "en": "This role leads distressed debt and special situations investments from sourcing and evaluation through structuring, post-investment management and exit. Reporting directly to the Managing Partner, the Investment Manager assesses opportunities, coordinates due diligence and transaction execution, and works with banks, asset management companies, law firms and other external counterparties. The role also supports business development and provides guidance to junior team members.",
         "zh-CN": "本岗位是公司不良资产及特殊机会债权投资业务的核心执行角色，从项目开发到最终退出全流程管理，直接向管理合伙人汇报。负责尽职调查、交易架构设计、投后管理与退出执行，并协调银行、AMC、律所等渠道资源，同时参与业务拓展与团队指导工作。"
       },
       "responsibilities": {
         "en": [
-          "Conduct legal due diligence for debt investment projects, comprehensively identify legal risks in transaction structures and prepare professional risk-analysis reports.",
-          "Lead or participate in the design of debt investment plans and draft and review core legal documents, including investment agreements, guarantee contracts and related instruments.",
-          "Perform post-investment management for existing debt assets, monitor debtor performance and promptly identify, escalate and address potential default risks.",
-          "Collaborate with business teams during project negotiations, coordinate with third parties such as law firms and valuation agencies and drive projects toward compliant closing and execution.",
-          "Monitor macroeconomic trends and regulatory-policy changes and provide legal-compliance support and industry-research insights for investment decision-making."
+          "Evaluate distressed debt and special situations opportunities, including transaction structure, asset value, recovery prospects, downside risks and potential returns, and prepare analysis to support investment decisions.",
+          "Conduct legal due diligence on debt investment opportunities, identify material legal risks in proposed transaction structures and prepare clear risk analysis for investment decision-making.",
+          "Lead or participate in the structuring of debt investments and draft and review key transaction documents, including investment agreements, guarantee agreements and related documentation.",
+          "Manage existing debt investments following closing, monitor debtor performance, identify and address potential default risks, and support recovery and exit execution.",
+          "Work with internal teams during negotiations and coordinate with external parties, including law firms and valuation firms, to support compliant and timely execution.",
+          "Monitor macroeconomic, regulatory and policy developments relevant to the firm’s investment activities and provide legal, compliance and industry analysis to support investment decisions.",
+          "Support business development activities and provide guidance to junior team members as required."
         ],
         "zh-CN": [
           "负责债权类投资项目的法律尽职调查，全面识别交易结构中的法律风险并出具专业分析报告。",
@@ -55,10 +57,11 @@
       "requiredQualifications": {
         "en": [
           "Bachelor’s degree or above in law or a related discipline.",
-          "At least two years of relevant experience in a financial institution’s legal department, non-contentious legal practice at a law firm or non-performing loan disposal.",
-          "Strong knowledge of civil and commercial law and financial regulatory frameworks, familiarity with the end-to-end debt investment process and strong legal drafting and review skills.",
-          "Strong analytical thinking, communication and coordination skills, resilience under pressure and the ability to adapt to frequent business travel and a fast-paced working environment.",
-          "High integrity and professional ethics, strong risk awareness and a team-oriented mindset."
+          "At least two years of relevant experience in a financial institution’s legal department, non-contentious legal practice at a law firm or non-performing loan resolution.",
+          "Strong knowledge of civil and commercial law and relevant financial regulatory frameworks, with familiarity across the full lifecycle of debt investments.",
+          "Strong legal drafting and document review skills, with the ability to assess transaction structures, risk and recovery considerations.",
+          "Strong analytical, communication and coordination skills, with the ability to work effectively in a fast-paced environment and travel frequently as required.",
+          "High professional integrity, sound judgment, strong risk awareness and a collaborative approach."
         ],
         "zh-CN": [
           "全日制本科及以上学历，法学专业背景。",
@@ -70,7 +73,7 @@
       },
       "preferredQualifications": {
         "en": [
-          "Candidates holding the National Unified Legal Professional Qualification Certificate, Class A, are preferred."
+          "National Unified Legal Professional Qualification Certificate, Class A."
         ],
         "zh-CN": [
           "通过国家统一法律职业资格考试A证优先。"
@@ -107,7 +110,7 @@
         }
       },
       "summary": {
-        "en": "Lead the execution and management of distressed debt and special situations investments, including due diligence, structuring, post-investment management and risk control.",
+        "en": "Lead distressed debt and special situations investments from evaluation and structuring through post-investment management and exit, with a focus on downside protection, legal risk and recovery.",
         "zh-CN": "负责不良资产及特殊机会债权投资项目的执行与管理，包括尽职调查、交易架构、投后管理及风险控制。"
       },
       "emailApplicationCopy": {

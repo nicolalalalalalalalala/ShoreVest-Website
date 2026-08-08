@@ -13,9 +13,12 @@ body.careers-application-page .careers-application__label { display:block; margi
 body.careers-application-page .careers-application__optional { color:rgba(252,249,241,.6); font-weight:400; }
 body.careers-application-page .careers-application__req { color:var(--sv-cinnabar-light,#E8998F); }
 body.careers-application-page .careers-application__input,
+body.careers-application-page .careers-application__select,
 body.careers-application-page .careers-application__textarea { box-sizing:border-box; width:100%; padding:12px 14px; font:400 15.5px/1.5 var(--sv-font); color:var(--sv-ivory,#FCF9F1); background:var(--sv-dark,#1A1B18); border:1px solid rgba(252,249,241,.24); border-radius:0; }
-body.careers-application-page .careers-application__textarea { min-height:120px; resize:vertical; }
+body.careers-application-page .careers-application__textarea { min-height:140px; resize:vertical; }
+body.careers-application-page .careers-application__select { min-height:48px; border-radius:0; }
 body.careers-application-page .careers-application__input:focus-visible,
+body.careers-application-page .careers-application__select:focus-visible,
 body.careers-application-page .careers-application__textarea:focus-visible { outline:none; border-color:var(--sv-qing-light,#7AAFAF); }
 body.careers-application-page [aria-invalid="true"] { border-color:var(--sv-cinnabar,#C64832) !important; }
 body.careers-application-page .careers-application__file { display:block; color:var(--sv-ivory,#FCF9F1); font:400 14px/1.5 var(--sv-font); }
