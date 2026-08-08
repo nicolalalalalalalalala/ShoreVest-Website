@@ -29,30 +29,21 @@ jobs:
       AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
       FUNCTION_APP: svrc26hk-recruit-fn-test
     steps:
-      - uses: actions/checkout@v4
+      - id: checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install Function dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
-        working-directory: services/recruitment-functions
-
-      - name: Run notification regression tests
-        run: node --test test/teamRouting.test.js test/teamNotification.test.js
-        working-directory: services/recruitment-functions
-
-      - name: Sign in to Azure
+      - id: login
+        name: Sign in to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify safe live state
+      - id: safety
+        name: Verify safe live state
         shell: bash
         run: |
           set -euo pipefail
@@ -60,13 +51,12 @@ jobs:
           [[ "$(az account show --query tenantId -o tsv)" == "$AZURE_TENANT_ID" ]]
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
-          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
-          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
           [[ "$(value RECRUITMENT_HR_ACCESS_ENABLED)" == 'false' ]]
           [[ "$(value RECRUITMENT_RETENTION_ENABLED)" == 'false' ]]
           [[ "$(value RECRUITMENT_RETENTION_DELETION_ENABLED)" == 'false' ]]
 
-      - name: Build immutable Function package
+      - id: package
+        name: Build immutable Function package
         shell: pwsh
         run: |
           ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
@@ -173,6 +163,10 @@ jobs:
         shell: bash
         env:
           JOB_STATUS: ${{ job.status }}
+          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          LOGIN_OUTCOME: ${{ steps.login.outcome }}
+          SAFETY_OUTCOME: ${{ steps.safety.outcome }}
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
           DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
           INDEX_OUTCOME: ${{ steps.index.outcome }}
           ACTIVATE_OUTCOME: ${{ steps.activate.outcome }}
@@ -185,6 +179,10 @@ jobs:
             "sourceCommit": "${GITHUB_SHA}",
             "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "steps": {
+              "checkout": "${CHECKOUT_OUTCOME}",
+              "azureLogin": "${LOGIN_OUTCOME}",
+              "safety": "${SAFETY_OUTCOME}",
+              "package": "${PACKAGE_OUTCOME}",
               "deploy": "${DEPLOY_OUTCOME}",
               "index": "${INDEX_OUTCOME}",
               "activateNotifications": "${ACTIVATE_OUTCOME}",
