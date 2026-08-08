@@ -36,9 +36,48 @@ const { createFinalizationGatedDispatcher } = require('./outbox/finalizationGate
 const initiateApplication = createInitiateApplication(coreInitiateApplication);
 const finalizeApplication = createFinalizeApplication(coreFinalizeApplication);
 const processScanResult = createProcessScanResult(coreProcessScanResult);
+const TEAM_NOTIFICATION_PROPERTY_MARKER = 'ShoreVestRecruitmentTeamApplicationReference';
+const DEFAULT_TEAM_NOTIFICATION_RECIPIENTS = Object.freeze([
+  'careers@shorevest.com',
+  'hr@shorevest.com'
+]);
 
 function randomHex(length) {
   return crypto.randomUUID().replace(/-/g, '').slice(0, length).toUpperCase();
+}
+
+function teamNotificationRecipients(env = process.env) {
+  const configured = String(env.RECRUITMENT_TEAM_NOTIFICATION_RECIPIENTS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return configured.length > 0
+    ? [...new Set(configured)]
+    : [...DEFAULT_TEAM_NOTIFICATION_RECIPIENTS];
+}
+
+function createRecruitmentGraph(graph, env = process.env) {
+  if (!graph) return null;
+  const recipients = teamNotificationRecipients(env);
+  return {
+    ...graph,
+    createDraftMessage(mailbox, message, extendedProperty) {
+      const internalNotification = String(extendedProperty?.id || '').includes(
+        TEAM_NOTIFICATION_PROPERTY_MARKER
+      );
+      if (!internalNotification) {
+        return graph.createDraftMessage(mailbox, message, extendedProperty);
+      }
+      return graph.createDraftMessage(
+        mailbox,
+        {
+          ...message,
+          toRecipients: recipients.map((address) => ({ emailAddress: { address } }))
+        },
+        extendedProperty
+      );
+    }
+  };
 }
 
 function createDeps(config = loadConfig(), requestContext = {}) {
@@ -81,9 +120,10 @@ function createDeps(config = loadConfig(), requestContext = {}) {
       clean: config.cleanContainer
     }
   });
-  const graph = config.outboxDelivery.enabled === true
+  const baseGraph = config.outboxDelivery.enabled === true
     ? createGraphAdapter({ credential, endpoint: config.graph.endpoint })
     : null;
+  const graph = createRecruitmentGraph(baseGraph);
   const baseOutboxDispatcher = graph
     ? createOutboxDispatcher({ graph, config })
     : null;
@@ -142,7 +182,11 @@ function createDeps(config = loadConfig(), requestContext = {}) {
 }
 
 module.exports = {
+  TEAM_NOTIFICATION_PROPERTY_MARKER,
+  DEFAULT_TEAM_NOTIFICATION_RECIPIENTS,
   randomHex,
+  teamNotificationRecipients,
+  createRecruitmentGraph,
   createDeps,
   flows: {
     initiateApplication,
