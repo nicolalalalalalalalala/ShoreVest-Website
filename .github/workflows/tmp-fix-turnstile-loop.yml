@@ -1,0 +1,110 @@
+name: Temporary Fix Turnstile Loop
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/tmp-fix-turnstile-loop.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/fix-turnstile-loop
+          fetch-depth: 0
+
+      - name: Fix Turnstile retry behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('assets/js/recruitment-application.js')
+          s = p.read_text()
+
+          s = s.replace(
+            "      bot: 'Please complete the security verification.',\n",
+            "      bot: 'Please complete the security verification.',\n      botUnavailable: 'Security verification could not be completed. Please refresh the page or try another browser.',\n"
+          )
+          s = s.replace(
+            "      bot: '请完成安全验证。',\n",
+            "      bot: '请完成安全验证。',\n      botUnavailable: '安全验证未能完成。请刷新页面或更换浏览器后重试。',\n"
+          )
+          old = """              callback: function (token) { state.botToken = token; },
+              'expired-callback': function () { state.botToken = ''; },
+              'error-callback': function () { state.botToken = ''; }
+"""
+          new = """              callback: function (token) {
+                state.botToken = token;
+                state.turnstileFailed = false;
+                var errorNode = doc.querySelector('[data-field-error=\"turnstile\"]');
+                if (errorNode) errorNode.textContent = '';
+              },
+              'expired-callback': function () { state.botToken = ''; },
+              'error-callback': function () {
+                state.botToken = '';
+                state.turnstileFailed = true;
+                var errorNode = doc.querySelector('[data-field-error=\"turnstile\"]');
+                if (errorNode) errorNode.textContent = STRINGS[locale(doc)].botUnavailable;
+              },
+              retry: 'never',
+              'refresh-expired': 'manual'
+"""
+          if old not in s:
+            raise SystemExit('Turnstile render block not found')
+          s = s.replace(old, new)
+          s = s.replace(
+            "    var state = { botToken: '', turnstileId: null, submitting: false };",
+            "    var state = { botToken: '', turnstileId: null, submitting: false, turnstileFailed: false };"
+          )
+          old_catch = """              resetTurnstile(win, state);
+            })
+"""
+          new_catch = """              if (error && error.code === 'BOT_VERIFICATION_FAILED') {
+                resetTurnstile(win, state);
+              }
+            })
+"""
+          if old_catch not in s:
+            raise SystemExit('Submission reset block not found')
+          s = s.replace(old_catch, new_catch, 1)
+          p.write_text(s)
+
+          for page in [Path('careers/apply.html'), Path('careers/apply/index.html'), Path('careers/application-test-20260808.html')]:
+            t = page.read_text()
+            t = t.replace('recruitment-application.js?v=20260808-isolated-test', 'recruitment-application.js?v=20260808-turnstile-loop-fix')
+            t = t.replace('recruitment-application.js?v=20260808-turnstile-mobile', 'recruitment-application.js?v=20260808-turnstile-loop-fix')
+            page.write_text(t)
+          PY
+
+      - name: Validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          npm run validate:recruitment
+          npm run check:recruitment
+          npm run test:recruitment
+          npm run check:security
+          grep -q "retry: 'never'" assets/js/recruitment-application.js
+          grep -q "BOT_VERIFICATION_FAILED" assets/js/recruitment-application.js
+          grep -q 'turnstile-loop-fix' careers/application-test-20260808.html
+          git diff --check
+
+      - name: Commit fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/tmp-fix-turnstile-loop.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/js/recruitment-application.js careers/apply.html careers/apply/index.html careers/application-test-20260808.html .github/workflows/tmp-fix-turnstile-loop.yml
+          git diff --cached --check
+          git commit -m "Stop repeated Turnstile reset loop"
+          git push origin HEAD:agent/fix-turnstile-loop
