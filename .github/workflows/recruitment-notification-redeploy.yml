@@ -175,3 +175,5 @@ jobs:
           git add recruitment-notification-hotfix-deployment-status.json
           git commit -m 'Record recruitment notification redeploy [skip ci]' || exit 0
           git push origin HEAD:agent/rebuild-recruitment-backend
+
+# Explicit second-push trigger for the hotfix deployment.
