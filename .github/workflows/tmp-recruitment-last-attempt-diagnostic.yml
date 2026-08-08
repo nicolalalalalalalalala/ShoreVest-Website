@@ -18,6 +18,7 @@ env:
   AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
   FUNCTION_APP: svrc26hk-recruit-fn-test
   STORAGE_ACCOUNT: svrc26hkcvtest
+  MANAGED_IDENTITY: svrc26hk-recruit-mi-test
 
 jobs:
   diagnose:
@@ -32,14 +33,31 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Check recent quarantine uploads with Azure identity
+      - name: Inspect recruitment managed identity roles
         shell: bash
         run: |
           set -euo pipefail
-          echo '=== RECENT QUARANTINE BLOBS (technical metadata only) ==='
-          az storage blob list \
-            --account-name "$STORAGE_ACCOUNT" \
-            --auth-mode login \
-            --container-name recruitment-quarantine \
-            --query "sort_by([].{name:name,lastModified:properties.lastModified,size:properties.contentLength,contentType:properties.contentSettings.contentType}, &lastModified)[-8:]" \
+          principal="$(az identity show --resource-group "$AZURE_RESOURCE_GROUP" --name "$MANAGED_IDENTITY" --query principalId -o tsv)"
+          storage_id="$(az storage account show --resource-group "$AZURE_RESOURCE_GROUP" --name "$STORAGE_ACCOUNT" --query id -o tsv)"
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          endpoint="$(jq -r '.[] | select(.name=="RECRUITMENT_COSMOS_ENDPOINT") | .value' <<<"$settings")"
+          cosmos="$(python3 - <<'PY' "$endpoint"
+          import sys, urllib.parse
+          print(urllib.parse.urlparse(sys.argv[1]).hostname.split('.')[0])
+          PY
+          )"
+
+          echo '=== STORAGE ARM/DATA ROLES FOR FUNCTION IDENTITY ==='
+          az role assignment list \
+            --assignee-object-id "$principal" \
+            --scope "$storage_id" \
+            --include-inherited \
+            --query '[].{role:roleDefinitionName,scope:scope}' \
             -o table
+
+          echo '=== COSMOS SQL DATA ROLES FOR FUNCTION IDENTITY ==='
+          az cosmosdb sql role assignment list \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --account-name "$cosmos" \
+            --query "[?principalId=='$principal'].{roleDefinitionId:roleDefinitionId,scope:scope,principalId:principalId}" \
+            -o table || true
