@@ -1,15 +1,15 @@
 {
-  "status": "success",
-  "sourceCommit": "95acf3940ddd2f404ee0e3bbc377adba1725a3a2",
-  "recordedAtUtc": "2026-08-08T19:26:23Z",
+  "status": "failure",
+  "sourceCommit": "fe37daacda22f93ebbb0731a795fda623c785390",
+  "recordedAtUtc": "2026-08-08T20:10:08Z",
   "steps": {
     "azureLogin": "success",
     "safety": "success",
     "manifest": "success",
     "package": "success",
-    "deploy": "success",
-    "index": "success",
-    "activateNotifications": "success",
-    "health": "success"
+    "deploy": "failure",
+    "index": "skipped",
+    "activateNotifications": "skipped",
+    "health": "skipped"
   }
 }
