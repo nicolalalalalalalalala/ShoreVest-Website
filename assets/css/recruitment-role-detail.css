@@ -26,8 +26,9 @@ body.careers-role-page.careers-preview-page .careers-section {
 
 body.careers-role-page.careers-preview-page .careers-two-col {
   display: block;
-  max-width: 920px;
-  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
 }
 
 body.careers-role-page.careers-preview-page .careers-two-col > :first-child,
@@ -41,7 +42,7 @@ body.careers-role-page.careers-preview-page .careers-h2 {
 }
 
 body.careers-role-page.careers-preview-page .careers-copy > p:first-child {
-  max-width: 78ch;
+  max-width: none;
   font-size: 17px;
   line-height: 1.68;
 }
@@ -97,7 +98,7 @@ body.careers-role-page.careers-preview-page .careers-copy > h3 {
 body.careers-role-page.careers-preview-page .careers-list {
   grid-template-columns: 1fr;
   gap: 12px;
-  max-width: 78ch;
+  max-width: none;
   padding-left: 1.25em;
   font-size: 16px;
   line-height: 1.62;
