@@ -1,0 +1,85 @@
+name: Temporary patch recruitment deploy retry
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-patch-recruitment-deploy-retry.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/rebuild-recruitment-backend
+          fetch-depth: 0
+
+      - name: Harden the single Azure deployment step
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/recruitment-functions.yml')
+          text = path.read_text()
+          old = '''      - id: deploy
+        name: Deploy Function package before changing notification flags
+        shell: bash
+        run: |
+          set -euo pipefail
+          az functionapp deployment source config-zip \\
+            --resource-group "$AZURE_RESOURCE_GROUP" \\
+            --name "$FUNCTION_APP" \\
+            --src "$RUNNER_TEMP/recruitment-functions.zip" \\
+            --build-remote false \\
+            --timeout 600 \\
+            --output none
+'''
+          new = '''      - id: deploy
+        name: Deploy Function package before changing notification flags
+        shell: bash
+        run: |
+          set -u
+          deployed=false
+          for attempt in 1 2 3 4; do
+            echo "Azure Function deployment attempt $attempt of 4"
+            if az functionapp deployment source config-zip \\
+              --resource-group "$AZURE_RESOURCE_GROUP" \\
+              --name "$FUNCTION_APP" \\
+              --src "$RUNNER_TEMP/recruitment-functions.zip" \\
+              --build-remote false \\
+              --timeout 600 \\
+              --output none; then
+              deployed=true
+              break
+            fi
+            echo "Deployment attempt $attempt failed; reading latest deployment log before retry."
+            az functionapp log deployment show \\
+              --resource-group "$AZURE_RESOURCE_GROUP" \\
+              --name "$FUNCTION_APP" \\
+              --output json || true
+            sleep $((attempt * 30))
+          done
+          [[ "$deployed" == 'true' ]] || exit 1
+'''
+          if old not in text:
+              raise SystemExit('Expected deployment block was not found exactly once')
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one deployment block, found {text.count(old)}')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+          git rm .github/workflows/tmp-patch-recruitment-deploy-retry.yml
+          git diff --check
+          git config user.name 'shorevest-recruitment-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/recruitment-functions.yml
+          git commit -m 'Harden recruitment Azure deployment retries'
+          git push origin HEAD:agent/rebuild-recruitment-backend
