@@ -22,6 +22,15 @@
       "redirectTarget": null
     },
     {
+      "source": "careers/application-test-20260808.html",
+      "route": "/careers/application-test-20260808/",
+      "destination": "careers/application-test-20260808/index.html",
+      "indexable": false,
+      "disabled": true,
+      "reason": "careers-disabled",
+      "redirectTarget": "/careers/#open-roles"
+    },
+    {
       "source": "careers/apply.html",
       "route": "/careers/apply/",
       "destination": "careers/apply/index.html",
