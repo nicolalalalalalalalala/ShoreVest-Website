@@ -178,6 +178,48 @@ try {
   Write-Output "Created $outputFullPath"
   Write-Output "SHA-256 $archiveHash"
   Write-Output "Digest sidecar $sidecarPath"
+
+  # The deploy job runs this script after Azure login. Capture the latest Azure
+  # deployment log without attempting another deployment so a failed publish
+  # leaves actionable evidence in the repository status artifact.
+  if ($env:AZURE_RESOURCE_GROUP -and $env:FUNCTION_APP) {
+    $diagnosticPath = Join-Path $repoRoot 'recruitment-capture-live-health.json'
+    try {
+      $previousErrorPreference = $ErrorActionPreference
+      $ErrorActionPreference = 'Continue'
+      $deploymentLogOutput = & az functionapp log deployment show `
+        --resource-group $env:AZURE_RESOURCE_GROUP `
+        --name $env:FUNCTION_APP `
+        --output json 2>&1
+      $deploymentLogExitCode = $LASTEXITCODE
+      $ErrorActionPreference = $previousErrorPreference
+      $diagnostic = [ordered]@{
+        diagnosticType = 'azure-function-deployment-log'
+        capturedAtUtc = [DateTime]::UtcNow.ToString('o')
+        sourceCommit = $CommitSha.ToLowerInvariant()
+        commandExitCode = $deploymentLogExitCode
+        deploymentLog = ($deploymentLogOutput -join "`n")
+      }
+      [System.IO.File]::WriteAllText(
+        $diagnosticPath,
+        (($diagnostic | ConvertTo-Json -Depth 20) + "`n"),
+        [System.Text.UTF8Encoding]::new($false)
+      )
+    } catch {
+      $diagnostic = [ordered]@{
+        diagnosticType = 'azure-function-deployment-log'
+        capturedAtUtc = [DateTime]::UtcNow.ToString('o')
+        sourceCommit = $CommitSha.ToLowerInvariant()
+        commandExitCode = -1
+        deploymentLog = "Unable to read Azure deployment log: $($_.Exception.Message)"
+      }
+      [System.IO.File]::WriteAllText(
+        $diagnosticPath,
+        (($diagnostic | ConvertTo-Json -Depth 20) + "`n"),
+        [System.Text.UTF8Encoding]::new($false)
+      )
+    }
+  }
 } finally {
   if (Test-Path -LiteralPath $stagingRoot) {
     Remove-Item -LiteralPath $stagingRoot -Recurse -Force
