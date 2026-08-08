@@ -32,46 +32,14 @@ jobs:
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Read recent recruitment request telemetry
+      - name: Check recent quarantine uploads with Azure identity
         shell: bash
         run: |
           set -euo pipefail
-          component="$(az resource list --resource-group "$AZURE_RESOURCE_GROUP" --resource-type 'microsoft.insights/components' --query '[0].name' -o tsv)"
-          [[ -n "$component" ]] || { echo 'No Application Insights component found'; exit 2; }
-          echo "Application Insights component: $component"
-
-          echo '=== RECENT RECRUITMENT REQUESTS ==='
-          az monitor app-insights query \
-            --app "$component" \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --analytics-query "requests | where timestamp > ago(60m) | where url contains '/api/recruitment/' | project timestamp, name, resultCode, success, url | order by timestamp desc | take 40" \
-            -o table || true
-
-          echo '=== RECENT RECRUITMENT TRACES ==='
-          az monitor app-insights query \
-            --app "$component" \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --analytics-query "traces | where timestamp > ago(60m) | where message startswith 'recruitment_' | project timestamp, message, severityLevel | order by timestamp desc | take 40" \
-            -o table || true
-
-          echo '=== RECENT TURNSTILE DEPENDENCIES ==='
-          az monitor app-insights query \
-            --app "$component" \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --analytics-query "dependencies | where timestamp > ago(60m) | where target contains 'challenges.cloudflare.com' or name contains 'siteverify' | project timestamp, name, target, resultCode, success, duration | order by timestamp desc | take 20" \
-            -o table || true
-
-      - name: Check recent quarantine uploads
-        shell: bash
-        run: |
-          set -euo pipefail
-          key="$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP" --account-name "$STORAGE_ACCOUNT" --query '[0].value' -o tsv)"
-          [[ -n "$key" ]]
           echo '=== RECENT QUARANTINE BLOBS (technical metadata only) ==='
           az storage blob list \
             --account-name "$STORAGE_ACCOUNT" \
-            --account-key "$key" \
+            --auth-mode login \
             --container-name recruitment-quarantine \
             --query "sort_by([].{name:name,lastModified:properties.lastModified,size:properties.contentLength,contentType:properties.contentSettings.contentType}, &lastModified)[-8:]" \
-            -o table || true
-          unset key
+            -o table
