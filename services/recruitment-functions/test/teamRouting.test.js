@@ -10,6 +10,7 @@ const {
 } = require('../src/appFactory');
 const { NOTIFICATION_EVENTS: EVENTS } = require('../../../api/recruitment/core/constants');
 
+// This file also provides the deployment regression gate for recruitment notifications.
 test('team notifications default to both monitored ShoreVest inboxes', () => {
   assert.deepEqual(teamNotificationRecipients({}), [
     'careers@shorevest.com',
