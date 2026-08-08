@@ -107,7 +107,7 @@ jobs:
           git rm .github/workflows/tmp-polish-recruitment-copy-us.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add careers/apply.html careers/apply/index.html careers/application-test-20260808.html assets/js/recruitment-application.js assets/data/recruitment/roles.v1.json services/recruitment-functions/src/roles.v1.json .github/workflows/tmp-polish-recruitment-copy-us.yml
+          git add careers/apply.html careers/apply/index.html careers/application-test-20260808.html assets/js/recruitment-application.js assets/data/recruitment/roles.v1.json services/recruitment-functions/src/roles.v1.json
           git diff --cached --check
           git commit -m "Polish Careers application copy in American English"
           git push origin HEAD:agent/polish-recruitment-copy-us
