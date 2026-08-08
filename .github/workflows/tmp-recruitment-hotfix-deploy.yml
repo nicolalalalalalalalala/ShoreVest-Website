@@ -1,0 +1,163 @@
+name: Temporary Recruitment Hotfix Deploy
+
+on:
+  push:
+    branches:
+      - agent/rebuild-recruitment-backend
+    paths:
+      - .github/workflows/tmp-recruitment-hotfix-deploy.yml
+
+permissions:
+  id-token: write
+  contents: write
+
+concurrency:
+  group: isolated-recruitment-hotfix
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: recruitment-test
+    env:
+      AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+      AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+      AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+      AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+      FUNCTION_APP: svrc26hk-recruit-fn-test
+    steps:
+      - id: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: agent/rebuild-recruitment-backend
+          fetch-depth: 0
+
+      - id: login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+      - id: safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(az account show --query id -o tsv)" == "$AZURE_SUBSCRIPTION_ID" ]]
+          [[ "$(az account show --query tenantId -o tsv)" == "$AZURE_TENANT_ID" ]]
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
+          [[ "$(value RECRUITMENT_HR_ACCESS_ENABLED)" == 'false' ]]
+          [[ "$(value RECRUITMENT_RETENTION_ENABLED)" == 'false' ]]
+          [[ "$(value RECRUITMENT_RETENTION_DELETION_ENABLED)" == 'false' ]]
+
+      - id: package
+        shell: pwsh
+        run: ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
+
+      - id: deploy
+        shell: bash
+        run: |
+          set -u
+          deployed=false
+          for attempt in 1 2 3 4; do
+            echo "Deployment attempt $attempt"
+            if az functionapp deployment source config-zip --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --src "$RUNNER_TEMP/recruitment-functions.zip" --build-remote false --timeout 600 --output none; then
+              deployed=true
+              break
+            fi
+            az functionapp log deployment show --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output json || true
+            sleep $((attempt * 30))
+          done
+          [[ "$deployed" == 'true' ]]
+
+      - id: index
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(initiateApplication completeUpload finalizeApplication health outboxWorker)
+          for attempt in $(seq 1 24); do
+            names="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query '[].name' -o tsv 2>/dev/null | sed 's#^.*/##' || true)"
+            missing=0
+            for name in "${expected[@]}"; do grep -qx "$name" <<<"$names" || missing=$((missing+1)); done
+            [[ "$missing" == 0 ]] && exit 0
+            sleep 15
+          done
+          exit 1
+
+      - id: activate
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          cutoff="$(jq -r '.[] | select(.name == "RECRUITMENT_OUTBOX_NOT_BEFORE_UTC") | .value' <<<"$settings" | head -n1)"
+          [[ -n "$cutoff" && "$cutoff" != 'null' ]] || cutoff="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          az functionapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --settings \
+            RECRUITMENT_API_ENABLED=true \
+            RECRUITMENT_CAPTURE_ONLY_MODE=true \
+            RECRUITMENT_OUTBOX_DELIVERY_ENABLED=true \
+            RECRUITMENT_OUTBOX_NOT_BEFORE_UTC="$cutoff" \
+            RECRUITMENT_CANDIDATE_ACK_ENABLED=true \
+            RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED=true \
+            RECRUITMENT_CANDIDATE_ACK_MAILBOX=careers@shorevest.com \
+            RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL=https://shorevest.com/privacy-policy/ \
+            RECRUITMENT_TEAM_NOTIFICATION_ENABLED=true \
+            RECRUITMENT_TEAM_NOTIFICATION_MAILBOX=careers@shorevest.com \
+            RECRUITMENT_TEAM_NOTIFICATION_RECIPIENTS=careers@shorevest.com,hr@shorevest.com \
+            RECRUITMENT_HR_ACCESS_ENABLED=false \
+            RECRUITMENT_RETENTION_ENABLED=false \
+            RECRUITMENT_RETENTION_DELETION_ENABLED=false --output none
+          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
+
+      - id: health
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            code="$(curl -sS -o /tmp/recruit-health.json -w '%{http_code}' "https://${FUNCTION_APP}.azurewebsites.net/api/recruitment/health" || true)"
+            if [[ "$code" == 200 ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' /tmp/recruit-health.json >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 10
+          done
+          cat /tmp/recruit-health.json >&2 || true
+          exit 1
+
+      - name: Record and clean up
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+          LOGIN: ${{ steps.login.outcome }}
+          SAFETY: ${{ steps.safety.outcome }}
+          PACKAGE: ${{ steps.package.outcome }}
+          DEPLOY: ${{ steps.deploy.outcome }}
+          INDEX: ${{ steps.index.outcome }}
+          ACTIVATE: ${{ steps.activate.outcome }}
+          HEALTH: ${{ steps.health.outcome }}
+        run: |
+          set -euo pipefail
+          cat > recruitment-hotfix-result.json <<EOF
+          {
+            "status": "${JOB_STATUS}",
+            "sourceCommit": "${GITHUB_SHA}",
+            "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "steps": {
+              "azureLogin": "${LOGIN}",
+              "safety": "${SAFETY}",
+              "package": "${PACKAGE}",
+              "deploy": "${DEPLOY}",
+              "index": "${INDEX}",
+              "activateNotifications": "${ACTIVATE}",
+              "health": "${HEALTH}"
+            }
+          }
+          EOF
+          if [[ -f /tmp/recruit-health.json ]]; then cp /tmp/recruit-health.json recruitment-capture-live-health.json; fi
+          git rm .github/workflows/tmp-recruitment-hotfix-deploy.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add recruitment-hotfix-result.json recruitment-capture-live-health.json 2>/dev/null || git add recruitment-hotfix-result.json
+          git commit -m 'Record recruitment hotfix deployment [skip ci]'
+          git push origin HEAD:agent/rebuild-recruitment-backend
