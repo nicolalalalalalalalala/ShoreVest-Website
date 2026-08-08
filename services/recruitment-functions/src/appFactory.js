@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { DefaultAzureCredential } = require('@azure/identity');
+const { NOTIFICATION_EVENTS: EVENTS } = require('../../../api/recruitment/core/constants');
 const {
   initiateApplication: coreInitiateApplication,
   completeUpload,
@@ -80,6 +81,32 @@ function createRecruitmentGraph(graph, env = process.env) {
   };
 }
 
+function createNotificationFirstDispatcher(dispatcher) {
+  if (!dispatcher || typeof dispatcher.deliver !== 'function') return dispatcher;
+  if (typeof dispatcher.notifyTeam !== 'function' || typeof dispatcher.project !== 'function') return dispatcher;
+
+  return {
+    ...dispatcher,
+    async deliver(event, dependencies) {
+      if (event?.type !== EVENTS.ApplicationReceived) {
+        return dispatcher.deliver(event, dependencies);
+      }
+
+      // Internal notification is operationally critical and must not be blocked by
+      // a transient SharePoint projection failure. notifyTeam is idempotent: it
+      // reconciles the deterministic tagged draft/sent message on every retry.
+      const teamDelivery = await dispatcher.notifyTeam(event, dependencies);
+      const projection = await dispatcher.project(event, dependencies);
+      if (projection.skipped) return projection;
+      return {
+        deliveryReference: `${teamDelivery.deliveryReference}|${projection.deliveryReference}`,
+        event: teamDelivery.event || event,
+        reconciled: teamDelivery.reconciled === true
+      };
+    }
+  };
+}
+
 function createDeps(config = loadConfig(), requestContext = {}) {
   const credentialOptions = config.managedIdentityClientId
     ? { managedIdentityClientId: config.managedIdentityClientId }
@@ -127,8 +154,9 @@ function createDeps(config = loadConfig(), requestContext = {}) {
   const baseOutboxDispatcher = graph
     ? createOutboxDispatcher({ graph, config })
     : null;
-  const outboxDispatcher = baseOutboxDispatcher
-    ? createFinalizationGatedDispatcher(baseOutboxDispatcher)
+  const notificationFirstDispatcher = createNotificationFirstDispatcher(baseOutboxDispatcher);
+  const outboxDispatcher = notificationFirstDispatcher
+    ? createFinalizationGatedDispatcher(notificationFirstDispatcher)
     : null;
 
   return {
@@ -187,6 +215,7 @@ module.exports = {
   randomHex,
   teamNotificationRecipients,
   createRecruitmentGraph,
+  createNotificationFirstDispatcher,
   createDeps,
   flows: {
     initiateApplication,
