@@ -13,6 +13,8 @@ const PROJECTION_EVENTS = new Set([
 
 const ACKNOWLEDGEMENT_PROPERTY_ID =
   'String {61d91fcb-ec61-4f51-9a2d-2d6f3307d8bd} Name ShoreVestApplicationReference';
+const TEAM_NOTIFICATION_PROPERTY_ID =
+  'String {61d91fcb-ec61-4f51-9a2d-2d6f3307d8bd} Name ShoreVestRecruitmentTeamApplicationReference';
 
 function deliveryError(code, message, permanent = false) {
   return Object.assign(new Error(message), { code, permanent });
@@ -197,12 +199,56 @@ function acknowledgementMessage(application, config) {
   };
 }
 
+function teamNotificationMessage(application, config) {
+  const submittedAt = application.submittedAtServerUtc || application.finalizedAtUtc || application.lastUpdatedAtUtc;
+  const reference = application.applicationReference;
+  const role = application.roleTitle;
+  const subject = `New ShoreVest application - ${role} - ${reference}`;
+  const content = [
+    'A new application has been submitted through shorevest.com.',
+    '',
+    `Role: ${role}`,
+    `Candidate: ${application.candidateName}`,
+    `Email: ${application.candidateEmail}`,
+    `Application reference: ${reference}`,
+    `Submitted: ${submittedAt}`,
+    `Source: ${application.source || 'website'}`,
+    '',
+    'The application record is being projected to the restricted Recruitment lists. CV files are not attached to recruitment notification emails.',
+    '',
+    'ShoreVest Careers'
+  ].join('\n');
+
+  return {
+    subject: boundedText(subject, 255),
+    body: { contentType: 'Text', content },
+    toRecipients: [{ emailAddress: { address: config.mailbox } }]
+  };
+}
+
 function classifyAcknowledgementMessages(messages) {
   const items = Array.isArray(messages) ? messages : [];
   if (items.length > 1) {
     throw deliveryError(
       'CANDIDATE_ACKNOWLEDGEMENT_DUPLICATE_STATE',
       'Multiple mailbox messages have the same application acknowledgement key',
+      true
+    );
+  }
+  const message = items[0] || null;
+  return {
+    message,
+    sent: Boolean(message && (message.isDraft === false || message.sentDateTime)),
+    draft: Boolean(message && message.isDraft === true)
+  };
+}
+
+function classifyTeamNotificationMessages(messages) {
+  const items = Array.isArray(messages) ? messages : [];
+  if (items.length > 1) {
+    throw deliveryError(
+      'TEAM_NOTIFICATION_DUPLICATE_STATE',
+      'Multiple mailbox messages have the same recruitment-team notification key',
       true
     );
   }
@@ -228,6 +274,7 @@ function createOutboxDispatcher({ graph, config } = {}) {
 
   const sharePoint = config?.sharePoint || {};
   const acknowledgement = config?.candidateAcknowledgement || {};
+  const teamNotification = config?.teamNotification || {};
 
   async function loadApplication(event, dependencies) {
     const application = await dependencies.applicationStore.getApplication(event.applicationReference);
@@ -357,25 +404,103 @@ function createOutboxDispatcher({ graph, config } = {}) {
     return { deliveryReference: `mail:${draft.id}`, event: activeEvent };
   }
 
+  async function notifyTeam(event, dependencies) {
+    if (teamNotification.enabled !== true) {
+      throw deliveryError('TEAM_NOTIFICATION_DISABLED', 'Recruitment-team notification is not enabled', true);
+    }
+    if (!dependencies.outboxCheckpoint || typeof dependencies.outboxCheckpoint.checkpoint !== 'function') {
+      throw deliveryError('OUTBOX_CHECKPOINT_MISSING', 'Outbox checkpoint store is not configured', true);
+    }
+    const application = await loadApplication(event, dependencies);
+    if (!application.finalizedAtUtc || application.candidateSubmissionStatus !== 'Submitted') {
+      throw deliveryError('APPLICATION_NOT_FINALIZED', 'Recruitment-team notification requires a finalized application', true);
+    }
+
+    const mailbox = teamNotification.mailbox;
+    const reference = application.applicationReference;
+    let activeEvent = event;
+    const mailboxState = classifyTeamNotificationMessages(
+      await graph.findMessagesByExtendedProperty(mailbox, TEAM_NOTIFICATION_PROPERTY_ID, reference)
+    );
+    if (mailboxState.sent) {
+      return { deliveryReference: `team-mail:${mailboxState.message.id}`, event: activeEvent, reconciled: true };
+    }
+
+    const checkpointedId = activeEvent.deliveryCheckpoint?.teamNotificationDraftMessageId;
+    let draft = mailboxState.draft ? mailboxState.message : null;
+    if (checkpointedId) {
+      const checkpointedMessage = await graph.getMessage(mailbox, checkpointedId);
+      if (checkpointedMessage && (checkpointedMessage.isDraft === false || checkpointedMessage.sentDateTime)) {
+        return { deliveryReference: `team-mail:${checkpointedMessage.id}`, event: activeEvent, reconciled: true };
+      }
+      if (checkpointedMessage?.isDraft === true) {
+        draft = checkpointedMessage;
+      } else if (!draft) {
+        throw deliveryError(
+          'TEAM_NOTIFICATION_STATE_UNCERTAIN',
+          'The checkpointed recruitment-team notification could not be reconciled'
+        );
+      }
+    }
+
+    if (!draft) {
+      draft = await graph.createDraftMessage(
+        mailbox,
+        teamNotificationMessage(application, teamNotification),
+        { id: TEAM_NOTIFICATION_PROPERTY_ID, value: reference }
+      );
+    }
+    if (!draft?.id) {
+      throw deliveryError('TEAM_NOTIFICATION_DRAFT_INVALID', 'Microsoft Graph did not return a recruitment-team draft id');
+    }
+    if (checkpointedId !== draft.id) {
+      activeEvent = await dependencies.outboxCheckpoint.checkpoint(activeEvent, {
+        teamNotificationDraftMessageId: draft.id,
+        teamNotificationExtendedPropertyId: TEAM_NOTIFICATION_PROPERTY_ID,
+        teamNotificationExtendedPropertyValue: reference
+      });
+    }
+    try {
+      await graph.sendDraftMessage(mailbox, draft.id);
+    } catch (error) {
+      error.event = activeEvent;
+      throw error;
+    }
+    return { deliveryReference: `team-mail:${draft.id}`, event: activeEvent };
+  }
+
   async function deliver(event, dependencies) {
     if (!event || typeof event.type !== 'string' || typeof event.applicationReference !== 'string') {
       throw deliveryError('OUTBOX_EVENT_INVALID', 'Outbox event is invalid', true);
     }
     if (event.type === EVENTS.CandidateAcknowledgementRequested) return acknowledge(event, dependencies);
+    if (event.type === EVENTS.ApplicationReceived) {
+      const projection = await project(event, dependencies);
+      if (projection.skipped) return projection;
+      const teamDelivery = await notifyTeam(event, dependencies);
+      return {
+        deliveryReference: `${projection.deliveryReference}|${teamDelivery.deliveryReference}`,
+        event: teamDelivery.event || event,
+        reconciled: teamDelivery.reconciled === true
+      };
+    }
     if (PROJECTION_EVENTS.has(event.type)) return project(event, dependencies);
     throw deliveryError('OUTBOX_EVENT_UNSUPPORTED', `Unsupported recruitment outbox event: ${event.type}`, true);
   }
 
-  return { deliver, project, acknowledge };
+  return { deliver, project, acknowledge, notifyTeam };
 }
 
 module.exports = {
   PROJECTION_EVENTS,
   ACKNOWLEDGEMENT_PROPERTY_ID,
+  TEAM_NOTIFICATION_PROPERTY_ID,
   compactFields,
   applicationFields,
   fileFields,
   acknowledgementMessage,
+  teamNotificationMessage,
   classifyAcknowledgementMessages,
+  classifyTeamNotificationMessages,
   createOutboxDispatcher
 };
