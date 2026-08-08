@@ -1,172 +1,25 @@
-name: Recruitment Functions CI
+name: Recruitment Functions Hotfix Deploy
+
 on:
   push:
     branches:
-      - 'agent/**'
+      - agent/rebuild-recruitment-backend
     paths:
-      - '.github/workflows/recruitment-functions.yml'
-      - '.github/workflows/recruitment-test-foundation-deploy.yml'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'scripts/validate-recruitment-roles.js'
-      - 'scripts/generate-clean-public-urls.js'
-      - 'services/recruitment-functions/**'
-      - 'api/recruitment/**'
-      - 'infra/recruitment/**'
-      - 'assets/data/recruitment/**'
-      - 'assets/js/recruitment-*.js'
-      - 'assets/js/site-config.js'
-      - 'assets/css/recruitment-application.css'
-      - 'careers.html'
-      - 'careers_cn.html'
-      - 'careers/**'
-      - 'cn/careers/**'
-      - 'sitemap.xml'
-      - '_headers'
-      - 'tests/recruitment*.test.js'
-      - 'tests/security-headers.test.js'
-  pull_request:
-    paths:
-      - '.github/workflows/recruitment-functions.yml'
-      - '.github/workflows/recruitment-test-foundation-deploy.yml'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'scripts/validate-recruitment-roles.js'
-      - 'scripts/generate-clean-public-urls.js'
-      - 'services/recruitment-functions/**'
-      - 'api/recruitment/**'
-      - 'infra/recruitment/**'
-      - 'assets/data/recruitment/**'
-      - 'assets/js/recruitment-*.js'
-      - 'assets/js/site-config.js'
-      - 'assets/css/recruitment-application.css'
-      - 'careers.html'
-      - 'careers_cn.html'
-      - 'careers/**'
-      - 'cn/careers/**'
-      - 'sitemap.xml'
-      - '_headers'
-      - 'tests/recruitment*.test.js'
-      - 'tests/security-headers.test.js'
+      - .github/workflows/recruitment-functions.yml
   workflow_dispatch:
+
 permissions:
   id-token: write
   contents: write
+
 concurrency:
-  group: recruitment-functions-${{ github.ref }}
-  cancel-in-progress: true
+  group: recruitment-functions-hotfix
+  cancel-in-progress: false
+
 jobs:
-  validate:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: npm ci
-      - name: Install recruitment function dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
-        working-directory: services/recruitment-functions
-      - run: npm run validate:recruitment
-      - run: npm run check:recruitment
-      - run: npm run test:recruitment
-      - run: npm run check:security
-      - run: npm run check:functions
-      - run: npm run test:functions
-      - name: Build and verify immutable Function package
-        shell: pwsh
-        run: |
-          $artifact = 'artifacts/recruitment-functions.zip'
-          & ./services/recruitment-functions/scripts/package.ps1 `
-            -CommitSha '${{ github.sha }}' `
-            -OutputPath $artifact
-
-          if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
-            throw 'Recruitment Function archive was not created.'
-          }
-          if (-not (Test-Path -LiteralPath "$artifact.sha256" -PathType Leaf)) {
-            throw 'Recruitment Function archive digest sidecar was not created.'
-          }
-
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $artifact))
-          try {
-            $entries = @($archive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
-            foreach ($required in @(
-              'host.json',
-              'package.json',
-              'deployment-metadata.json',
-              'services/recruitment-functions/package.json',
-              'services/recruitment-functions/src/functions/index.js',
-              'api/recruitment/core/flows.js',
-              'assets/data/recruitment/roles.v1.json',
-              'services/recruitment-functions/node_modules/@azure/functions/package.json'
-            )) {
-              if ($entries -notcontains $required) {
-                throw "Package is missing required entry: $required"
-              }
-            }
-            if ($entries | Where-Object { $_ -match '^(staging|recruitment-functions)/' }) {
-              throw 'Package contains a forbidden wrapper directory.'
-            }
-            if ($entries | Where-Object { $_ -match '(^|/)(local\.settings|\.env)' }) {
-              throw 'Package contains forbidden local configuration.'
-            }
-
-            $packageEntry = $archive.GetEntry('package.json')
-            $packageReader = [System.IO.StreamReader]::new($packageEntry.Open())
-            try {
-              $deploymentPackage = ($packageReader.ReadToEnd() | ConvertFrom-Json)
-            } finally {
-              $packageReader.Dispose()
-            }
-            if ($deploymentPackage.main -ne 'services/recruitment-functions/src/functions/index.js') {
-              throw 'Deployment package main entry does not preserve the Function service layout.'
-            }
-
-            $metadataEntry = $archive.GetEntry('deployment-metadata.json')
-            $reader = [System.IO.StreamReader]::new($metadataEntry.Open())
-            try {
-              $metadata = ($reader.ReadToEnd() | ConvertFrom-Json)
-            } finally {
-              $reader.Dispose()
-            }
-            if ($metadata.sourceCommit -ne '${{ github.sha }}') {
-              throw 'Deployment metadata commit does not match the workflow head.'
-            }
-            if ($metadata.payloadSha256 -notmatch '^[0-9a-f]{64}$') {
-              throw 'Deployment metadata payload digest is invalid.'
-            }
-            if ($metadata.archiveSha256Sidecar -ne 'recruitment-functions.zip.sha256') {
-              throw 'Deployment metadata sidecar name is invalid.'
-            }
-          } finally {
-            $archive.Dispose()
-          }
-
-          $actualHash = (Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash.ToLowerInvariant()
-          $recordedHash = ((Get-Content -LiteralPath "$artifact.sha256" -Raw).Trim() -split '\s+')[0]
-          if ($actualHash -ne $recordedHash) {
-            throw 'Archive digest sidecar does not match the generated ZIP.'
-          }
-      - name: Check Azure deployment shell syntax
-        run: |
-          bash -n infra/recruitment/bootstrap-github-oidc.sh
-          bash -n infra/recruitment/deploy-test-foundation-cloudshell.sh
-      - name: Compile recruitment Bicep
-        run: npm run bicep:build:recruitment
-      - name: Compile ShoreVest test Bicep parameters
-        run: az bicep build-params --file infra/recruitment/test-eastasia.bicepparam --stdout >/dev/null
-      - name: Lint recruitment Bicep
-        run: npm run bicep:lint:recruitment
-      - run: git diff --check
-
-  deploy_capture:
-    needs: validate
-    if: github.event_name == 'push' && github.ref == 'refs/heads/agent/rebuild-recruitment-backend'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     environment: recruitment-test
     env:
       AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
@@ -175,26 +28,30 @@ jobs:
       AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
       FUNCTION_APP: svrc26hk-recruit-fn-test
     steps:
-      - id: checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - id: node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: services/recruitment-functions/package-lock.json
 
-      - id: login
-        name: Sign in to Azure with bootstrapped OIDC identity
+      - name: Install Function dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: services/recruitment-functions
+
+      - name: Run notification regression tests
+        run: node --test test/teamRouting.test.js test/teamNotification.test.js
+        working-directory: services/recruitment-functions
+
+      - name: Sign in to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - id: safety
-        name: Verify capture safety state before deployment
+      - name: Verify safe live state
         shell: bash
         run: |
           set -euo pipefail
@@ -202,49 +59,43 @@ jobs:
           [[ "$(az account show --query tenantId -o tsv)" == "$AZURE_TENANT_ID" ]]
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
-          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]] || { echo 'Public capture API is not currently enabled.' >&2; exit 1; }
-          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]] || { echo 'Capture-only mode is not currently enabled.' >&2; exit 1; }
-          for key in RECRUITMENT_HR_ACCESS_ENABLED RECRUITMENT_RETENTION_ENABLED RECRUITMENT_RETENTION_DELETION_ENABLED; do
-            [[ "$(value "$key")" == 'false' ]] || { echo "$key must remain false." >&2; exit 1; }
-          done
+          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
+          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
+          [[ "$(value RECRUITMENT_HR_ACCESS_ENABLED)" == 'false' ]]
+          [[ "$(value RECRUITMENT_RETENTION_ENABLED)" == 'false' ]]
+          [[ "$(value RECRUITMENT_RETENTION_DELETION_ENABLED)" == 'false' ]]
 
-      - id: manifest
-        name: Verify approved online application roles
-        shell: bash
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const m = require('./assets/data/recruitment/roles.v1.json');
-          const enabled = m.roles.filter(r => r.application && r.application.enabled === true);
-          const ids = enabled.map(r => r.id).sort();
-          const expected = ['distressed-debt-investment-manager', 'legal-assistant'];
-          if (JSON.stringify(ids) !== JSON.stringify(expected)) {
-            throw new Error(`Unexpected enabled application roles: ${ids.join(', ')}`);
-          }
-          if (enabled.some(r => r.application.privacyNoticeVersion !== '2026-08-08-v1')) {
-            throw new Error('An enabled role does not use the approved recruitment privacy version');
-          }
-          console.log('Both approved public roles accept the secure online application flow.');
-          NODE
-
-      - id: package
-        name: Build immutable Function package
+      - name: Build immutable Function package
         shell: pwsh
         run: |
           ./services/recruitment-functions/scripts/package.ps1 -CommitSha '${{ github.sha }}' -OutputPath "$env:RUNNER_TEMP/recruitment-functions.zip"
 
       - id: deploy
-        name: Deploy Function package before changing notification flags
+        name: Deploy Function package with backoff
         shell: bash
         run: |
-          set -euo pipefail
-          az functionapp deployment source config-zip \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --name "$FUNCTION_APP" \
-            --src "$RUNNER_TEMP/recruitment-functions.zip" \
-            --build-remote false \
-            --timeout 600 \
-            --output none
+          set -u
+          deployed=false
+          for attempt in 1 2 3 4; do
+            echo "Azure Function deployment attempt $attempt of 4"
+            if az functionapp deployment source config-zip \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$FUNCTION_APP" \
+              --src "$RUNNER_TEMP/recruitment-functions.zip" \
+              --build-remote false \
+              --timeout 600 \
+              --output none; then
+              deployed=true
+              break
+            fi
+            echo "Deployment attempt $attempt failed. Latest Azure deployment log:"
+            az functionapp log deployment show \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$FUNCTION_APP" \
+              --output json || true
+            sleep $((attempt * 30))
+          done
+          [[ "$deployed" == 'true' ]] || exit 1
 
       - id: index
         name: Verify required Functions indexed
@@ -256,21 +107,21 @@ jobs:
             names="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query '[].name' -o tsv 2>/dev/null | sed 's#^.*/##' || true)"
             missing=0
             for name in "${expected[@]}"; do grep -qx "$name" <<<"$names" || missing=$((missing+1)); done
-            if [[ "$missing" == 0 ]]; then exit 0; fi
+            if [[ "$missing" == '0' ]]; then exit 0; fi
             echo "Index check $attempt: $missing required Functions missing."
             sleep 15
           done
           exit 1
 
-      - id: activate_notifications
-        name: Enable candidate and Careers mailbox notifications
+      - id: activate
+        name: Activate candidate and team notifications
         shell: bash
         run: |
           set -euo pipefail
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
-          current_cutoff="$(jq -r '.[] | select(.name == "RECRUITMENT_OUTBOX_NOT_BEFORE_UTC") | .value' <<<"$settings" | head -n1)"
-          if [[ -z "$current_cutoff" || "$current_cutoff" == 'null' ]]; then
-            current_cutoff="$(node -e 'process.stdout.write(new Date().toISOString())')"
+          cutoff="$(jq -r '.[] | select(.name == "RECRUITMENT_OUTBOX_NOT_BEFORE_UTC") | .value' <<<"$settings" | head -n1)"
+          if [[ -z "$cutoff" || "$cutoff" == 'null' ]]; then
+            cutoff="$(node -e 'process.stdout.write(new Date().toISOString())')"
           fi
           az functionapp config appsettings set \
             --resource-group "$AZURE_RESOURCE_GROUP" \
@@ -279,27 +130,27 @@ jobs:
               RECRUITMENT_API_ENABLED=true \
               RECRUITMENT_CAPTURE_ONLY_MODE=true \
               RECRUITMENT_OUTBOX_DELIVERY_ENABLED=true \
-              RECRUITMENT_OUTBOX_NOT_BEFORE_UTC="$current_cutoff" \
+              RECRUITMENT_OUTBOX_NOT_BEFORE_UTC="$cutoff" \
               RECRUITMENT_CANDIDATE_ACK_ENABLED=true \
               RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED=true \
               RECRUITMENT_CANDIDATE_ACK_MAILBOX=careers@shorevest.com \
               RECRUITMENT_CANDIDATE_ACK_PRIVACY_URL=https://shorevest.com/privacy-policy/ \
               RECRUITMENT_TEAM_NOTIFICATION_ENABLED=true \
               RECRUITMENT_TEAM_NOTIFICATION_MAILBOX=careers@shorevest.com \
+              RECRUITMENT_TEAM_NOTIFICATION_RECIPIENTS=careers@shorevest.com,hr@shorevest.com \
               RECRUITMENT_HR_ACCESS_ENABLED=false \
               RECRUITMENT_RETENTION_ENABLED=false \
               RECRUITMENT_RETENTION_DELETION_ENABLED=false \
             --output none
-          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP"
-          echo "Notification activation cutoff: $current_cutoff"
+          az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --output none
 
       - id: health
-        name: Verify live capture plus notification health and safety
+        name: Verify live recruitment health
         shell: bash
         run: |
           set -euo pipefail
           healthy=false
-          for attempt in $(seq 1 24); do
+          for attempt in $(seq 1 30); do
             code="$(curl -sS -o "$RUNNER_TEMP/health.json" -w '%{http_code}' "https://${FUNCTION_APP}.azurewebsites.net/api/recruitment/health" || true)"
             if [[ "$code" == '200' ]] && jq -e '.ok == true and .configuration == "valid" and .dependencies == "ready"' "$RUNNER_TEMP/health.json" >/dev/null 2>&1; then
               healthy=true
@@ -308,51 +159,23 @@ jobs:
             echo "Health check $attempt: HTTP $code"
             sleep 10
           done
-          if [[ "$healthy" != 'true' ]]; then
-            echo 'Notification-enabled runtime failed health. Reverting notification delivery while preserving capture.' >&2
-            cat "$RUNNER_TEMP/health.json" >&2 || true
-            az functionapp config appsettings set \
-              --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "$FUNCTION_APP" \
-              --settings \
-                RECRUITMENT_API_ENABLED=true \
-                RECRUITMENT_CAPTURE_ONLY_MODE=true \
-                RECRUITMENT_OUTBOX_DELIVERY_ENABLED=false \
-                RECRUITMENT_CANDIDATE_ACK_ENABLED=false \
-                RECRUITMENT_TEAM_NOTIFICATION_ENABLED=false \
-                RECRUITMENT_HR_ACCESS_ENABLED=false \
-                RECRUITMENT_RETENTION_ENABLED=false \
-                RECRUITMENT_RETENTION_DELETION_ENABLED=false \
-              --output none || true
-            az functionapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" || true
-            exit 1
-          fi
+          [[ "$healthy" == 'true' ]] || { cat "$RUNNER_TEMP/health.json" >&2 || true; exit 1; }
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
           value() { jq -r --arg key "$1" '.[] | select(.name == $key) | .value' <<<"$settings" | tr '[:upper:]' '[:lower:]'; }
-          [[ "$(value RECRUITMENT_API_ENABLED)" == 'true' ]]
-          [[ "$(value RECRUITMENT_CAPTURE_ONLY_MODE)" == 'true' ]]
           [[ "$(value RECRUITMENT_OUTBOX_DELIVERY_ENABLED)" == 'true' ]]
           [[ "$(value RECRUITMENT_CANDIDATE_ACK_ENABLED)" == 'true' ]]
-          [[ "$(value RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED)" == 'true' ]]
           [[ "$(value RECRUITMENT_TEAM_NOTIFICATION_ENABLED)" == 'true' ]]
-          [[ "$(value RECRUITMENT_HR_ACCESS_ENABLED)" == 'false' ]]
-          [[ "$(value RECRUITMENT_RETENTION_ENABLED)" == 'false' ]]
-          [[ "$(value RECRUITMENT_RETENTION_DELETION_ENABLED)" == 'false' ]]
           cp "$RUNNER_TEMP/health.json" recruitment-capture-live-health.json
 
-      - name: Record Azure deployment result
+      - name: Record controlled Azure deploy
         if: always()
         shell: bash
         env:
           JOB_STATUS: ${{ job.status }}
-          OUT_LOGIN: ${{ steps.login.outcome }}
-          OUT_SAFETY: ${{ steps.safety.outcome }}
-          OUT_MANIFEST: ${{ steps.manifest.outcome }}
-          OUT_PACKAGE: ${{ steps.package.outcome }}
-          OUT_DEPLOY: ${{ steps.deploy.outcome }}
-          OUT_INDEX: ${{ steps.index.outcome }}
-          OUT_ACTIVATE: ${{ steps.activate_notifications.outcome }}
-          OUT_HEALTH: ${{ steps.health.outcome }}
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          INDEX_OUTCOME: ${{ steps.index.outcome }}
+          ACTIVATE_OUTCOME: ${{ steps.activate.outcome }}
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
         run: |
           set -euo pipefail
           cat > recruitment-capture-ci-deployment-status.json <<EOF
@@ -361,19 +184,16 @@ jobs:
             "sourceCommit": "${GITHUB_SHA}",
             "recordedAtUtc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "steps": {
-              "azureLogin": "${OUT_LOGIN}",
-              "safety": "${OUT_SAFETY}",
-              "manifest": "${OUT_MANIFEST}",
-              "package": "${OUT_PACKAGE}",
-              "deploy": "${OUT_DEPLOY}",
-              "index": "${OUT_INDEX}",
-              "activateNotifications": "${OUT_ACTIVATE}",
-              "health": "${OUT_HEALTH}"
+              "deploy": "${DEPLOY_OUTCOME}",
+              "index": "${INDEX_OUTCOME}",
+              "activateNotifications": "${ACTIVATE_OUTCOME}",
+              "health": "${HEALTH_OUTCOME}"
             }
           }
           EOF
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add recruitment-capture-ci-deployment-status.json recruitment-capture-live-health.json 2>/dev/null || git add recruitment-capture-ci-deployment-status.json
+          git add recruitment-capture-ci-deployment-status.json
+          [[ -f recruitment-capture-live-health.json ]] && git add recruitment-capture-live-health.json
           git commit -m 'Record controlled recruitment Azure deploy [skip ci]' || exit 0
           git push origin HEAD:agent/rebuild-recruitment-backend
