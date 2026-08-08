@@ -22,15 +22,6 @@
       "redirectTarget": null
     },
     {
-      "source": "careers/application-test-20260808.html",
-      "route": "/careers/application-test-20260808/",
-      "destination": "careers/application-test-20260808/index.html",
-      "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/careers/#open-roles"
-    },
-    {
       "source": "careers/apply.html",
       "route": "/careers/apply/",
       "destination": "careers/apply/index.html",
@@ -44,36 +35,36 @@
       "route": "/careers/distressed-debt-investment-manager/",
       "destination": "careers/distressed-debt-investment-manager/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/finance-fund-operations-associate.html",
       "route": "/careers/finance-fund-operations-associate/",
       "destination": "careers/finance-fund-operations-associate/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/investment-analyst.html",
       "route": "/careers/investment-analyst/",
       "destination": "careers/investment-analyst/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/legal-assistant.html",
       "route": "/careers/legal-assistant/",
       "destination": "careers/legal-assistant/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "home_cn.html",
@@ -107,36 +98,36 @@
       "route": "/cn/careers/distressed-debt-investment-manager/",
       "destination": "cn/careers/distressed-debt-investment-manager/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/cn/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/finance-fund-operations-associate_cn.html",
       "route": "/cn/careers/finance-fund-operations-associate/",
       "destination": "cn/careers/finance-fund-operations-associate/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/cn/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/investment-analyst_cn.html",
       "route": "/cn/careers/investment-analyst/",
       "destination": "cn/careers/investment-analyst/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/cn/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "careers/legal-assistant_cn.html",
       "route": "/cn/careers/legal-assistant/",
       "destination": "cn/careers/legal-assistant/index.html",
       "indexable": false,
-      "disabled": true,
-      "reason": "careers-disabled",
-      "redirectTarget": "/cn/careers/#open-roles"
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
     },
     {
       "source": "contact_cn.html",
