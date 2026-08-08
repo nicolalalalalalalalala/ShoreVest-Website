@@ -1,5 +1,7 @@
 {
   "status": "failed",
-  "detail": "Managed identity principal ID could not be resolved. functionapp= resource=",
-  "recordedAtUtc": "2026-08-08T18:57:35Z"
+  "detail": "Identity resolved (add37994-bada-4dae-97f1-6ac7f11f4ca9), but Graph service-principal metadata was unavailable: ERROR: Insufficient privileges to complete the operation. ",
+  "principalId": "add37994-bada-4dae-97f1-6ac7f11f4ca9",
+  "clientId": "9ef354c4-f119-436d-aeae-d11ef2b4cc63",
+  "recordedAtUtc": "2026-08-08T19:06:46Z"
 }
