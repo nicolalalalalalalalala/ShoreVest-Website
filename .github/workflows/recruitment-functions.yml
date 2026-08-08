@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/recruitment-functions.yml
       - services/recruitment-functions/HOTFIX_TRIGGER.txt
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -14,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: recruitment-functions-hotfix
+  group: recruitment-functions-hotfix-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
