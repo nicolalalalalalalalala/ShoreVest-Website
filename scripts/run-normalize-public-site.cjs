@@ -51,4 +51,13 @@ const run = spawnSync(process.execPath, [temporaryPath, ...process.argv.slice(2)
 try { fs.unlinkSync(temporaryPath); } catch (_) {}
 process.stdout.write(run.stdout || '');
 process.stderr.write(run.stderr || '');
-process.exit(run.status == null ? 1 : run.status);
+if (run.status !== 0) process.exit(run.status == null ? 1 : run.status);
+
+const punctuationScript = path.join(__dirname, 'normalize-copy-punctuation.cjs');
+const punctuationRun = spawnSync(process.execPath, [punctuationScript, ...process.argv.slice(2)], {
+  cwd: path.resolve(__dirname, '..'),
+  encoding: 'utf8'
+});
+process.stdout.write(punctuationRun.stdout || '');
+process.stderr.write(punctuationRun.stderr || '');
+process.exit(punctuationRun.status == null ? 1 : punctuationRun.status);
