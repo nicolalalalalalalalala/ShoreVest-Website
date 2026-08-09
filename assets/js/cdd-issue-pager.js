@@ -78,7 +78,7 @@
     a.href = withToken(issue.file);
     var dir = document.createElement("span");
     dir.className = "cdd-pager__dir";
-    dir.textContent = (kind === "prev" ? "\u2190 " : "") + dirLabel + " \u00b7 " + issue.label + (kind === "next" ? " \u2192" : "");
+    dir.textContent = (kind === "prev" ? "\u2190 " : "") + dirLabel + ", " + issue.label + (kind === "next" ? " \u2192" : "");
     var t = document.createElement("span");
     t.className = "cdd-pager__title";
     t.textContent = issue.title;

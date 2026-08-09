@@ -270,7 +270,7 @@
     const tl = document.querySelector('.cdd-topline__inner');
     if (tl && !tl.querySelector('.cdd-nameplate')) {
       const existingLockup = tl.querySelector('.cdd-lockup');
-      const lockupText = existingLockup ? existingLockup.textContent.trim() : '\u65b0\u5cb8\u8cc7\u672c \u00b7 \u4e2d\u570b\u50b5\u52d9\u52d5\u614b';
+      const lockupText = existingLockup ? existingLockup.textContent.trim() : '\u65b0\u5cb8\u8cc7\u672c  \u4e2d\u570b\u50b5\u52d9\u52d5\u614b';
       tl.innerHTML = '';
       const np = document.createElement('div');
       np.className = 'cdd-nameplate';
@@ -289,7 +289,7 @@
       lk.textContent = lockupText;
       const iss = document.createElement('span');
       iss.className = 'cdd-nameplate__issue';
-      iss.textContent = String(data.volumeIssue || '').replace(/\s*\|\s*/g, ' \u00b7 ');
+      iss.textContent = String(data.volumeIssue || '').replace(/\s*\|\s*/g, ', ');
       right.append(lk, iss);
       tl.append(np, right);
     }
