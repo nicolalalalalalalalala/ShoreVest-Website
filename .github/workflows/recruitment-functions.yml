@@ -166,16 +166,15 @@ jobs:
           set -euo pipefail
           reference='SV-APP-2026-9997C158CF90455D'
           settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
-          endpoint="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_ENDPOINT") | .value' <<<"$settings" | head -n1)"
-          database="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_DATABASE") | .value' <<<"$settings" | head -n1)"
-          account="${endpoint#https://}"
-          account="${account%%.*}"
-          key="$(az cosmosdb keys list --resource-group "$AZURE_RESOURCE_GROUP" --name "$account" --query primaryMasterKey -o tsv)"
-          export COSMOS_ENDPOINT="$endpoint" COSMOS_DATABASE="$database" COSMOS_KEY="$key" APPLICATION_REFERENCE="$reference"
+          export COSMOS_ENDPOINT="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_ENDPOINT") | .value' <<<"$settings" | head -n1)"
+          export COSMOS_DATABASE="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_DATABASE") | .value' <<<"$settings" | head -n1)"
+          export APPLICATION_REFERENCE="$reference"
           node <<'NODE'
           const { CosmosClient } = require('./services/recruitment-functions/node_modules/@azure/cosmos');
+          const { AzureCliCredential } = require('./services/recruitment-functions/node_modules/@azure/identity');
           (async () => {
-            const client = new CosmosClient({ endpoint: process.env.COSMOS_ENDPOINT, key: process.env.COSMOS_KEY });
+            const credential = new AzureCliCredential();
+            const client = new CosmosClient({ endpoint: process.env.COSMOS_ENDPOINT, aadCredentials: credential });
             const container = client.database(process.env.COSMOS_DATABASE).container('submissions');
             const query = {
               query: `SELECT c.type, c.state, c.attemptCount, c.completedAtUtc, c.deliveryReference, c.lastErrorCode FROM c WHERE c.docType = 'outbox' AND c.applicationReference = @reference`,
@@ -201,7 +200,6 @@ jobs:
             process.exit(1);
           });
           NODE
-          unset COSMOS_KEY
 
       - name: Record controlled Azure deploy
         if: always()
