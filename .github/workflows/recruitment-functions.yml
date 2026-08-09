@@ -159,6 +159,50 @@ jobs:
           [[ "$(value RECRUITMENT_TEAM_NOTIFICATION_ENABLED)" == 'true' ]]
           cp "$RUNNER_TEMP/health.json" recruitment-capture-live-health.json
 
+      - id: diagnostic
+        name: Check test application outbox delivery
+        shell: bash
+        run: |
+          set -euo pipefail
+          reference='SV-APP-2026-9997C158CF90455D'
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          endpoint="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_ENDPOINT") | .value' <<<"$settings" | head -n1)"
+          database="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_DATABASE") | .value' <<<"$settings" | head -n1)"
+          account="${endpoint#https://}"
+          account="${account%%.*}"
+          key="$(az cosmosdb keys list --resource-group "$AZURE_RESOURCE_GROUP" --name "$account" --query primaryMasterKey -o tsv)"
+          export COSMOS_ENDPOINT="$endpoint" COSMOS_DATABASE="$database" COSMOS_KEY="$key" APPLICATION_REFERENCE="$reference"
+          node <<'NODE'
+          const { CosmosClient } = require('./services/recruitment-functions/node_modules/@azure/cosmos');
+          (async () => {
+            const client = new CosmosClient({ endpoint: process.env.COSMOS_ENDPOINT, key: process.env.COSMOS_KEY });
+            const container = client.database(process.env.COSMOS_DATABASE).container('submissions');
+            const query = {
+              query: `SELECT c.type, c.state, c.attemptCount, c.completedAtUtc, c.deliveryReference, c.lastErrorCode FROM c WHERE c.docType = 'outbox' AND c.applicationReference = @reference`,
+              parameters: [{ name: '@reference', value: process.env.APPLICATION_REFERENCE }]
+            };
+            const { resources } = await container.items.query(query, { maxItemCount: 20 }).fetchAll();
+            const sanitized = resources.map((item) => ({
+              type: item.type,
+              state: item.state,
+              attemptCount: item.attemptCount,
+              completedAtUtc: item.completedAtUtc || null,
+              teamMailRecorded: String(item.deliveryReference || '').includes('team-mail:'),
+              candidateMailRecorded: String(item.deliveryReference || '').includes('mail:'),
+              lastErrorCode: item.lastErrorCode || null
+            })).sort((a, b) => String(a.type).localeCompare(String(b.type)));
+            console.log('OUTBOX_DIAGNOSTIC=' + JSON.stringify(sanitized));
+            const team = sanitized.find((item) => item.type === 'ApplicationReceived');
+            if (!team) throw new Error('ApplicationReceived outbox event not found');
+            if (team.state !== 'Completed') throw new Error(`ApplicationReceived state is ${team.state}`);
+            if (team.teamMailRecorded !== true) throw new Error('team-mail delivery reference missing');
+          })().catch((error) => {
+            console.error('OUTBOX_DIAGNOSTIC_ERROR=' + error.message);
+            process.exit(1);
+          });
+          NODE
+          unset COSMOS_KEY
+
       - name: Record controlled Azure deploy
         if: always()
         shell: bash
