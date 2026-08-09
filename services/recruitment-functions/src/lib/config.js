@@ -179,12 +179,11 @@ function validateConfig(config) {
     invalid.push('botVerification.mode');
   }
 
-  // Capture-only continues to block HR document access and all retention/deletion
-  // automation. Notification delivery is intentionally allowed so a captured
-  // application can be projected and acknowledged without opening CV access or
-  // enabling destructive lifecycle actions.
+  // Capture-only keeps destructive lifecycle automation off while allowing
+  // explicitly authenticated, role-gated read access to clean documents.
+  // Notification delivery and HR reads are non-destructive; retention and
+  // deletion remain blocked until the full recruitment lifecycle is launched.
   if (config.captureOnly === true) {
-    if (config.hrAccess?.enabled === true) invalid.push('hrAccess.enabled');
     if (config.retention?.enabled === true) invalid.push('retention.enabled');
     if (config.retention?.deletionEnabled === true) invalid.push('retention.deletionEnabled');
   }

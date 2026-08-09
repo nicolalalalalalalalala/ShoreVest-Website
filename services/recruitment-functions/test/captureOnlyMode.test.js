@@ -26,6 +26,7 @@ function captureEnvironment(patch = {}) {
     RECRUITMENT_CANDIDATE_ACK_ENABLED: 'false',
     RECRUITMENT_CANDIDATE_ACK_TEMPLATE_APPROVED: 'false',
     RECRUITMENT_TEAM_NOTIFICATION_ENABLED: 'false',
+    RECRUITMENT_PLATFORM_AUTH_ENABLED: 'false',
     RECRUITMENT_HR_ACCESS_ENABLED: 'false',
     RECRUITMENT_RETENTION_ENABLED: 'false',
     RECRUITMENT_RETENTION_DELETION_ENABLED: 'false',
@@ -56,9 +57,28 @@ test('capture-only mode allows non-destructive candidate and Careers mailbox not
   assert.deepEqual(validateConfig(config), { ok: true, missing: [], invalid: [] });
 });
 
-test('capture-only mode still fails closed for HR access and retention or deletion', () => {
+test('capture-only mode allows authenticated read-only HR document access', () => {
+  const config = loadConfig(captureEnvironment({
+    RECRUITMENT_PLATFORM_AUTH_ENABLED: 'true',
+    RECRUITMENT_HR_ACCESS_ENABLED: 'true',
+    RECRUITMENT_HR_REQUIRED_ROLE: 'Recruitment.HR',
+    RECRUITMENT_HR_READ_SAS_SECONDS: '300'
+  }));
+  assert.equal(config.captureOnly, true);
+  assert.equal(config.hrAccess.enabled, true);
+  assert.deepEqual(validateConfig(config), { ok: true, missing: [], invalid: [] });
+});
+
+test('capture-only HR access still fails closed without platform authentication', () => {
+  const shape = validateConfig(loadConfig(captureEnvironment({
+    RECRUITMENT_HR_ACCESS_ENABLED: 'true'
+  })));
+  assert.equal(shape.ok, false);
+  assert.ok(shape.invalid.includes('hrAccess.platformAuthenticationEnabled'));
+});
+
+test('capture-only mode still fails closed for retention or deletion', () => {
   for (const [setting, expected] of [
-    ['RECRUITMENT_HR_ACCESS_ENABLED', 'hrAccess.enabled'],
     ['RECRUITMENT_RETENTION_ENABLED', 'retention.enabled'],
     ['RECRUITMENT_RETENTION_DELETION_ENABLED', 'retention.deletionEnabled']
   ]) {
