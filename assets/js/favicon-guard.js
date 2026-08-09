@@ -1,5 +1,5 @@
 (function () {
-  var VERSION = "20260801-ga4-restored-1";
+  var VERSION = "20260809-copy-normalizer-1";
 
   var GOOGLE_ANALYTICS_ID = "G-CLVYF17N9H";
 
@@ -134,6 +134,16 @@
     document.head.appendChild(fontStylesheet);
   }
 
+  function ensureSiteCopyNormalizer() {
+    if (!document.head || document.querySelector('script[data-sv-copy-normalizer="true"]')) return;
+
+    var copyNormalizer = document.createElement("script");
+    copyNormalizer.src = base + "assets/js/site-copy-normalizer.js?v=" + VERSION;
+    copyNormalizer.async = false;
+    copyNormalizer.setAttribute("data-sv-copy-normalizer", "true");
+    document.head.appendChild(copyNormalizer);
+  }
+
   function isCanonicalHomepage() {
     var canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical || !canonical.href) return location.pathname === "/";
@@ -237,18 +247,21 @@
   ensureFavicons();
   ensureChineseCopyOverrides();
   ensureChineseFontUniformity();
+  ensureSiteCopyNormalizer();
   ensureWebsiteSearchSignals();
   ensureInvestorPortalEmailLogin();
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", ensureFavicons);
     document.addEventListener("DOMContentLoaded", ensureChineseCopyOverrides);
     document.addEventListener("DOMContentLoaded", ensureChineseFontUniformity);
+    document.addEventListener("DOMContentLoaded", ensureSiteCopyNormalizer);
     document.addEventListener("DOMContentLoaded", ensureWebsiteSearchSignals);
     document.addEventListener("DOMContentLoaded", ensureInvestorPortalEmailLogin);
   }
   window.addEventListener("pageshow", ensureFavicons);
   window.addEventListener("pageshow", ensureChineseCopyOverrides);
   window.addEventListener("pageshow", ensureChineseFontUniformity);
+  window.addEventListener("pageshow", ensureSiteCopyNormalizer);
   window.addEventListener("pageshow", ensureWebsiteSearchSignals);
   window.addEventListener("pageshow", ensureInvestorPortalEmailLogin);
   document.addEventListener("visibilitychange", ensureFavicons);
