@@ -311,11 +311,14 @@ function teamNotificationMessage(application, config) {
     '',
     'ShoreVest Careers'
   ].join('\n');
+  const recipients = Array.isArray(config.recipients) && config.recipients.length > 0
+    ? config.recipients
+    : [config.mailbox];
 
   return {
     subject: boundedText(subject, 255),
     body: { contentType: 'Text', content },
-    toRecipients: [{ emailAddress: { address: config.mailbox } }]
+    toRecipients: recipients.map((address) => ({ emailAddress: { address } }))
   };
 }
 
@@ -568,12 +571,19 @@ function createOutboxDispatcher({ graph, config } = {}) {
     }
     if (event.type === EVENTS.CandidateAcknowledgementRequested) return acknowledge(event, dependencies);
     if (event.type === EVENTS.ApplicationReceived) {
-      const projection = await project(event, dependencies);
-      if (projection.skipped) return projection;
       const teamDelivery = await notifyTeam(event, dependencies);
+      const activeEvent = teamDelivery.event || event;
+      let projection;
+      try {
+        projection = await project(activeEvent, dependencies);
+      } catch (error) {
+        error.event = activeEvent;
+        throw error;
+      }
+      if (projection.skipped) return { ...projection, event: activeEvent };
       return {
         deliveryReference: `${projection.deliveryReference}|${teamDelivery.deliveryReference}`,
-        event: teamDelivery.event || event,
+        event: activeEvent,
         reconciled: teamDelivery.reconciled === true
       };
     }
