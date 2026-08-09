@@ -1,1 +1,1 @@
-Trigger branded recruitment acknowledgement deployment and suppress the legacy generic notification path.
+Trigger branded recruitment acknowledgement deployment through pull-request validation.
