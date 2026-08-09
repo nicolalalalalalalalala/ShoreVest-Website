@@ -74,6 +74,7 @@ function loadConfig(env = process.env) {
   );
   const approvedOriginHostnames = originHostnames(origins);
   const candidateMailbox = String(env.RECRUITMENT_CANDIDATE_ACK_MAILBOX || '').trim();
+  const teamMailbox = String(env.RECRUITMENT_TEAM_NOTIFICATION_MAILBOX || candidateMailbox).trim();
 
   return {
     apiEnabled: bool(env.RECRUITMENT_API_ENABLED),
@@ -133,7 +134,8 @@ function loadConfig(env = process.env) {
     },
     teamNotification: {
       enabled: bool(env.RECRUITMENT_TEAM_NOTIFICATION_ENABLED),
-      mailbox: String(env.RECRUITMENT_TEAM_NOTIFICATION_MAILBOX || candidateMailbox).trim()
+      mailbox: teamMailbox,
+      recipients: commaList(env.RECRUITMENT_TEAM_NOTIFICATION_RECIPIENTS || teamMailbox)
     },
     hrAccess: {
       enabled: bool(env.RECRUITMENT_HR_ACCESS_ENABLED),
@@ -217,6 +219,11 @@ function validateConfig(config) {
       // recruitment notifications. Readiness probes this mailbox once, which
       // guarantees both delivery paths use a verified Graph/Exchange target.
       invalid.push('teamNotification.mailbox');
+    }
+    if (!Array.isArray(config.teamNotification?.recipients) || config.teamNotification.recipients.length === 0) {
+      missing.push('teamNotification.recipients');
+    } else if (config.teamNotification.recipients.some((recipient) => !validShoreVestMailbox(recipient))) {
+      invalid.push('teamNotification.recipients');
     }
   }
 
