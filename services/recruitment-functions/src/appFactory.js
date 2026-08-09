@@ -37,7 +37,16 @@ const { createFinalizationGatedDispatcher } = require('./outbox/finalizationGate
 const initiateApplication = createInitiateApplication(coreInitiateApplication);
 const finalizeApplication = createFinalizeApplication(coreFinalizeApplication);
 const processScanResult = createProcessScanResult(coreProcessScanResult);
+const ACKNOWLEDGEMENT_PROPERTY_MARKER = 'ShoreVestApplicationReference';
 const TEAM_NOTIFICATION_PROPERTY_MARKER = 'ShoreVestRecruitmentTeamApplicationReference';
+const SHOREVEST_LOGO_URL = 'https://shorevest.com/assets/brand/sv-lockup-fc-dark.png';
+const LEGACY_NOTIFICATION_FIELDS = Object.freeze([
+  'NotificationState',
+  'NotificationEventKey',
+  'NotificationSentAtUtc',
+  'NotificationAttemptCount',
+  'NotificationLastErrorCode'
+]);
 const DEFAULT_TEAM_NOTIFICATION_RECIPIENTS = Object.freeze([
   'careers@shorevest.com',
   'hr@shorevest.com'
@@ -45,6 +54,16 @@ const DEFAULT_TEAM_NOTIFICATION_RECIPIENTS = Object.freeze([
 
 function randomHex(length) {
   return crypto.randomUUID().replace(/-/g, '').slice(0, length).toUpperCase();
+}
+
+function escapeHtml(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[character]);
 }
 
 function teamNotificationRecipients(env = process.env) {
@@ -57,28 +76,164 @@ function teamNotificationRecipients(env = process.env) {
     : [...DEFAULT_TEAM_NOTIFICATION_RECIPIENTS];
 }
 
+function acknowledgementRole(subject, chinese) {
+  const parts = String(subject || '')
+    .split('|')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (parts.length >= 3 && parts[1]) return parts[1];
+  return chinese ? '该职位' : 'this role';
+}
+
+function candidateAcknowledgementMessage(message, extendedProperty) {
+  const subject = String(message?.subject || '');
+  const chinese = /^\s*申请已收到/.test(subject);
+  const role = escapeHtml(acknowledgementRole(subject, chinese));
+  const reference = escapeHtml(extendedProperty?.value || '');
+  const logoUrl = escapeHtml(SHOREVEST_LOGO_URL);
+  const privacyUrl = 'https://shorevest.com/privacy-policy/';
+  const siteUrl = 'https://shorevest.com/';
+
+  const copy = chinese
+    ? {
+      preheader: `我们已收到您对 ${role} 职位的申请。`,
+      heading: '申请已收到',
+      received: `感谢您对 ShoreVest 的关注。我们已收到您对 <strong>${role}</strong> 职位的申请。`,
+      next: '招聘团队将审核您的申请材料。如您的经验与职位要求相符，我们将与您联系并告知后续安排。',
+      reference: '申请编号',
+      retain: '请保留此申请编号，以备后续查询。',
+      privacy: '隐私政策',
+      footer: 'ShoreVest Careers'
+    }
+    : {
+      preheader: `We have received your application for the ${role} position.`,
+      heading: 'Application received',
+      received: `Thank you for your interest in ShoreVest. We have received your application for the <strong>${role}</strong> position.`,
+      next: 'Our recruitment team will review your application. If your experience aligns with the role, a member of our team will contact you regarding next steps.',
+      reference: 'Application reference',
+      retain: 'Please retain this reference for your records.',
+      privacy: 'Privacy Policy',
+      footer: 'ShoreVest Careers'
+    };
+
+  const referenceBlock = reference
+    ? `<tr>
+        <td style="padding:20px 0 0 0;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;background:#f4f0e7;">
+            <tr>
+              <td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif;color:#24343b;">
+                <div style="font-size:11px;line-height:1.4;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#566f66;">${copy.reference}</div>
+                <div style="padding-top:5px;font-size:15px;line-height:1.5;word-break:break-word;">${reference}</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>`
+    : '';
+
+  const content = `<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body style="margin:0;padding:0;background:#ffffff;color:#24343b;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${copy.preheader}</div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#ffffff;">
+    <tr>
+      <td align="center" style="padding:32px 20px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#24343b;">
+          <tr>
+            <td style="padding:0 0 20px 0;">
+              <a href="${siteUrl}" style="text-decoration:none;">
+                <img src="${logoUrl}" width="172" alt="ShoreVest" style="display:block;width:172px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="height:2px;line-height:2px;font-size:0;background:#c64832;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="padding:30px 0 0 0;">
+              <h1 style="margin:0 0 20px 0;font-family:Arial,Helvetica,sans-serif;font-size:30px;line-height:1.2;font-weight:600;color:#24343b;">${copy.heading}</h1>
+              <p style="margin:0 0 16px 0;font-size:16px;line-height:1.65;color:#24343b;">${copy.received}</p>
+              <p style="margin:0;font-size:16px;line-height:1.65;color:#24343b;">${copy.next}</p>
+            </td>
+          </tr>
+          ${referenceBlock}
+          <tr>
+            <td style="padding:18px 0 0 0;font-size:13px;line-height:1.6;color:#657078;">${copy.retain}</td>
+          </tr>
+          <tr>
+            <td style="padding:28px 0 0 0;border-top:1px solid #dedbd3;font-size:13px;line-height:1.65;color:#657078;">
+              <div>${copy.footer}</div>
+              <div style="padding-top:4px;"><a href="${privacyUrl}" style="color:#566f66;text-decoration:underline;">${copy.privacy}</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="${siteUrl}" style="color:#566f66;text-decoration:none;">shorevest.com</a></div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return {
+    ...message,
+    body: { contentType: 'HTML', content }
+  };
+}
+
+function withoutLegacyNotificationFields(fields) {
+  if (!fields || typeof fields !== 'object' || Array.isArray(fields)) return fields;
+  const cleaned = { ...fields };
+  for (const field of LEGACY_NOTIFICATION_FIELDS) delete cleaned[field];
+  return cleaned;
+}
+
 function createRecruitmentGraph(graph, env = process.env) {
   if (!graph) return null;
   const recipients = teamNotificationRecipients(env);
-  return {
+  const wrapped = {
     ...graph,
     createDraftMessage(mailbox, message, extendedProperty) {
-      const internalNotification = String(extendedProperty?.id || '').includes(
-        TEAM_NOTIFICATION_PROPERTY_MARKER
-      );
-      if (!internalNotification) {
-        return graph.createDraftMessage(mailbox, message, extendedProperty);
+      const propertyId = String(extendedProperty?.id || '');
+      const internalNotification = propertyId.includes(TEAM_NOTIFICATION_PROPERTY_MARKER);
+      const candidateAcknowledgement =
+        !internalNotification && propertyId.includes(ACKNOWLEDGEMENT_PROPERTY_MARKER);
+
+      if (internalNotification) {
+        return graph.createDraftMessage(
+          mailbox,
+          {
+            ...message,
+            toRecipients: recipients.map((address) => ({ emailAddress: { address } }))
+          },
+          extendedProperty
+        );
       }
-      return graph.createDraftMessage(
-        mailbox,
-        {
-          ...message,
-          toRecipients: recipients.map((address) => ({ emailAddress: { address } }))
-        },
-        extendedProperty
-      );
+
+      if (candidateAcknowledgement) {
+        return graph.createDraftMessage(
+          mailbox,
+          candidateAcknowledgementMessage(message, extendedProperty),
+          extendedProperty
+        );
+      }
+
+      return graph.createDraftMessage(mailbox, message, extendedProperty);
     }
   };
+
+  if (typeof graph.upsertListItem === 'function') {
+    wrapped.upsertListItem = function upsertListItem(options) {
+      return graph.upsertListItem({
+        ...options,
+        fields: withoutLegacyNotificationFields(options?.fields)
+      });
+    };
+  }
+
+  return wrapped;
 }
 
 function createNotificationFirstDispatcher(dispatcher) {
@@ -210,10 +365,16 @@ function createDeps(config = loadConfig(), requestContext = {}) {
 }
 
 module.exports = {
+  ACKNOWLEDGEMENT_PROPERTY_MARKER,
   TEAM_NOTIFICATION_PROPERTY_MARKER,
+  SHOREVEST_LOGO_URL,
+  LEGACY_NOTIFICATION_FIELDS,
   DEFAULT_TEAM_NOTIFICATION_RECIPIENTS,
   randomHex,
   teamNotificationRecipients,
+  acknowledgementRole,
+  candidateAcknowledgementMessage,
+  withoutLegacyNotificationFields,
   createRecruitmentGraph,
   createNotificationFirstDispatcher,
   createDeps,
