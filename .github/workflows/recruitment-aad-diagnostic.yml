@@ -1,0 +1,71 @@
+name: Recruitment AAD Delivery Diagnostic
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: recruitment-test
+    env:
+      AZURE_CLIENT_ID: 2a5392be-62d3-44ad-8581-0ab5966b4964
+      AZURE_TENANT_ID: 768bd74c-6be4-4c55-b52d-33673e3b8700
+      AZURE_SUBSCRIPTION_ID: 4146f1fc-590f-4ee4-a7b7-57f15c08c74e
+      AZURE_RESOURCE_GROUP: rg-shorevest-recruitment-test-eastasia
+      FUNCTION_APP: svrc26hk-recruit-fn-test
+      APPLICATION_REFERENCE: SV-APP-2026-9997C158CF90455D
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+      - name: Install recruitment runtime dependencies
+        working-directory: services/recruitment-functions
+        run: npm ci --omit=dev --no-audit --no-fund
+      - name: Read sanitized outbox delivery state via AAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="$(az functionapp config appsettings list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" -o json)"
+          export COSMOS_ENDPOINT="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_ENDPOINT") | .value' <<<"$settings" | head -n1)"
+          export COSMOS_DATABASE="$(jq -r '.[] | select(.name == "RECRUITMENT_COSMOS_DATABASE") | .value' <<<"$settings" | head -n1)"
+          node <<'NODE'
+          const { CosmosClient } = require('./services/recruitment-functions/node_modules/@azure/cosmos');
+          const { AzureCliCredential } = require('./services/recruitment-functions/node_modules/@azure/identity');
+          (async () => {
+            const credential = new AzureCliCredential();
+            const client = new CosmosClient({ endpoint: process.env.COSMOS_ENDPOINT, aadCredentials: credential });
+            const container = client.database(process.env.COSMOS_DATABASE).container('submissions');
+            const query = {
+              query: `SELECT c.type, c.state, c.attemptCount, c.completedAtUtc, c.deliveryReference, c.lastErrorCode FROM c WHERE c.docType = 'outbox' AND c.applicationReference = @reference`,
+              parameters: [{ name: '@reference', value: process.env.APPLICATION_REFERENCE }]
+            };
+            const { resources } = await container.items.query(query, { maxItemCount: 20 }).fetchAll();
+            const sanitized = resources.map((item) => ({
+              type: item.type,
+              state: item.state,
+              attemptCount: item.attemptCount,
+              completedAtUtc: item.completedAtUtc || null,
+              teamMailRecorded: String(item.deliveryReference || '').includes('team-mail:'),
+              candidateMailRecorded: String(item.deliveryReference || '').includes('mail:'),
+              lastErrorCode: item.lastErrorCode || null
+            })).sort((a, b) => String(a.type).localeCompare(String(b.type)));
+            console.log('OUTBOX_DIAGNOSTIC=' + JSON.stringify(sanitized));
+            const team = sanitized.find((item) => item.type === 'ApplicationReceived');
+            if (!team) throw new Error('ApplicationReceived outbox event not found');
+            if (team.state !== 'Completed') throw new Error(`ApplicationReceived state is ${team.state}`);
+            if (team.teamMailRecorded !== true) throw new Error('team-mail delivery reference missing');
+          })().catch((error) => {
+            console.error('OUTBOX_DIAGNOSTIC_ERROR=' + error.message);
+            process.exit(1);
+          });
+          NODE
