@@ -1,1 +1,1 @@
-Trigger branded recruitment acknowledgement deployment through pull-request validation.
+Trigger AAD-only verification for recruitment application SV-APP-2026-9997C158CF90455D.
