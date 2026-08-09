@@ -1,1 +1,1 @@
-Trigger the simplified single controlled recruitment hotfix deployment.
+Trigger branded recruitment acknowledgement deployment and suppress the legacy generic notification path.
