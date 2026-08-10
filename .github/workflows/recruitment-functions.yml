@@ -94,7 +94,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected=(initiateApplication completeUpload finalizeApplication health outboxWorker)
+          expected=(initiateApplication completeUpload finalizeApplication hrApplicationDetails hrCleanDocumentAccess health outboxWorker)
           for attempt in $(seq 1 24); do
             names="$(az functionapp function list --resource-group "$AZURE_RESOURCE_GROUP" --name "$FUNCTION_APP" --query '[].name' -o tsv 2>/dev/null | sed 's#^.*/##' || true)"
             missing=0
