@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=22 <25"
   },
-  "main": "src/functions/index.js",
+  "main": "src/functions/bootstrap.js",
   "scripts": {
     "check": "node scripts/check-syntax.js",
     "test": "node --test test/*.test.js",
