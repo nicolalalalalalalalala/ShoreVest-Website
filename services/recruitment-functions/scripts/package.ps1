@@ -104,7 +104,7 @@ try {
   Copy-Item -LiteralPath $serviceLockPath -Destination (Join-Path $serviceStagingRoot 'package-lock.json') -Force
 
   $deploymentPackage = Get-Content -LiteralPath $servicePackagePath -Raw | ConvertFrom-Json
-  $deploymentPackage.main = 'services/recruitment-functions/src/functions/index.js'
+  $deploymentPackage.main = 'services/recruitment-functions/src/functions/bootstrap.js'
   [System.IO.File]::WriteAllText(
     (Join-Path $stagingRoot 'package.json'),
     (($deploymentPackage | ConvertTo-Json -Depth 20) + "`n"),
