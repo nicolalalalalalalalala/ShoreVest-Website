@@ -12,42 +12,126 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Query Pages API and live endpoints
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Query Pages API
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPOSITORY: ${{ github.repository }}
         run: |
-          set +e
+          set -euo pipefail
           echo '=== REPOSITORY PAGES CONFIG ==='
-          curl -sS -D /tmp/pages.headers \
+          curl -fsS \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${GH_REPOSITORY}/pages" | tee /tmp/pages.json
-          echo
-          cat /tmp/pages.headers
+            "https://api.github.com/repos/${GH_REPOSITORY}/pages"
           echo
           echo '=== LATEST PAGES BUILD ==='
-          curl -sS -D /tmp/build.headers \
+          curl -fsS \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${GH_REPOSITORY}/pages/builds/latest" | tee /tmp/build.json
+            "https://api.github.com/repos/${GH_REPOSITORY}/pages/builds/latest"
           echo
-          cat /tmp/build.headers
-          echo
-          echo '=== GITHUB PAGES ORIGIN ==='
-          curl -sSIL --max-time 20 'https://shorevest.github.io/website/john-jones/' | head -80
-          echo
-          echo '=== CUSTOM DOMAIN JOHN ==='
-          curl -sSIL --max-time 20 'https://shorevest.com/john-jones/' | head -80
-          echo
-          echo '=== CUSTOM DOMAIN NEWS ==='
-          curl -sSIL --max-time 20 'https://shorevest.com/news-insights/' | head -80
-          echo
-          echo '=== CUSTOM DOMAIN ROUTER ASSET ==='
-          curl -sSIL --max-time 20 'https://shorevest.com/assets/js/legacy-404-redirects.js?v=20260820-production' | head -80
-          echo
-          echo '=== CUSTOM DOMAIN MAIN COMMIT MARKER FILE ==='
-          curl -sSIL --max-time 20 'https://shorevest.com/john-jones/index.html' | head -80
+
+      - name: Exhaustively audit live legacy routes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib import request, error, parse
+          import re
+          import time
+
+          base = 'https://shorevest.com'
+          router = Path('assets/js/legacy-404-redirects.js').read_text(encoding='utf-8')
+          pairs = re.findall(r"^\s*'([^']+)':\s*'([^']+)',?\s*$", router, flags=re.M)
+          mapping = dict(pairs)
+          if len(mapping) != len(pairs) or len(mapping) < 90:
+              raise SystemExit(f'Bad redirect map: pairs={len(pairs)} unique={len(mapping)}')
+
+          def fetch(path, cache_bust=False):
+              encoded = parse.quote(path, safe='/%._-~')
+              url = base + encoded
+              if cache_bust:
+                  url += ('&' if '?' in url else '?') + 'svqa=' + str(int(time.time() * 1000))
+              req = request.Request(url, headers={'User-Agent': 'ShoreVest-redirect-QA/1.0'})
+              try:
+                  with request.urlopen(req, timeout=20) as resp:
+                      return resp.status, resp.geturl(), resp.read()
+              except error.HTTPError as exc:
+                  return exc.code, exc.geturl(), exc.read()
+
+          target_failures = []
+          route_failures = []
+          static_ok = 0
+          router_fallback_ok = 0
+          existing_file_ok = 0
+
+          # Every unique destination must itself resolve successfully.
+          for target in sorted(set(mapping.values())):
+              status, final_url, body = fetch(target, cache_bust=True)
+              if status != 200:
+                  target_failures.append((target, status, final_url))
+
+          for old, target in mapping.items():
+              suffix = Path(old).suffix.lower()
+              status, final_url, body = fetch(old, cache_bust=True)
+              text = body.decode('utf-8', errors='ignore')
+
+              if old == '/shorevest':
+                  if status == 404 and 'legacy-404-redirects.js' in text:
+                      router_fallback_ok += 1
+                  else:
+                      route_failures.append((old, target, status, 'expected 404 router fallback'))
+                  continue
+
+              if suffix and suffix != '.html':
+                  if status == 200:
+                      existing_file_ok += 1
+                  elif status == 404 and 'legacy-404-redirects.js' in text:
+                      router_fallback_ok += 1
+                  else:
+                      route_failures.append((old, target, status, 'file-like route neither exists nor has router fallback'))
+                  continue
+
+              if status != 200:
+                  route_failures.append((old, target, status, 'static redirect page not served'))
+                  continue
+              if target not in text or 'Redirecting | ShoreVest' not in text:
+                  route_failures.append((old, target, status, 'served page does not contain expected redirect target'))
+                  continue
+              static_ok += 1
+
+          # Intentionally unhandled/bot paths must stay real 404s.
+          for path in ['/wp-login.php', '/definitely-not-a-real-shorevest-page-20260820']:
+              status, final_url, body = fetch(path, cache_bust=True)
+              if status != 404:
+                  route_failures.append((path, None, status, 'should remain genuine 404'))
+
+          print('=== EXHAUSTIVE LIVE REDIRECT AUDIT ===')
+          print(f'exact_mappings={len(mapping)}')
+          print(f'unique_destinations={len(set(mapping.values()))}')
+          print(f'static_redirect_pages_ok={static_ok}')
+          print(f'router_fallbacks_ok={router_fallback_ok}')
+          print(f'existing_file_urls_ok={existing_file_ok}')
+          print(f'target_failures={len(target_failures)}')
+          print(f'route_failures={len(route_failures)}')
+
+          if target_failures:
+              print('TARGET FAILURES:')
+              for item in target_failures:
+                  print(item)
+          if route_failures:
+              print('ROUTE FAILURES:')
+              for item in route_failures:
+                  print(item)
+
+          if target_failures or route_failures:
+              raise SystemExit(1)
+          print('PASS: every mapped live route and destination validated')
+          PY
