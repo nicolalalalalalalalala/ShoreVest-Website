@@ -1,5 +1,6 @@
 name: Force live GitHub Pages rebuild
 
+# Trigger refreshed after production legacy redirect merge on 2026-08-20.
 on:
   push:
     branches: [main]
