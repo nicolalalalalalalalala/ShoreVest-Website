@@ -14,7 +14,7 @@ on:
       - 'tests/employee-portal-boot-guard.test.js'
       - 'tests/employee-portal-travel-calendar-stability.test.js'
       - 'scripts/qa-asset-tracing-browser.cjs'
-      - 'docs/employee-portal/ASSET_TRACING_MODULE.md'
+      - 'docs/employee-portal/ASSET_TRACING*.md'
       - '.github/workflows/asset-tracing-checks.yml'
   workflow_dispatch:
 
@@ -42,6 +42,7 @@ jobs:
           node --check assets/js/employee-portal/asset-tracing-interactions.js
           node --check assets/js/employee-portal/asset-tracing-accessibility.js
           node --check assets/js/employee-portal/asset-tracing-usability.js
+          node --check assets/js/employee-portal/asset-tracing-v2-triage.js
           node --check assets/js/employee-portal/views-asset-tracing.js
           node --check assets/js/employee-portal/views-asset-tracing-phase1b.js
           node --check assets/js/employee-portal/views-asset-tracing-report.js
@@ -56,6 +57,7 @@ jobs:
           node tests/employee-portal-asset-tracing-report.test.js
           node tests/employee-portal-asset-tracing-accessibility.test.js
           node tests/employee-portal-asset-tracing-usability.test.js
+          node tests/employee-portal-asset-tracing-v2-triage.test.js
 
       - name: Re-run portal entry and security checks
         run: |
