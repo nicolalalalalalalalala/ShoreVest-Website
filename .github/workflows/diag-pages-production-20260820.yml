@@ -1,0 +1,53 @@
+name: Diagnose production Pages deployment
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/diag-pages-production-20260820.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query Pages API and live endpoints
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+        run: |
+          set +e
+          echo '=== REPOSITORY PAGES CONFIG ==='
+          curl -sS -D /tmp/pages.headers \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GH_REPOSITORY}/pages" | tee /tmp/pages.json
+          echo
+          cat /tmp/pages.headers
+          echo
+          echo '=== LATEST PAGES BUILD ==='
+          curl -sS -D /tmp/build.headers \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GH_REPOSITORY}/pages/builds/latest" | tee /tmp/build.json
+          echo
+          cat /tmp/build.headers
+          echo
+          echo '=== GITHUB PAGES ORIGIN ==='
+          curl -sSIL --max-time 20 'https://shorevest.github.io/website/john-jones/' | head -80
+          echo
+          echo '=== CUSTOM DOMAIN JOHN ==='
+          curl -sSIL --max-time 20 'https://shorevest.com/john-jones/' | head -80
+          echo
+          echo '=== CUSTOM DOMAIN NEWS ==='
+          curl -sSIL --max-time 20 'https://shorevest.com/news-insights/' | head -80
+          echo
+          echo '=== CUSTOM DOMAIN ROUTER ASSET ==='
+          curl -sSIL --max-time 20 'https://shorevest.com/assets/js/legacy-404-redirects.js?v=20260820-production' | head -80
+          echo
+          echo '=== CUSTOM DOMAIN MAIN COMMIT MARKER FILE ==='
+          curl -sSIL --max-time 20 'https://shorevest.com/john-jones/index.html' | head -80
