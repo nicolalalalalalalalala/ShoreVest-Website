@@ -1,0 +1,106 @@
+name: Apply production legacy redirects once
+
+on:
+  push:
+    branches:
+      - fix/production-legacy-redirects-20260820
+    paths:
+      - '.github/workflows/apply-production-legacy-redirects-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/production-legacy-redirects-20260820
+
+      - name: Wire 404 recovery and generate exact redirect pages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import html as html_lib
+          import json
+          import re
+
+          router_path = Path('assets/js/legacy-404-redirects.js')
+          router = router_path.read_text(encoding='utf-8')
+
+          page404 = Path('404.html')
+          text = page404.read_text(encoding='utf-8')
+          marker = '  <base href="/">\n'
+          script = '  <script src="/assets/js/legacy-404-redirects.js?v=20260820-production"></script>\n'
+          if script not in text:
+              if marker not in text:
+                  raise SystemExit('404.html base marker not found')
+              text = text.replace(marker, marker + script, 1)
+              page404.write_text(text, encoding='utf-8')
+
+          mapping = dict(re.findall(r"^\s*'([^']+)':\s*'([^']+)',?\s*$", router, flags=re.M))
+          if len(mapping) < 90:
+              raise SystemExit(f'Legacy redirect map unexpectedly small: {len(mapping)}')
+
+          generated = 0
+          skipped_filelike = 0
+          skipped_existing = 0
+
+          for old, target in mapping.items():
+              rel = old.lstrip('/')
+              suffix = Path(rel).suffix.lower()
+
+              # GitHub Pages would serve HTML stored at .pdf/.mp3 with the wrong MIME.
+              # Those legacy file URLs are recovered by the 404 router instead.
+              if suffix and suffix != '.html':
+                  skipped_filelike += 1
+                  continue
+
+              destination = Path(rel) if suffix == '.html' else Path(rel) / 'index.html'
+              if destination.exists():
+                  skipped_existing += 1
+                  continue
+
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              target_attr = html_lib.escape(target, quote=True)
+              target_js = json.dumps(target)
+              canonical = 'https://shorevest.com' + target
+              canonical_attr = html_lib.escape(canonical, quote=True)
+
+              stub = f'''<!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="robots" content="noindex, follow">
+            <meta http-equiv="refresh" content="0; url={target_attr}">
+            <link rel="canonical" href="{canonical_attr}">
+            <title>Redirecting | ShoreVest</title>
+            <script>
+              (function () {{
+                var target = {target_js};
+                window.location.replace(target + (window.location.search || '') + (window.location.hash || ''));
+              }}());
+            </script>
+          </head>
+          <body><p>Redirecting to <a href="{target_attr}">ShoreVest</a>…</p></body>
+          </html>
+          '''
+              destination.write_text(stub, encoding='utf-8')
+              generated += 1
+
+          print(f'mappings={len(mapping)} generated={generated} filelike_fallbacks={skipped_filelike} existing={skipped_existing}')
+          PY
+
+      - name: Remove one-time workflow and commit generated redirects
+        run: |
+          rm -f .github/workflows/apply-production-legacy-redirects-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "Generate exact production legacy redirect pages"
+          git push origin HEAD:fix/production-legacy-redirects-20260820
