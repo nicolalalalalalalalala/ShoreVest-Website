@@ -13,6 +13,15 @@
       "redirectTarget": null
     },
     {
+      "source": "apply.html",
+      "route": "/apply/",
+      "destination": "apply/index.html",
+      "indexable": false,
+      "disabled": false,
+      "reason": null,
+      "redirectTarget": null
+    },
+    {
       "source": "careers/index.html",
       "route": "/careers/",
       "destination": "careers/index.html",

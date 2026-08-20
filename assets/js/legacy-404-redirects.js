@@ -35,7 +35,7 @@
     '/china-debt-dynamics/beijings-strategy-for-dealing-with-local-government-debt-no-bailouts-but-a-helping-hand': '/insights/china-debt-dynamics/v7i4/',
     '/china-debt-dynamics-v9i4': '/insights/china-debt-dynamics/v9i4/',
     '/china-debt-dynamics-v9i3': '/insights/china-debt-dynamics/v9i3/',
-    '/china-debt-dynamics-v9i3.html': '/insights/china-debt-dynamics/v9i3/',
+    '/insights/china-debt-dynamics/v9i3/': '/insights/china-debt-dynamics/v9i3/',
     '/china-debt-dynamics/chinas-property-support-measures-rescue-not-reflation': '/insights/china-debt-dynamics/v6i3/',
     '/china-debt-dynamics/green-finance-sowing-the-seeds-of-chinas-next-wave-of-npls': '/insights/china-debt-dynamics/v9i1/',
     '/china-debt-dynamics/private-credit-in-a-reset-world-order': '/insights/china-debt-dynamics/v8i5/',
@@ -59,7 +59,7 @@
     '/2025/01/06': '/insights/china-debt-dynamics/v9i1/',
 
     '/about-shorevest-partners': '/firm/',
-    '/apply.html': '/careers/',
+    '/apply/': '/careers/',
     '/careers/legal-assistant': '/careers/',
     '/philosophy': '/firm/',
     '/vision-principles': '/firm/',
