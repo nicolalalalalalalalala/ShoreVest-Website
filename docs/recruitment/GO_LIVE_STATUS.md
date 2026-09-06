@@ -28,39 +28,47 @@ end-to-end CV upload against the deployed backend.
   intended pre-launch state while every other security check (secure client, `noindex`
   apply pages, no secrets, no email/mock, approved roles) is preserved unchanged.
 
-## The go-live blocker (why the switch stays off)
+## The go-live blocker (why the switch stays off) — CONFIRMED root cause (2026-09-06)
 
-The application client (`assets/js/recruitment-application.js`) performs a **three-step**
-submission: `POST /applications/initiate` → `PUT` the CV to the returned short-lived SAS
-URL → `POST /applications/complete` → `POST /applications/finalize`, expecting a
-`finalizationToken` from `complete` and a final application reference from `finalize`.
+The online submission itself works end-to-end on the deployed backend (a real fake-data
+submission returned "Application received", the CV landed in `recruitment-quarantine`, and
+candidate + HR notifications were delivered with no CV attached). But the **malware
+scan → promote-to-clean step never runs**, so every uploaded CV is stuck at `ScanPending`
+and never becomes reviewer-retrievable in `recruitment-clean`.
 
-The Function App **committed in this repo** (`services/recruitment-functions`) implements
-only `initiate` and `complete` — there is **no `finalize` route and no `finalizationToken`**.
-So against the committed backend the flow fails at the final step (the client shows an
-error, never a false success). The frontend was written against a **newer** backend than
-the one committed here; the deployed test app carries settings for that newer contract
-(candidate acknowledgement, SharePoint, HR access, retention) and very likely implements
-`finalize`, but that could not be verified from CI (the backend is unreachable from the
-build environment and Turnstile requires a real browser).
+Diagnosed against Azure:
+
+- The Event Grid scan-result topic showed **zero** publishes ever (`PublishSuccessCount`
+  null across the whole window) — Defender never emitted a single scan result.
+- `Microsoft.Security/pricings/StorageAccounts` on the subscription is **`Free`**.
+  Defender for Storage malware scanning is a **paid** feature; on the Free tier the
+  resource-level `onUpload.isEnabled: true` flag is cosmetic and nothing actually scans.
+
+This is an Azure plan/config gap, **not** a code bug — which is why the site correctly
+stays OFF and `openRolesEnabled` is untouched.
+
+## Remediation in progress — free self-hosted ClamAV scanner
+
+Rather than enable the paid Defender plan, the scan source is being replaced with a free,
+self-hosted **ClamAV** scanner that keeps every CV inside the tenant. Only the scan source
+changes; the existing `processScanResult` state machine (promote/block/manual-review/
+notify) is reused unchanged. See **`docs/recruitment/MALWARE_SCANNING_CLAMAV.md`** for the
+architecture, cost, deploy steps and the required functional round-trip test. Code +
+Bicep + tests are staged in this branch; deployment happens via Cloud Shell.
 
 ## Go-live checklist (do these, in order)
 
-1. **Verify a real CV upload end-to-end.** In a browser, open
-   `https://shorevest.com/careers/apply.html?role=legal-assistant&source=website`
-   (it is live and `noindex` even while Open Roles are hidden). Complete the form with
-   **fake candidate data**, upload a test PDF/DOCX, pass Turnstile, and submit. Expect
-   "Application received" with a reference — and confirm the file actually lands in the
-   `recruitment-quarantine` container and a record appears in Cosmos `submissions`.
-   - If it succeeds → the deployed backend implements the full contract; proceed.
-   - If it errors at submission → the deployed backend is missing `finalize`; reconcile
-     `services/recruitment-functions` with the deployed source before launch.
+1. **Stand up the ClamAV scanner** and pass the functional round-trip test in
+   `MALWARE_SCANNING_CLAMAV.md`: a clean CV must reach `recruitment-clean` and be
+   reviewer-retrievable, an EICAR test file must be classified `Malicious` and blocked,
+   and Cosmos must move `ScanPending → Ready`/`Blocked`. Re-drive the CVs currently stuck
+   at `ScanPending`.
 2. **Point `apiBase` at a production backend.** Today it targets the *test* Function App;
    a production launch should not send real candidate PII to test infrastructure. Stand up
    (or designate) the production recruitment environment and update `apiBase`.
-3. **Reconcile the committed backend with the deployed one.** The deployed app is ahead of
-   this repo (finalize, SharePoint projection, HR access, candidate ack, retention). Bring
-   `services/recruitment-functions` up to that source so the repo is the source of truth.
-4. **Flip the switch (two lines).** Set `openRolesEnabled: true` in
+3. **Reconcile the committed backend with the deployed one** (the deployed app carries
+   finalize, SharePoint projection, HR access, candidate ack, retention) so the repo is the
+   source of truth.
+4. **Flip the switch (two lines).** Only after 1–3: set `openRolesEnabled: true` in
    `assets/data/recruitment/public-config.json` and update the matching assertion in
    `tests/recruitment-static-security.test.js` to `true`.
