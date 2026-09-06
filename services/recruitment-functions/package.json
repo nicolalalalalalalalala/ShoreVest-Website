@@ -18,6 +18,7 @@
     "@azure/identity": "4.10.2",
     "@azure/keyvault-secrets": "4.10.0",
     "@azure/storage-blob": "12.28.0",
+    "@azure/storage-queue": "12.27.0",
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1"
   },

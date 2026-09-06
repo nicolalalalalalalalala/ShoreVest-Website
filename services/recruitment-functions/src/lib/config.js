@@ -37,7 +37,18 @@ function loadConfig(env = process.env) {
       allowDisabled: !production || bool(env.RECRUITMENT_RATE_LIMIT_ALLOW_DISABLED),
       limit: Number(env.RECRUITMENT_RATE_LIMIT_COUNT || 5),
       windowSeconds: Number(env.RECRUITMENT_RATE_LIMIT_WINDOW_SECONDS || 300)
-    }
+    },
+    // ClamAV scan worker (Azure Container Apps). The worker drains BlobCreated
+    // events for the quarantine container from a Storage Queue and scans each CV
+    // against a co-located clamd. See MALWARE_SCANNING_CLAMAV.md.
+    scanQueueUrl: env.RECRUITMENT_SCAN_QUEUE_URL,
+    clamavHost: env.CLAMAV_HOST || env.RECRUITMENT_CLAMAV_HOST,
+    clamavPort: Number(env.CLAMAV_PORT || env.RECRUITMENT_CLAMAV_PORT || 3310),
+    clamavTimeoutMs: Number(env.RECRUITMENT_CLAMAV_TIMEOUT_MS || 120000),
+    maxScanBytes: Number(env.RECRUITMENT_MAX_SCAN_BYTES || 30 * 1024 * 1024),
+    scanMaxDequeue: Number(env.RECRUITMENT_SCAN_MAX_DEQUEUE || 5),
+    scanIdleDelayMs: Number(env.RECRUITMENT_SCAN_IDLE_DELAY_MS || 5000),
+    scanVisibilityTimeoutSeconds: Number(env.RECRUITMENT_SCAN_VISIBILITY_TIMEOUT_SECONDS || 300)
   };
 }
 

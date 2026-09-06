@@ -2,7 +2,10 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
-// Public launch: approved role pages are visible and both approved roles use the secure online application flow.
+// Staged for launch: the full secure online application flow is built and wired, but the
+// public master switch (openRolesEnabled) stays OFF until an end-to-end CV upload is verified
+// against the deployed backend. Going live is a deliberate two-line change: flip
+// openRolesEnabled to true in public-config.json AND update the assertion below to true.
 function read(f){return fs.readFileSync(path.join(root,f),'utf8');}
 
 const rolePages = [
@@ -15,7 +18,7 @@ const applicationPages = ['careers/apply.html','careers/apply_cn.html'];
 const manifest = JSON.parse(read('assets/data/recruitment/roles.v1.json'));
 const publicConfig = JSON.parse(read('assets/data/recruitment/public-config.json'));
 
-assert.strictEqual(publicConfig.openRolesEnabled, true, 'approved Open Roles are publicly visible');
+assert.strictEqual(publicConfig.openRolesEnabled, false, 'Open Roles stay hidden until go-live is verified (flip to true to launch)');
 assert.strictEqual(publicConfig.applicationsEnabled, true, 'the dedicated application page is enabled');
 assert.strictEqual(publicConfig.turnstileSiteKey, '0x4AAAAAAEJh3KNuIlG3ZdgM', 'only the public Turnstile site key is published');
 assert.strictEqual(publicConfig.apiBase, 'https://svrc26hk-recruit-fn-test.azurewebsites.net/api/recruitment');
